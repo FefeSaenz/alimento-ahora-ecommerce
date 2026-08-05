@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-syne: 'Syne', sans-serif;
+  
+  /* Acá definís los colores de tu nueva marca */
+  --color-brand-primary: #ff5c00; /* Naranja */
+  --color-brand-secondary: #000000; /* Negro */
+  --color-brand-background: #ffffff; /* Blanco */
+}
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply bg-white text-black antialiased;
+  }
+}
+
+/* --- ANIMACIÓN KEN BURNS --- */
+@keyframes ken-burns {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 8s ease-out forwards;
+}
+
+/* --- ANIMACIÓN MARQUESINA (ANNOUNCEMENT BAR) --- */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* --- ANIMACIÓN BARRA DE PROGRESO (HERO) --- */
+@keyframes fill-progress-transform {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* --- ANIMACIÓN BURBUJA WHATSAPP --- */
+@keyframes bounce-pause {
+  0%, 15%, 100% { transform: translateY(0); }
+  5%, 10% { transform: translateY(-20%); }
+}
+.animate-bounce-pause {
+  animation: bounce-pause 5s ease-in-out infinite;
+}
+
+/* --- CUSTOM SCROLLBAR ALIMENTO AHORA --- */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #000000;
+}
+
+@layer components {
+  /* --- SISTEMA DE ANIMACIONES UI (DRAWERS Y MODALES) --- */
+  
+  /* 1. Backdrop (Fondos oscuros) */
+  .ui-backdrop {
+    @apply transition-opacity duration-300 opacity-0 pointer-events-none;
+  }
+  .ui-backdrop.is-open {
+    @apply opacity-100 pointer-events-auto;
+  }
+
+  /* 2. Paneles Deslizables Base */
+  .ui-slide-panel {
+    @apply transition-transform duration-300 ease-out transform;
+  }
+
+  /* 3. Animación Izquierda -> Derecha (Menú Mobile) */
+  .ui-slide-left {
+    @apply -translate-x-full;
+  }
+  .ui-slide-left.is-open {
+    @apply translate-x-0;
+  }
+
+  /* 4. Animación Derecha -> Izquierda (Carrito / Filtros) */
+  .ui-slide-right {
+    @apply translate-x-full;
+  }
+  .ui-slide-right.is-open {
+    @apply translate-x-0;
+  }
+  /* 5. Animación de Fundido (Para Buscador Full-Screen) */
+  .ui-fade-overlay {
+    @apply transition-opacity duration-300 opacity-0 pointer-events-none;
+  }
+  .ui-fade-overlay.is-open {
+    @apply opacity-100 pointer-events-auto;
+  }
+}

@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /v1/
+Disallow: /gestion/
+
+Sitemap: https://www.alimentoahora.com.ar/sitemap.xml
