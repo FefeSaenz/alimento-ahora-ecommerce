@@ -60,8 +60,9 @@ const Layout: React.FC = () => {
                 cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)}
             />
           
+            {/* Si querés, acá podés pasarle el color naranja a la AnnouncementBar en su propio archivo */}
             <AnnouncementBar 
-                messages={["ENVÍO GRATIS + $200.000"]} 
+                messages={["ENVÍO GRATIS + $20.000 EN PARANÁ"]} 
             />
 
             <SearchOverlay 
@@ -73,7 +74,7 @@ const Layout: React.FC = () => {
                 products={unifiedProducts}
             />
             
-            <main className="grow">
+            <main className="grow bg-white">
                 {/* Pasamos setSelectedQuickView para que las páginas hijas (Home, Category) puedan abrirlo */}
                 <Outlet context={{ setSelectedQuickView, searchTerm, setSearchTerm }} />
             </main>
@@ -121,20 +122,17 @@ const Layout: React.FC = () => {
 
             <WhatsAppButton />
 
-            {/* 2. Toaster global estilizado para ALIMENTO AHORA */}
-            {/* Toaster global estilizado para ALIMENTO AHORA (Brutalista Forzado) */}
+            {/* Toaster global estilizado para ALIMENTO AHORA (Más amigable y curvo) */}
             <Toaster 
-                position="top-center" // Lo pasamos arriba para que no tape los botones del modal
+                position="top-center" 
                 toastOptions={{
-                    // Usamos el modificador "!" de Tailwind para obligar a sobreescribir el diseño por defecto
-                    className: '!bg-black !text-white !border-gray-800 !border !rounded-none !shadow-2xl !font-sans !py-5 !px-6',
+                    className: '!bg-white !text-black !border-gray-200 !border !rounded-2xl !shadow-xl !font-fredoka !py-4 !px-6',
                     classNames: {
-                        // Estilo del texto
-                        title: '!text-[11px] !font-black !uppercase !tracking-[2px]',
-                        // Decoración lateral según el tipo de mensaje
-                        error: '!border-l-4 !border-l-red-600',
-                        success: '!border-l-4 !border-l-[#25D366]',
-                        info: '!border-l-4 !border-l-white',
+                        title: '!text-[14px] !font-bold !text-gray-800',
+                        description: '!text-gray-500 !text-sm',
+                        error: '!border-l-4 !border-l-red-500',
+                        success: '!border-l-4 !border-l-brand-primary', // Usamos el naranja de la marca para el éxito
+                        info: '!border-l-4 !border-l-blue-500',
                     }
                 }} 
             />

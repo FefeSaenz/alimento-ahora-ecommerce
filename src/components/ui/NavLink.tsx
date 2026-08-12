@@ -20,15 +20,14 @@ const NavLink: React.FC<NavLinkProps> = ({ item, onClick, className = "", showSu
       <Link
         to={item.url}
         onClick={(e) => onClick(e, item.url)}
-        // Eliminé los text-gray-400 y hover:text-black de acá. 
-        // Ahora el color se controla 100% desde la prop 'className' que viene del Header.
-        className={`uppercase font-black transition-colors flex items-center gap-2 ${
-          item.active ? 'opacity-100' : 'opacity-70 hover:opacity-100'
+        // Eliminé el uppercase para dejarlo más versátil
+        className={`transition-colors flex items-center gap-2 ${
+          item.active ? 'opacity-100' : 'opacity-80 hover:opacity-100'
         } ${className}`}
       >
         {item.label}
         
-        {/* Lógica del icono de fuego inyectada en el átomo */}
+        {/* Lógica del icono de fuego */}
         {item.icon === 'fire' && (
           <i className="fa-solid fa-fire text-orange-500 animate-pulse text-[0.8em] pr-0"></i>
         )}
@@ -37,15 +36,14 @@ const NavLink: React.FC<NavLinkProps> = ({ item, onClick, className = "", showSu
       {/* Renderizado condicional del Submenú */}
       {hasSubmenu && (
         <div className="bg-white/30 absolute top-full left-0 hidden md:group-hover:block animate-in fade-in slide-in-from-top-1 duration-200 z-50">
-          {/* mt-[-10px] para que no haya "hueco" y no se cierre al mover el mouse */}
-          <div className="bg-white/90 backdrop-blur-md shadow-xl border-gray-100 border-0 p-6 min-w-55">
+          {/* Bordes redondeados para seguir el estilo amigable */}
+          <div className="bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 p-4 min-w-48 rounded-2xl mt-1">
             {item.submenu?.map((sub, idx) => (
               <Link
                 key={`${sub.url}-${idx}`}
                 to={sub.url}
                 onClick={(e) => onClick(e, sub.url)}
-                // Los colores del submenu quedan fijos porque el fondo del submenu siempre es blanco
-                className="block py-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
+                className="block py-2 px-2 text-[14px] font-fredoka font-medium text-gray-600 hover:text-brand-primary hover:bg-orange-50 rounded-lg transition-all"
               >
                 {sub.label}
               </Link>

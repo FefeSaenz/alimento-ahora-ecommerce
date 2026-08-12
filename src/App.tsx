@@ -17,7 +17,7 @@ const OrderSuccess = lazy(() => import('@/src/pages/OrderSuccess'))
 
 // Pantalla de carga genérica mientras se descargan los "chunks" de código
 const PageLoader = () => (
-  <div className="h-screen flex items-center justify-center font-bold text-2xl tracking-tighter animate-pulse">
+  <div className="h-screen flex items-center justify-center font-lilita text-3xl text-brand-primary animate-pulse">
     CARGANDO ALIMENTO AHORA...
   </div>
 );
@@ -55,13 +55,14 @@ const AppContent: React.FC = () => {
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/orden/:id" element={<OrderSuccess />} />
 
-          {/* Página 404 (Opcional pero recomendado) */}
+          {/* Página 404 (Estilo Alimento Ahora) */}
           <Route 
             path="*" 
             element={
               <div className="min-h-[60vh] flex flex-col items-center justify-center p-20 text-center">
-                <h1 className="text-6xl font-black italic-pulso mb-4">404</h1>
-                <p className="text-gray-500 font-bold uppercase tracking-widest">Página no encontrada</p>
+                <h1 className="text-8xl font-lilita text-gray-200 mb-4">404</h1>
+                <p className="text-gray-500 font-fredoka font-medium text-xl">Uy! Parece que este plato está vacío.</p>
+                <a href="/" className="mt-6 bg-brand-primary text-white font-fredoka font-semibold py-3 px-8 rounded-full hover:bg-orange-600 transition-colors">Volver al inicio</a>
               </div>
           } 
           />

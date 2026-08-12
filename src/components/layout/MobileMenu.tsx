@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import { useApp } from '@/src/context/AppContext';
 import NavLink from '@/src/components/ui/NavLink';
-import logoPulso from '@/src/assets/logo-pulso-black.svg';
+import logoAlimentoAhora from '@/src/assets/logoNegro-alimentoAhora.png';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -28,7 +28,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
 
   return (
     <div 
-      className={`fixed inset-0 z-100 bg-white flex flex-col ui-slide-panel ui-slide-left ${isOpen ? 'is-open' : ''}`}
+      className={`fixed inset-0 z-50 bg-white flex flex-col ui-slide-panel ui-slide-left ${isOpen ? 'is-open' : ''}`}
     >
       <div className="max-w-7xl mx-auto px-6 h-full flex flex-col w-full">
         
@@ -39,34 +39,34 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
             onClick={onClose}
             className="flex items-center hover:opacity-80 transition-opacity"
           >
-            {logoPulso ? (
+            {logoAlimentoAhora ? (
               <img 
-                src={logoPulso} 
+                src={logoAlimentoAhora} 
                 alt="ALIMENTO AHORA" 
-                width={100}
+                width={130}
                 height={40}
-                className="h-6 md:h-7 w-auto max-w-30 object-contain" 
+                className="h-8 w-auto max-w-30 object-contain" 
               />
             ) : (
-              <span className="text-[10px] font-black uppercase tracking-[4px]">{logoText}</span>
+              <span className="text-xl font-lilita text-brand-primary">{logoText}</span>
             )}
           </Link>
           
-          <button onClick={onClose} className="text-gray-400 p-2 cursor-pointer">
+          <button onClick={onClose} className="text-gray-800 hover:text-brand-primary p-2 cursor-pointer bg-gray-50 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
             <i className="fa-solid fa-xmark text-xl"></i>
           </button>
         </div>
         
-        {/* LINKS GIGANTES */}
-        <div className="flex-1 overflow-y-auto pt-8"> 
+        {/* LINKS GRANDES Y AMIGABLES */}
+        <div className="flex-1 overflow-y-auto pt-8 pb-4"> 
           <nav className="flex flex-col space-y-4"> 
             {menuItems && menuItems.map((item) => (
-              <div key={item.id} className="block">
+              <div key={item.id} className="block border-b border-gray-50 pb-2">
                 <NavLink 
                   item={item} 
                   onClick={handleLinkClick} 
                   showSubmenu={false} 
-                  className="text-4xl font-black tracking-tighter text-black leading-[0.8] transition-transform active:scale-95 origin-left" 
+                  className="text-3xl font-lilita text-gray-800 hover:text-brand-primary leading-tight transition-transform active:translate-x-2" 
                 />
               </div>
             ))}
@@ -75,13 +75,19 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
 
         {/* FOOTER DRAWER */}
         <div className="border-t border-gray-100 py-8 shrink-0 flex flex-col space-y-6">
-          <button onClick={() => { onOpenProfile(); onClose(); }} className="flex items-center space-x-3 text-left w-fit cursor-pointer">
-            <i className="fa-regular fa-user text-lg text-gray-400"></i>
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-[2px]">Mi Cuenta</span>
+          <button 
+            onClick={() => { onOpenProfile(); onClose(); }} 
+            className="flex items-center space-x-3 text-left w-fit cursor-pointer bg-orange-50 px-4 py-2 rounded-full hover:bg-orange-100 transition-colors"
+          >
+            <i className="fa-regular fa-user text-lg text-brand-primary"></i>
+            <span className="text-sm font-fredoka font-semibold text-brand-primary">Mi Cuenta</span>
           </button>
-          <div className="flex items-center space-x-6">
-            <a href="https://www.instagram.com/alimentoahora/" className="text-[11px] font-bold text-gray-400 uppercase tracking-[2px]">Instagram</a>
-            <a href="#" className="text-[11px] font-bold text-gray-400 uppercase tracking-[2px]">Contacto</a>
+          
+          <div className="flex items-center space-x-6 px-2">
+            <a href="https://www.instagram.com/alimentoahora/" className="text-sm font-fredoka text-gray-500 hover:text-brand-primary transition-colors flex items-center gap-2">
+              <i className="fa-brands fa-instagram text-lg"></i>
+              Instagram
+            </a>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavLink from '@/src/components/ui/NavLink';
 import { useApp } from '@/src/context/AppContext';
-import logoAlimentoAhora from '@/src/assets/logo-alimentoAhora.svg';
+import logoAlimentoAhora from '@/src/assets/logoNegro-alimentoAhora.png';
 import MobileMenu from './MobileMenu';
 
 interface HeaderProps {
@@ -30,35 +30,35 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
   
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-md border-b border-gray-800 px-5 lg:px-5 h-20 flex items-center justify-between text-white">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 px-5 lg:px-5 h-20 flex items-center justify-between text-black">
         
         {/* --- 1. BLOQUE IZQUIERDO --- */}
-        <div className="flex items-center space-x-5 ">
+        <div className="flex items-center space-x-5">
           
           {/* Mobile/Tablet: Hamburguesa */}
           <button 
             onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden text-gray-300 hover:text-white transition-transform active:scale-95 cursor-pointer"
+            className="lg:hidden text-gray-800 hover:text-brand-primary transition-colors cursor-pointer p-1"
             aria-label="Abrir menú"
           >
             <div className="flex flex-col space-y-1.5 items-start">
-              <span className="block w-5 h-0.5 bg-gray-300 hover:bg-white transition-colors"></span>
-              <span className="block w-5 h-0.5 bg-gray-300 hover:bg-white transition-colors"></span>
-              <span className="block w-5 h-0.5 bg-gray-300 hover:bg-white transition-colors"></span>
+              <span className="block w-6 h-0.5 bg-current rounded-full transition-colors"></span>
+              <span className="block w-5 h-0.5 bg-current rounded-full transition-colors"></span>
+              <span className="block w-6 h-0.5 bg-current rounded-full transition-colors"></span>
             </div>
           </button>
 
           {/* Mobile/Tablet: Lupa */}
           <button 
             onClick={onOpenSearch} 
-            className="lg:hidden text-gray-300 hover:text-white transition-transform active:scale-95 cursor-pointer"
+            className="lg:hidden text-gray-800 hover:text-brand-primary transition-colors cursor-pointer p-1"
             aria-label="Buscar"
           >
-            <i className="fa-solid fa-magnifying-glass text-lg"></i>
+            <i className="fa-solid fa-magnifying-glass text-xl"></i>
           </button>
 
-          {/* Desktop: Logo (Alineado a la izquierda) */}
-          <Link to="/" className="hidden lg:flex items-center hover:opacity-80 transition-opacity py-1 mr-10">
+          {/* Desktop: Logo */}
+          <Link to="/" className="hidden lg:flex items-center hover:opacity-80 transition-opacity py-1 mr-8">
             {logoAlimentoAhora ? (
               <img 
                 src={logoAlimentoAhora}
@@ -66,20 +66,20 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
                 width={150}
                 height={64}
                 fetchPriority="high"
-                className="h-14 lg:h-6 w-auto object-contain object-left transition-all" />
+                className="h-14 lg:h-12 w-auto object-contain object-left transition-all" />
             ) : (
-              <span className="text-3xl font-black tracking-tighter">{logoText}</span>
+              <span className="text-3xl font-lilita tracking-wide text-brand-primary">{logoText}</span>
             )}
           </Link>
           
-          {/* Desktop: Navegación (Se oculta en mobile/tablet) */}
+          {/* Desktop: Navegación */}
           <nav className="hidden lg:flex items-center space-x-6 h-full">
             {menuItems && menuItems.length > 0 ? (
               menuItems.map((item) => (
-                <NavLink key={item.id} item={item} onClick={handleNavClick} className="h-full text-[11px] tracking-[3px] text-gray-300 hover:text-white" />
+                <NavLink key={item.id} item={item} onClick={handleNavClick} className="h-full text-[14px] font-fredoka font-medium tracking-normal text-gray-800 hover:text-brand-primary" />
               ))
             ) : (
-              <span className="text-[10px] text-gray-500 animate-pulse">Cargando menú...</span>
+              <span className="text-sm font-fredoka text-gray-400 animate-pulse">Cargando menú...</span>
             )}
           </nav>
         </div>
@@ -94,9 +94,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
                 width={150}
                 height={48}
                 fetchPriority="high"
-                className="h-6 md:h-12 w-auto max-w-30 md:max-w-40 object-contain" />
+                className="h-8 md:h-10 w-auto max-w-30 md:max-w-40 object-contain" />
             ) : (
-              <span className="text-2xl font-black tracking-tighter">{logoText}</span>
+              <span className="text-2xl font-lilita tracking-wide text-brand-primary">{logoText}</span>
             )}
           </Link>
         </div>
@@ -107,30 +107,30 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
           {/* Desktop: Lupa */}
           <button 
             onClick={onOpenSearch} 
-            className="hidden lg:block text-gray-300 hover:text-white transition-transform active:scale-95 cursor-pointer"
+            className="hidden lg:block text-gray-800 hover:text-brand-primary transition-transform active:scale-95 cursor-pointer"
             aria-label="Buscar"
           >
-            <i className="fa-solid fa-magnifying-glass text-lg"></i>
+            <i className="fa-solid fa-magnifying-glass text-xl"></i>
           </button>
 
           {/* Desktop: Perfil */}
           <button 
             onClick={onOpenProfile} 
-            className="hidden lg:block text-gray-300 hover:text-white transition-transform active:scale-95 cursor-pointer"
+            className="hidden lg:block text-gray-800 hover:text-brand-primary transition-transform active:scale-95 cursor-pointer"
             aria-label="Perfil de usuario"
           >
-            <i className="fa-regular fa-user text-lg"></i>
+            <i className="fa-regular fa-user text-xl"></i>
           </button>
 
           {/* Mobile, Tablet & Desktop: Carrito */}
           <button 
             onClick={onOpenCart} 
-            className="relative group transition-transform active:scale-95 cursor-pointer"
+            className="relative group transition-transform active:scale-95 cursor-pointer p-1"
             aria-label="Abrir carrito"
           >
-            <i className="fa-solid fa-cart-shopping text-lg text-gray-300 group-hover:text-white"></i>
+            <i className="fa-solid fa-cart-shopping text-xl text-gray-800 group-hover:text-brand-primary transition-colors"></i>
             {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-white text-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold animate-in fade-in zoom-in">
+              <span className="absolute -top-1 -right-1 bg-brand-primary text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold animate-in fade-in zoom-in border-2 border-white">
                 {cartCount}
               </span>
             )}

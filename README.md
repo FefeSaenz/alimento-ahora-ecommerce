@@ -61,8 +61,10 @@ El proyecto sigue una estructura modular y reactiva para facilitar su mantenimie
 ## ✅ Logros y Avances
 - [x] **Clonado de arquitectura base (Plantilla Pulso).**
 - [x] **Limpieza de repositorio Git y reconfiguración de metadatos SEO.**
+- [x] **Adaptación de paleta de colores y tipografías globales.**
+- [x] **Reemplazo de assets estáticos iniciales (Logos, Favicon modernos).**
 
 ## 🛠️ Próximos Pasos
-- [ ] **Adaptación de paleta de colores y tipografías globales.**
-- [ ] **Reemplazo de assets estáticos (Logos, Banners, Favicon).**
+- [ ] **Estructuración de la Home (Hero Section con Color Blocking para integración de stickers).**
 - [ ] **Ajuste de interfaces y Mappers para el nuevo modelo de datos (Bolsas, Kilos, Marcas de alimento).**
+- [ ] **Revisión de tarjetas de producto y carruseles para alinear a la nueva estética curva.**
