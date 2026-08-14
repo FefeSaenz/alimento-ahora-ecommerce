@@ -63,8 +63,11 @@ El proyecto sigue una estructura modular y reactiva para facilitar su mantenimie
 - [x] **Limpieza de repositorio Git y reconfiguración de metadatos SEO.**
 - [x] **Adaptación de paleta de colores y tipografías globales.**
 - [x] **Reemplazo de assets estáticos iniciales (Logos, Favicon modernos).**
+- [x] **Estructuración de la Home (Hero Section con Color Blocking para integración de stickers).**
+- [x] **Rediseño de componentes UI base (Tarjetas, Carruseles y Títulos) con bordes curvos y paleta de la marca.**
 
 ## 🛠️ Próximos Pasos
 - [ ] **Estructuración de la Home (Hero Section con Color Blocking para integración de stickers).**
 - [ ] **Ajuste de interfaces y Mappers para el nuevo modelo de datos (Bolsas, Kilos, Marcas de alimento).**
-- [ ] **Revisión de tarjetas de producto y carruseles para alinear a la nueva estética curva.**
+- [ ] **Rediseño de componentes de Layout restantes (Footer, Mapa/Localizaciones y Modales).**
+- [ ] **Adaptación visual de las vistas de Catálogo (Products) y Detalle de Producto (ProductDetail).**

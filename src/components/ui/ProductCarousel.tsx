@@ -71,13 +71,15 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
         {/* FLECHAS LATERALES (Exclusivas de Desktop, escuchan solo al group/carousel) */}
         <button 
           onClick={() => scroll('left')}
-          className="hidden md:flex absolute -left-4 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-black hover:text-white hover:border-black transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
+          // Hover Naranja de Alimento Ahora
+          className="hidden md:flex absolute -left-4 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
         >
           <i className="fa-solid fa-chevron-left text-sm"></i>
         </button>
         <button 
           onClick={() => scroll('right')}
-          className="hidden md:flex absolute -right-4 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-black hover:text-white hover:border-black transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
+          // Hover Naranja de Alimento Ahora
+          className="hidden md:flex absolute -right-4 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
         >
           <i className="fa-solid fa-chevron-right text-sm"></i>
         </button>
@@ -101,12 +103,13 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
           <div className="snap-start shrink-0 w-[55vw] sm:w-[45vw] md:hidden flex">
             <Link 
               to={viewAllLink}
-              className="flex-1 flex flex-col items-center justify-center gap-4 bg-gray-50 transition-colors text-black rounded-sm p-4 group"
+              // Fondo naranjita, bordes muy redondeados y letras Fredoka
+              className="flex-1 flex flex-col items-center justify-center gap-4 bg-orange-50 transition-colors text-brand-primary rounded-2xl p-4 group"
             >
-              <div className="w-12 h-12 rounded-full border border-gray-200 group-active:border-black flex items-center justify-center transition-none cursor-pointer">
+              <div className="w-12 h-12 rounded-full border border-orange-200 group-active:border-brand-primary flex items-center justify-center transition-none cursor-pointer">
                 <i className="fa-solid fa-arrow-right text-lg"></i>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[2px] text-center leading-relaxed">
+              <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-center leading-relaxed">
                 {viewAllText}
               </span>
             </Link>

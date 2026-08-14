@@ -25,7 +25,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* SECCIÓN DE IMAGEN (Aspect Ratio 3/4) */}
-        <div className="relative aspect-3/4 overflow-hidden bg-gray-100 rounded-sm w-full">
+        <div className="relative aspect-3/4 overflow-hidden bg-gray-50 rounded-2xl w-full border border-gray-100 shadow-sm transition-shadow group-hover:shadow-md">
           
           {/* OPTIMIZACIÓN SEO Y PERFORMANCE: Renderizamos ambas imágenes y usamos opacidad cruzada */}
           {/* CAPA 1: Imagen Principal */}
@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
             alt={product.name}
             loading="lazy" 
             decoding="async"
-            className={`w-full h-full object-cover transition-all duration-700 ease-in-out ${
+            className={`w-full h-full object-contain p-4 transition-all duration-700 ease-in-out ${
               product.images?.length > 1 ? 'group-hover:opacity-0' : 'group-hover:scale-105'
             }`}
           />
@@ -46,17 +46,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
               alt={`${product.name} vista alternativa`}
               loading="lazy"
               decoding="async"
-              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 ease-in-out group-hover:opacity-100 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-contain p-4 opacity-0 transition-all duration-700 ease-in-out group-hover:opacity-100 group-hover:scale-105"
             />
           )}
   
           {/* CAPA 2: Etiqueta Visual y Filtro Oscuro (Visuales) */}
           {displayTag && (
-            <div className="absolute top-4 left-4 bg-black text-white px-3 py-1.5 text-[9px] font-black uppercase tracking-[3px] z-10 rounded-sm pointer-events-none">
+            <div className="absolute top-3 left-3 bg-brand-primary text-white px-3 py-1 text-[10px] font-fredoka font-bold uppercase tracking-wider z-10 rounded-full pointer-events-none shadow-sm">
               {displayTag}
             </div>
           )}
-          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors pointer-events-none z-10"></div>
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none z-10"></div>
   
           {/* CAPA 3: EL LINK DE CRISTAL */}
           <Link 
@@ -66,14 +66,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
           />
   
           {/* CAPA 4: EL BOTÓN DE VISTA RÁPIDA */}
-          <div className="absolute inset-0 bottom-0 max-md:hidden items-end pb-2 justify-center opacity-0 group-hover:opacity-100 z-20 pointer-events-none transition-opacity duration-300 flex">
+          <div className="absolute inset-0 bottom-0 max-md:hidden items-end pb-4 justify-center opacity-0 group-hover:opacity-100 z-20 pointer-events-none transition-opacity duration-300 flex">
              <button 
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 onAdd(product);
               }}
-              className="bg-white text-black px-6 py-3 text-[10px] font-black uppercase tracking-[3px] shadow-xl hover:bg-black hover:text-white transition-all duration-300 active:scale-[0.98] cursor-pointer pointer-events-auto"
+              className="bg-white text-brand-primary border border-gray-200 px-6 py-2.5 text-xs font-fredoka font-bold uppercase tracking-wider rounded-full shadow-lg hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all duration-300 active:scale-[0.98] cursor-pointer pointer-events-auto"
              >
               Vista Rápida
              </button>
@@ -83,8 +83,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
         {/* SECCIÓN DE TEXTOS (Título y Precio) */}
         {/* También es un Link nativo hacia la PDP - PC & Mobile */}
         <Link to={productUrl} className="mt-4 text-center block cursor-pointer z-10" title={`Ver ${product.name}`}>
-          <h3 className="text-sm font-bold text-gray-800 uppercase tracking-tight leading-tight mb-1">{product.name}</h3>
-          <Price amount={product.price} className="text-sm font-black block leading-none" />
+          <h3 className="text-sm font-fredoka font-semibold text-gray-800 leading-tight mb-1">{product.name}</h3>
+          <Price amount={product.price} className="text-base font-fredoka font-bold text-brand-primary block leading-none" />
         </Link>
       </div>
     );

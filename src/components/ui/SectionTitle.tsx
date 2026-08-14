@@ -15,15 +15,15 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
   variant = 'default'
 }) => {
 
-  const titleSize = variant === 'slim' ? 'text-2xl md:text-3xl' : 'text-3xl md:text-4xl';
-  const borderSize = variant === 'slim' ? 'border-b-3' : 'border-b-4 md:border-b-5';
+  const titleSize = variant === 'slim' ? 'text-2xl md:text-3xl' : 'text-3xl md:text-5xl';
+  const borderSize = variant === 'slim' ? 'border-b-3' : 'border-b-4';
 
   return (
     // El contenedor principal (w-full) maneja la línea de lado a lado
-    <div className={`w-full ${borderSize} border-black`}>
+    <div className={`w-full ${borderSize} border-brand-primary mb-4`}>
       {/* El contenedor interno (max-w-360) mantiene el texto alineado con los productos */}
-      <div className="max-w-360 mx-auto px-6 flex justify-between items-end pb-1 md:pb-1">
-        <h2 className={`${titleSize} font-syne font-bold uppercase tracking-normal leading-none mt-1`}>
+      <div className="max-w-360 mx-auto px-6 flex justify-between items-end pb-2">
+        <h2 className={`${titleSize} font-lilita text-gray-800 tracking-wide leading-none`}>
           {title}
         </h2>
         
@@ -31,7 +31,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
         {viewAllLink && viewAllText && (
           <Link
             to={viewAllLink}
-            className="text-[10px] pb-1 font-black uppercase tracking-[2px] text-gray-400 hover:text-black transition-colors hidden md:block cursor-pointer"
+            className="text-xs pb-1 font-fredoka font-semibold uppercase tracking-wider text-gray-400 hover:text-brand-primary transition-colors hidden md:block cursor-pointer"
           >
             {viewAllText}
           </Link>

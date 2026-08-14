@@ -78,38 +78,38 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {banners.map((banner, index) => (
-          <div key={banner.id} className="w-full h-full shrink-0 snap-start relative">
+          <div key={banner.id} className="w-full h-full shrink-0 snap-start relative flex items-center justify-center pt-20 pb-32">
             <img 
               src={banner.image} 
               alt={banner.title}
               loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
-              className={`w-full h-full object-cover opacity-60 ${
-                index === currentIndex ? 'animate-ken-burns' : ''
+              className={`w-full max-w-2xl h-full object-contain opacity-90 transition-transform duration-700 ease-out ${
+                index === currentIndex ? 'scale-105' : 'scale-100'
               }`}
             />
           </div>
         ))}
       </div>
 
-      <div key={currentIndex} className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6 z-10 pointer-events-none">
-        <p className="text-[10px] md:text-[12px] font-black uppercase tracking-[6px] mb-4 animate-in fade-in slide-in-from-bottom duration-500">
+      <div key={currentIndex} className="absolute inset-0 flex flex-col items-center justify-end text-center text-white px-6 z-10 pointer-events-none pb-24 md:pb-28">
+        {/*<p className="text-sm md:text-base font-fredoka font-semibold uppercase tracking-widest mb-2 animate-in fade-in slide-in-from-bottom duration-500 text-gray-300">
           {currentBanner.subtitle}
-        </p>
-        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9] mb-8 max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+        </p>*/}
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-lilita text-brand-primary leading-[0.9] mb-8 max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-500">
           {currentBanner.title}
         </h1>
         
         <button 
           onClick={() => onCtaClick(currentBanner.cta?.url || '/productos')}
-          className="pointer-events-auto bg-white text-black px-12 py-5 text-[11px] font-black uppercase tracking-[4px] hover:bg-black hover:text-white transition-all transform active:scale-95 cursor-pointer"
+          className="pointer-events-auto bg-brand-primary text-white px-10 py-4 text-sm font-fredoka font-bold uppercase tracking-wider rounded-full shadow-lg hover:bg-orange-600 hover:shadow-xl transition-all transform active:scale-95 cursor-pointer"
         >
           {currentBanner.cta.text || 'Explorar'}
         </button>
       </div>
       
       {/* INDICADORES (DOTS CON LÓGICA DE TIEMPO UNIFICADA - SINGLE TRUTH) */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex space-x-3 z-30">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-3 z-30">
         {banners.map((_, index) => {
           const isActive = index === currentIndex;
           return (
@@ -119,13 +119,13 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
               className="group py-4 px-1 cursor-pointer" 
               aria-label={`Ir al banner ${index + 1}`}
             >
-              <div className={`h-0.5 relative overflow-hidden transition-all duration-500 ${
-                isActive ? 'w-12 bg-white/30' : 'w-4 bg-white/30 group-hover:bg-white/60'
+              <div className={`h-1.5 rounded-full relative overflow-hidden transition-all duration-500 ${
+                isActive ? 'w-12 bg-gray-700' : 'w-4 bg-gray-700 group-hover:bg-gray-500'
               }`}>
                 {isActive && (
                   <div 
                     key={`progress-${currentIndex}`} 
-                    className="absolute top-0 left-0 w-full h-full bg-white origin-left"
+                    className="absolute top-0 left-0 w-full h-full bg-brand-primary origin-left rounded-full"
                     style={{ 
                       // 1. Usamos la animación de scaleX optimizada por GPU
                       animation: 'fill-progress-transform 5s linear forwards',

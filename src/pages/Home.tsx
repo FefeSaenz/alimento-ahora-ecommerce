@@ -11,11 +11,12 @@ import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts';
 import HeroBanner from '@/src/components/ui/HeroBanner';
 import ProductGrid from '@/src/components/layout/ProductGrid';
 import ProductCarousel from '@/src/components/ui/ProductCarousel';
-import LocationsSection from '@/src/components/layout/LocationsSection';
+//import LocationsSection from '@/src/components/layout/LocationsSection';
 
 //Assets
-import banner1 from '@/src/assets/PORTADA PAG WEB PULSO 1.png';
-import banner2 from '@/src/assets/PORTADA PAG WEB PULSO 2.png';
+import banner1 from '@/src/assets/AAbanner1.png';
+import banner2 from '@/src/assets/AAbanner2.png';
+import banner3 from '@/src/assets/AAbanner3.png';
 
 // Definimos la interfaz del contexto que viene del Layout vía Outlet
 interface HomeContext {
@@ -66,7 +67,7 @@ const Home: React.FC = () => {
                 // Fallbacks: Si no hay título, ponemos uno genérico según el índice
                 title: banner.link_item_title && banner.link_item_title !== `banner_${index + 1}` 
                         ? banner.link_item_title 
-                        : (index === 0 ? 'NUEVA COLECCIÓN' : 'STREET ESSENTIALS'),
+                        : (index === 0 ? '¡ALIMENTO PREMIUM!' : '¡ESTAMOS YENDO!'),
                 subtitle: banner.link_item_description || 'ALIMENTO AHORA',
                 description: '',
                 image: banner.link_item_picture, // ¡Usamos la imagen real de la API!
@@ -82,11 +83,29 @@ const Home: React.FC = () => {
             { 
                 id: 'local-1',
                 type: 'hero' as const, 
-                title: 'STREET ESSENTIALS', 
-                subtitle: 'NEW COLLECTION 2026',
+                title: '¡ESTAMOS YENDO!', 
+                subtitle: 'ENVÍO GRATIS EN PARANÁ',
                 description: '',
                 image: banner1, 
-                cta: { url: '/productos', text: 'EXPLORAR TIENDA' } 
+                cta: { url: '/productos', text: 'COMPRAR AHORA' } 
+            },
+            { 
+                id: 'local-2',
+                type: 'hero' as const, 
+                title: 'ALIMENTO PREMIUM', 
+                subtitle: 'LAS MEJORES MARCAS',
+                description: '',
+                image: banner2, 
+                cta: { url: '/productos', text: 'VER CATÁLOGO' } 
+            },
+            { 
+                id: 'local-3',
+                type: 'hero' as const, 
+                title: 'LLEGAMOS RÁPIDO', 
+                subtitle: 'TU MASCOTA FELIZ',
+                description: '',
+                image: banner3, 
+                cta: { url: '/productos', text: 'PEDIR AHORA' } 
             }
         ];
     }, [frontConfig?.banners]);
@@ -102,33 +121,32 @@ const Home: React.FC = () => {
     };
 
     return (
-        <div className="animate-in fade-in duration-700 flex flex-col gap-10 pb-16">
+        <div className="animate-in fade-in duration-700 flex flex-col gap-10 pb-16 bg-white">
             <HeroBanner
                 banners={visualBanners}
                 onCtaClick={handleBannerClick}
             />
 
             <ProductGrid 
-                title='Drops'
+                title='Destacados'
                 products={featuredProducts.slice(0, 8)} // Solo mostramos los primeros 8 productos destacados
                 onQuickView={handleQuickView}
                 quantityLabel={false}
                 viewAllLink="/productos"
-                viewAllText="Ver Toda La Colección"
+                viewAllText="Ver Todo El Catálogo"
                 layoutMode="home"
             />
             
             {/* SECCIÓN OFERTAS: Carrusel (Solo se muestra si hay ofertas activas) */}
             {offersMapped.length > 0 && (
                 <ProductCarousel 
-                    title="Sale!" 
+                    title="¡Ofertas!" 
                     products={offersMapped} 
                     onAdd={handleQuickView}
                     viewAllLink="/offers"
                     viewAllText="Ver Todas Las Ofertas"
                 />
             )}
-            <LocationsSection />
         </div>
     );
 };
