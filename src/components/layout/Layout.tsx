@@ -60,7 +60,6 @@ const Layout: React.FC = () => {
                 cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)}
             />
           
-            {/* Si querés, acá podés pasarle el color naranja a la AnnouncementBar en su propio archivo */}
             <AnnouncementBar 
                 messages={["ENVÍO GRATIS + $20.000 EN PARANÁ"]} 
             />

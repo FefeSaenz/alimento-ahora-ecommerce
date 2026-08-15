@@ -28,17 +28,18 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
         onClick={onClose} 
       />
 
-      {/* DRAWER PANEL: Usando ui-slide-panel y ui-slide-right */}
+      {/* DRAWER PANEL: Bordes redondeados en la izquierda (rounded-l-3xl) */}
       <div 
-        className={`fixed top-0 right-0 h-full bg-white z-50 w-full max-w-212.5 shadow-2xl flex ui-slide-panel ui-slide-right ${isOpen ? 'is-open' : ''}`}
+        className={`fixed top-0 right-0 h-full bg-white z-50 w-full max-w-212.5 rounded-l-3xl shadow-2xl flex ui-slide-panel ui-slide-right ${isOpen ? 'is-open' : ''}`}
       >
         
         <CartRecommendations onAddFromRec={onAddFromRec} />
 
-        <div className="flex-1 flex flex-col h-full bg-white">
+        <div className="flex-1 flex flex-col h-full bg-white rounded-l-3xl overflow-hidden">
           <div className="p-6 flex items-center justify-between border-b border-gray-100">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-black">Mi Carrito</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors cursor-pointer">
+            {/* Título del cajón */}
+            <h2 className="text-2xl font-lilita text-brand-primary tracking-wide">Mi Carrito</h2>
+            <button onClick={onClose} className="bg-gray-50 text-gray-500 hover:text-brand-primary hover:bg-orange-50 w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer">
               <i className="fa-solid fa-xmark text-xl"></i>
             </button>
           </div>
@@ -57,7 +58,7 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
                   />
                 ))
               ) : (
-                <EmptyState message="Tu carrito está vacío" icon="fa-cart-arrow-down" />
+                <EmptyState message="Tu carrito está vacío" icon="fa-basket-shopping" />
               )}
             </div>
           </div>

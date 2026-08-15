@@ -2,7 +2,6 @@ import React from 'react';
 import NavLink from '@/src/components/ui/NavLink';
 import { useApp } from '@/src/context/AppContext';
 import logoAlimentoAhora from '@/src/assets/logo-alimentoAhora.svg'
-import SloganPulso from '@/src/assets/Slogan.png'
 
 /**
  * FOOTER DATA
@@ -59,7 +58,8 @@ const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
 
         {/* COLUMNA 2: INFO LINKS (Usando NavLink) */}
         <div className="md:col-span-3">
-          <h4 className="text-[11px] font-black uppercase tracking-[3px] mb-6 text-white">/ Info</h4>
+          {/* Título Lilita One, sin la barra inclinada estricta */}
+          <h4 className="text-xl font-lilita tracking-wide mb-6 text-brand-primary">Información</h4>
           <ul className="flex flex-col space-y-3">
             {menuItems && menuItems.length > 0 ? (
               menuItems.map((item) => (
@@ -69,22 +69,22 @@ const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
                     //key={item.id}
                     onClick={handleNavClick}
                     showSubmenu={false}
-                    // Agregamos text-[11px] y tracking-[3px] acá para forzar la igualdad
-                    className="text-[11px] tracking-[3px] text-gray-400! hover:text-white! py-1!"
+                    // Tipografía Fredoka suave, hover Naranja
+                    className="text-sm font-fredoka font-medium text-gray-400! hover:text-brand-primary! py-1! transition-colors"
                   />
                 </li>
               ))
             ) : (
-              <span className="text-[11px] text-gray-300 animate-pulse uppercase tracking-widest">Cargando menú...</span>
+              <span className="text-sm font-fredoka text-gray-400 animate-pulse">Cargando menú...</span>
             )}
             
             {/* BOTÓN: TÉRMINOS Y CONDICIONES (Preparado para Modal) */}
             <li>
               <button 
                 onClick={onOpenTerms} // TODO: Conectar con estado de Modal
-                className="text-[11px] font-black uppercase tracking-[3px] text-gray-400 hover:text-white transition-colors cursor-pointer text-left w-full py-1"
+                className="text-sm font-fredoka font-medium text-gray-400 hover:text-brand-primary transition-colors cursor-pointer text-left w-full py-1"
               >
-                TÉRMINOS Y CONDICIONES
+                Términos y Condiciones
               </button>
             </li>
           </ul>
@@ -92,25 +92,16 @@ const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
 
         {/* COLUMNA 3: REDES SOCIALES (Reemplaza temporalmente al Newsletter) */}
         <div className="md:col-span-3">
-          <h4 className="text-[11px] font-black uppercase tracking-[3px] mb-6 text-white">/ Seguinos</h4>
+          {/* Título Lilita One */}
+          <h4 className="text-xl font-lilita tracking-wide mb-6 text-brand-primary">Seguinos</h4>
           <ul className="flex flex-col space-y-4">
             <li>
-              <a href="https://www.instagram.com/pulsowear_/" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors group">
+              <a href="https://www.instagram.com/alimentoahora/" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm font-fredoka font-medium text-gray-400 hover:text-brand-primary transition-colors group">
                 <i className="fa-brands fa-instagram text-lg group-hover:scale-110 transition-transform"></i> Instagram
               </a>
             </li>
             <li>
-              <a href="https://www.threads.com/@pulsowear_/" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors group">
-                <i className="fa-brands fa-threads text-lg group-hover:scale-110 transition-transform"></i> Threads
-              </a>
-            </li>
-            <li>
-              <a href="https://www.tiktok.com/@pulso.pna/" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors group">
-                <i className="fa-brands fa-tiktok text-lg group-hover:scale-110 transition-transform"></i> TikTok
-              </a>
-            </li>
-            <li>
-              <a href={waLink} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-colors group">
+              <a href={waLink} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm font-fredoka font-medium text-gray-400 hover:text-brand-primary transition-colors group">
                 <i className="fa-brands fa-whatsapp text-lg group-hover:scale-110 transition-transform"></i> WhatsApp
               </a>
             </li>
@@ -142,10 +133,10 @@ const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
           <div className='max-w-360 mx-auto px-6 pt-8 pb-8 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left'>
             {/* Izquierda: Identidad de la Marca */}
             <div className="flex flex-col gap-2">
-              <p className="text-[10px] font-black uppercase tracking-[4px] text-white transition-colors">
+              <p className="text-xl font-lilita text-brand-primary transition-colors">
                 Amor, de a kilos.
               </p>
-              <p className="text-[10px] font-black hover:text-white uppercase tracking-[4px] text-gray-700">
+              <p className="text-xs font-fredoka text-gray-600">
                 © {new Date().getFullYear()} ALIMENTO AHORA. PARANÁ, ENTRE RÍOS. TODOS LOS DERECHOS RESERVADOS.
               </p>
             </div>

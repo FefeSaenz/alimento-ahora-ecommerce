@@ -12,20 +12,20 @@ interface RecommendationListProps {
 const RecommendationList: React.FC<RecommendationListProps> = ({ products, onAddFromRec }) => {
   if (products.length === 0) return null;
   return(
-    <div className="hidden md:flex flex-col w-75 border-r border-gray-100 bg-gray-50/30 overflow-y-auto custom-scrollbar">
+    <div className="hidden md:flex flex-col w-75 border-r border-gray-100 bg-orange-50/50 overflow-y-auto custom-scrollbar">
       <div className="p-8 border-b border-gray-100">
-        <h2 className="text-[11px] font-bold uppercase tracking-[3px] text-gray-400">Te puede gustar</h2>
+        <h2 className="text-lg font-lilita text-brand-primary tracking-wide">Te puede gustar</h2>
       </div>
-      <div className="p-4 space-y-8">
+      <div className="p-6 space-y-6">
         {products.map((product) => (
-          <div key={product.id} className="text-center group cursor-pointer" onClick={() => onAddFromRec(product)}>
-            <div className="aspect-3/4 mb-3 overflow-hidden bg-gray-100">
-              <img src={product.images[0]} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={product.name} />
+          <div key={product.id} className="text-center group cursor-pointer bg-white p-3 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100" onClick={() => onAddFromRec(product)}>
+            <div className="aspect-3/4 mb-3 overflow-hidden bg-gray-50 rounded-xl border border-gray-50">
+              <img src={product.images[0]} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500" alt={product.name} />
             </div>
-            <h4 className="text-[10px] font-medium uppercase truncate px-2 text-gray-800">
+            <h4 className="text-xs font-fredoka font-semibold text-gray-800 line-clamp-2 px-2 leading-tight">
               {product.name}
             </h4>
-            <Price amount={product.price} className="text-[10px] font-bold mt-1 text-gray-500" />
+            <Price amount={product.price} className="text-sm font-fredoka font-black mt-2 text-brand-primary block" />
           </div>
         ))}
       </div>

@@ -11,14 +11,15 @@ const CartShippingTracker: React.FC<Props> = ({ subtotal }) => {
   const remaining = Math.max(FREE_SHIPPING_THRESHOLD - subtotal, 0);
 
   return (
-    <div className="mb-8">
-      <p className="text-[11px] font-medium text-gray-600 text-center mb-3 uppercase tracking-widest">
+    <div className="mb-8 bg-orange-50 p-4 rounded-2xl border border-orange-100">
+      <p className="text-xs font-fredoka font-medium text-gray-700 text-center mb-3">
         {remaining > 0 
-          ? <>Faltan <Price amount={remaining} /> para el envío gratis</>
-          : '¡Envío gratuito bonificado!'}
+          ? <>Te faltan <Price amount={remaining} className="font-bold text-brand-primary"/> para tener <b>envío gratis</b></>
+          : <span className="text-brand-primary font-bold">¡Envío gratuito bonificado! 🐾</span>}
       </p>
-      <div className="h-0.5 w-full bg-gray-100">
-        <div className="h-full bg-black transition-all duration-500" style={{ width: `${progress}%` }} />
+      {/* Barra de progreso redondeada */}
+      <div className="h-1.5 w-full bg-white rounded-full overflow-hidden">
+        <div className="h-full bg-brand-primary rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
       </div>
     </div>
   );

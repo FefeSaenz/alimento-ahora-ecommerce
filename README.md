@@ -65,9 +65,12 @@ El proyecto sigue una estructura modular y reactiva para facilitar su mantenimie
 - [x] **Reemplazo de assets estáticos iniciales (Logos, Favicon modernos).**
 - [x] **Estructuración de la Home (Hero Section con Color Blocking para integración de stickers).**
 - [x] **Rediseño de componentes UI base (Tarjetas, Carruseles y Títulos) con bordes curvos y paleta de la marca.**
+- [x] **Rediseño de Layout base y ecosistema del Carrito (Footer, CartDrawer, CartSummary).**
 
 ## 🛠️ Próximos Pasos
-- [ ] **Estructuración de la Home (Hero Section con Color Blocking para integración de stickers).**
-- [ ] **Ajuste de interfaces y Mappers para el nuevo modelo de datos (Bolsas, Kilos, Marcas de alimento).**
 - [ ] **Rediseño de componentes de Layout restantes (Footer, Mapa/Localizaciones y Modales).**
 - [ ] **Adaptación visual de las vistas de Catálogo (Products) y Detalle de Producto (ProductDetail).**
+- [ ] **Ajuste de interfaces y Mappers para el nuevo modelo de datos (Bolsas, Kilos, Marcas de alimento).**
+- [ ] **Desconexión de UI del sistema de Autenticación y transformación del Checkout hacia un flujo de pedidos por WhatsApp.**
+
+
