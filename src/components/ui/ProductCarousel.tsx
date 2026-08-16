@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import SectionTitle from './SectionTitle';
-
 import { Product } from '@/src/types/product.types';
 
 interface ProductCarouselProps {

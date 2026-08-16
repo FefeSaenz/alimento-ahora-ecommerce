@@ -185,7 +185,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               </button>
             </div>
             
-            <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto no-scrollbar">
+            <div className="flex flex-wrap gap-2 max-h-30 overflow-y-auto no-scrollbar">
               
               {activeCategory && activeCategory !== 'Todos' && (
                 <button 

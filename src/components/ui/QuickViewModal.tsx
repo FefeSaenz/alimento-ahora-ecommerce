@@ -164,7 +164,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
                       onClick={() => isAvailable && setSelectedSize(sizeStr)}
                       disabled={!isAvailable}
                       // Botones redondeados suaves para los tamaños
-                      className={`px-4 py-2 min-w-[3rem] lg:min-w-[3.5rem] h-10 lg:h-11 2xl:h-12 border rounded-xl flex items-center justify-center text-xs lg:text-sm font-fredoka font-bold transition-all ${
+                      className={`px-4 py-2 min-w-12 lg:min-w-14 h-10 lg:h-11 2xl:h-12 border rounded-xl flex items-center justify-center text-xs lg:text-sm font-fredoka font-bold transition-all ${
                         !isAvailable 
                           ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through' 
                           : selectedSize === sizeStr 

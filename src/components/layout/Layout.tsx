@@ -10,13 +10,13 @@ import { useCart } from '@/src/context/CartContext';
 import Header from './Header';
 import Footer from './Footer';
 import AnnouncementBar from './AnnouncementBar';
+import SearchOverlay from './SearchOverlay';
 import CartDrawer from '@/src/components/cart/CartDrawer';
 import QuickViewModal from '@/src/components/ui/QuickViewModal';
 import CheckoutModal from '@/src/components/ui/CheckoutModal';
 import UserProfile from '@/src/components/ui/UserProfile';
 import WhatsAppButton from '@/src/components/ui/WhatsAppButton';
 import TermsModal from '@/src/components/ui/TermsModal';
-import SearchOverlay from './SearchOverlay';
 
 import { Product } from '@/src/types/product.types';
 import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts';

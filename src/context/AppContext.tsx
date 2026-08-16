@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getFrontData } from '../api/axios';
-import { Product } from '../types/product.types';
-import { mapApiDressToProduct, extractUniqueCategories } from '../utils/mappers';
-import { MenuItem, ApiResponse } from '../types/api';
+import { getFrontData } from '@/src/api/axios';
+import { Product } from '@/src/types/product.types';
+import { mapApiDressToProduct, extractUniqueCategories } from '@/src/utils/mappers';
+import { MenuItem, ApiResponse } from '@/src/types/api';
 
 interface AppContextType {
   allProducts: Product[];

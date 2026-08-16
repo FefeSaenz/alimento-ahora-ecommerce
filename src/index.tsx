@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
-import './styles/globals.css';
+import '@/src/styles/globals.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
