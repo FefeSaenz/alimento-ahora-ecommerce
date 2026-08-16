@@ -9,7 +9,7 @@ const Price: React.FC<PriceProps> = ({ amount, className }) => {
   const formattedPrice = new Intl.NumberFormat('es-AR', {
     style: 'currency',
     currency: 'ARS',
-    minimumFractionDigits: 0, // En Argentina solemos redondear los centavos en ropa
+    minimumFractionDigits: 0, // En Argentina solemos redondear los centavos
   }).format(amount);
 
   return <span className={className}>{formattedPrice} ARS</span>;

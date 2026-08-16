@@ -22,8 +22,8 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
   // --- LÓGICA DE SUGERENCIAS INTELIGENTES ---
   const topCategories = useMemo(() => {
-    // Si todavía no cargaron los productos, mostramos un fallback genérico
-    if (!products.length) return ['Remeras', 'Pantalones', 'Buzos']; 
+    // Fallback genérico adaptado al PetShop
+    if (!products.length) return ['Perros', 'Gatos', 'Accesorios']; 
 
     // 1. Contamos cuántos productos hay por cada categoría
     const categoryCounts = products.reduce((acc, product) => {
@@ -75,38 +75,41 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({
         
         {/* Header del Buscador */}
         <div className="flex items-center justify-between h-20 border-b border-gray-100 shrink-0">
-          <span className="text-[10px] font-black uppercase tracking-[4px] text-gray-400">BUSCAR</span>
-          <button onClick={onClose} className="text-gray-400 hover:text-black transition-colors cursor-pointer p-2">
+          <span className="text-sm font-fredoka font-bold text-gray-400">BUSCAR</span>
+          <button onClick={onClose} className="bg-gray-50 text-gray-500 hover:text-brand-primary hover:bg-orange-50 w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer">
             <i className="fa-solid fa-xmark text-xl"></i>
           </button>
         </div>
         
         {/* Cuerpo del Buscador */}
         <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="w-full max-w-4xl">
+          <div className="w-full max-w-4xl px-4">
+            {/* Input gigante amigable */}
             <input
               ref={inputRef}
               type="text"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="¿QUÉ ESTÁS BUSCANDO?"
-              className="w-full text-2xl sm:text-4xl lg:text-7xl font-black uppercase tracking-tighter text-center outline-none border-none placeholder:text-gray-100"
+              placeholder="¿Qué buscás?"
+              className="w-full text-4xl sm:text-5xl lg:text-7xl font-lilita text-brand-primary text-center outline-none border-none placeholder:text-gray-200 bg-transparent"
             />
             
             {/* SUGERENCIAS INTELIGENTES RENDERIZADAS DINÁMICAMENTE */}
-            <div className="mt-8 flex justify-center items-center space-x-4">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+            <div className="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
+              <span className="text-xs font-fredoka font-bold text-gray-400">
                 Sugerencias:
               </span>
-              {topCategories.map((category) => (
-                <button 
-                  key={category}
-                  onClick={() => onSearchSubmit(category)} 
-                  className="text-[10px] font-black uppercase tracking-widest underline underline-offset-4 hover:text-gray-600 transition-colors cursor-pointer"
-                >
-                  {category}
-                </button>
-              ))}
+              <div className="flex gap-2">
+                {topCategories.map((category) => (
+                  <button 
+                    key={category}
+                    onClick={() => onSearchSubmit(category)} 
+                    className="text-xs font-fredoka font-semibold text-gray-600 bg-gray-50 hover:bg-orange-50 hover:text-brand-primary border border-gray-100 px-4 py-2 rounded-full transition-colors cursor-pointer"
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
 
           </div>

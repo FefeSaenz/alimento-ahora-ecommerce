@@ -57,6 +57,7 @@ El proyecto sigue una estructura modular y reactiva para facilitar su mantenimie
 - `Fail-Fast Checkout Response Validation (Pattern)`: Interceptación y validación estructural obligatoria en el flujo de respuesta del checkout. Si el servidor procesa la compra pero no retorna un `order_number` alfanumérico válido, el frontend interrumpe la secuencia de navegación de forma inmediata y lanza una excepción controlada, impidiendo redirigir al usuario a un recibo de compra vacío o inexistente.
 - `Component Layout Mirroring (Pattern)`: Estandarización de la experiencia visual compartida entre componentes de diferente jerarquía estructural (Modales de Vista Rápida y Páginas de Detalle de Producto). Garantiza que las reglas de negocio críticas, como los selectores facetados de variantes y las etiquetas de precios promocionales, mantengan una paridad de diseño y comportamiento del 100% a lo largo de la aplicación.
 - `Viewport Height Resiliency (Performance Pattern)`: Estrategia avanzada de diseño adaptativo orientada a resolver la paradoja de la altura en laptops estándar (1366x768 / 720p). El sistema aplica una compresión vertical fluida reduciendo paddings, compactando gaps e inyectando truncados tipográficos controlados, aislando las dimensiones masivas de alta fidelidad exclusivamente tras el breakpoint `2xl:`. Esto garantiza que los CTAs clave de conversión permanezcan visibles *Above the Fold* sin activar scrollbars huérfanos.
+- `AGENTS.md`: Reglas estrictas de arquitectura, comandos y contexto del proyecto destinadas a guiar a asistentes de código con Inteligencia Artificial para evitar refactorizaciones no deseadas.
 
 ## ✅ Logros y Avances
 - [x] **Clonado de arquitectura base (Plantilla Pulso).**
@@ -66,9 +67,9 @@ El proyecto sigue una estructura modular y reactiva para facilitar su mantenimie
 - [x] **Estructuración de la Home (Hero Section con Color Blocking para integración de stickers).**
 - [x] **Rediseño de componentes UI base (Tarjetas, Carruseles y Títulos) con bordes curvos y paleta de la marca.**
 - [x] **Rediseño de Layout base y ecosistema del Carrito (Footer, CartDrawer, CartSummary).**
+- [x] **Rediseño completo de Modales de Interacción (QuickView, Checkout, Perfil, Búsqueda) y finalización del Layout base.**
 
 ## 🛠️ Próximos Pasos
-- [ ] **Rediseño de componentes de Layout restantes (Footer, Mapa/Localizaciones y Modales).**
 - [ ] **Adaptación visual de las vistas de Catálogo (Products) y Detalle de Producto (ProductDetail).**
 - [ ] **Ajuste de interfaces y Mappers para el nuevo modelo de datos (Bolsas, Kilos, Marcas de alimento).**
 - [ ] **Desconexión de UI del sistema de Autenticación y transformación del Checkout hacia un flujo de pedidos por WhatsApp.**

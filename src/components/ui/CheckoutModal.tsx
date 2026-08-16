@@ -220,9 +220,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
     }
   };
 
+  // ESTILOS DE INPUT: Transformados a cajas redondeadas y amigables
   const getInputClass = (fieldName: string) => {
     const isError = !!errors[fieldName];
-    return `w-full border-b py-3 text-[16px] md:text-xs font-bold transition-all outline-none uppercase tracking-widest bg-transparent ${isError ? 'border-red-500 text-red-600' : 'border-gray-200 text-black focus:border-black'}`;
+    return `w-full border rounded-xl px-4 py-3.5 text-[16px] md:text-sm font-fredoka font-medium transition-all outline-none bg-gray-50 placeholder:text-gray-400 ${
+      isError 
+        ? 'border-red-400 text-red-600 focus:border-red-500 focus:bg-white' 
+        : 'border-gray-200 text-gray-800 focus:border-brand-primary focus:bg-white focus:shadow-sm'
+    }`;
   };
 
   const formatTime = (seconds: number) => {
@@ -234,43 +239,48 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
   return (
     <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-2xl">
       <div className="flex flex-col h-full text-black">
-          <div className="flex border-b border-gray-100 shrink-0">
+          {/* BARRA DE PROGRESO */}
+          <div className="flex border-b border-gray-100 shrink-0 bg-white">
             {[1, 2, step === 3 ? 3 : null].filter(Boolean).map((s) => (
-              <div key={s} className={`flex-1 py-3 text-center text-[10px] font-black uppercase tracking-[3px] transition-colors ${step >= s! ? 'text-black' : 'text-gray-300'}`}>
+              <div key={s} className={`flex-1 py-4 text-center text-xs font-fredoka font-bold uppercase tracking-widest transition-colors ${step >= s! ? 'text-brand-primary' : 'text-gray-300'}`}>
                 {s === 1 ? 'Información' : s === 2 ? 'Pago' : 'Verificación'}
-                <div className={`h-0.5 mt-2 mx-auto w-12 transition-colors ${step >= s! ? 'bg-black' : 'bg-gray-100'}`} />
+                {/* Indicador redondeado */}
+                <div className={`h-1 mt-2 mx-auto w-12 rounded-full transition-all duration-300 ${step >= s! ? 'bg-brand-primary w-16' : 'bg-gray-100'}`} />
               </div>
             ))}
           </div>
 
-          <div className="px-5 py-5 md:px-8 md:py-5 overflow-y-auto flex-1 custom-scrollbar">
+          <div className="px-6 py-6 md:px-10 md:py-8 overflow-y-auto flex-1 custom-scrollbar bg-white">
             {/* JSX PARA MOSTRAR EL ERROR DE PROCESAMIENTO */}
             {checkoutError && (
-              <div className="p-3 mb-4 bg-red-50 text-red-600 text-[10px] font-bold text-center border border-red-200 animate-in fade-in">
+              <div className="p-4 mb-6 bg-red-50 rounded-xl text-red-600 text-xs font-fredoka font-bold text-center border border-red-200 animate-in fade-in">
                 {checkoutError}
-                <button onClick={processCheckout} className="block w-full underline mt-1 cursor-pointer">Reintentar</button>
+                <button onClick={processCheckout} className="block w-full underline mt-2 hover:text-red-800 transition-colors cursor-pointer">Reintentar</button>
               </div>
             )}
 
             {step === 1 && (
               // ... (código de los inputs igual que antes)
               <div className="animate-in slide-in-from-right duration-300">
-                <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter mb-3 text-black">Entrega</h3>
-                <div className="flex space-x-4 mb-4">
-                  <button onClick={() => setShippingMethod('Standard')} className={`flex-1 py-3 border text-[10px] font-black uppercase tracking-widest transition-all ${shippingMethod === 'Standard' ? 'border-black bg-black text-white' : 'border-gray-200 text-gray-400 hover:border-black hover:text-black'}`}>Envío a Domicilio</button>
-                  <button onClick={() => setShippingMethod('Pickup')} className={`flex-1 py-3 border text-[10px] font-black uppercase tracking-widest transition-all ${shippingMethod === 'Pickup' ? 'border-black bg-black text-white' : 'border-gray-200 text-gray-400 hover:border-black hover:text-black'}`}>Retiro en Local</button>
+                <h3 className="text-2xl md:text-3xl font-lilita text-brand-primary tracking-wide mb-4">Entrega</h3>
+                
+                <div className="flex space-x-4 mb-6">
+                  <button onClick={() => setShippingMethod('Standard')} className={`flex-1 py-3.5 rounded-xl border text-xs font-fredoka font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer ${shippingMethod === 'Standard' ? 'border-brand-primary bg-brand-primary text-white shadow-md' : 'border-gray-200 bg-white text-gray-500 hover:border-brand-primary hover:text-brand-primary'}`}>Envío a Domicilio</button>
+                  <button onClick={() => setShippingMethod('Pickup')} className={`flex-1 py-3.5 rounded-xl border text-xs font-fredoka font-bold uppercase tracking-wider transition-all shadow-sm cursor-pointer ${shippingMethod === 'Pickup' ? 'border-brand-primary bg-brand-primary text-white shadow-md' : 'border-gray-200 bg-white text-gray-500 hover:border-brand-primary hover:text-brand-primary'}`}>Retiro en Local</button>
                 </div>
-                <div className="space-y-2 md:space-y-3">
-                  <input name="email" type="email" placeholder="EMAIL" className={getInputClass('email')} onChange={(e) => handleInputChange(e, 'email')} value={formData.email} disabled={isAuthenticated || isCodeSent} />
-                  <input name="name" type="text" placeholder="NOMBRE COMPLETO" className={getInputClass('name')} onChange={(e) => handleInputChange(e, 'name')} value={formData.name} />
+                
+                <div className="space-y-3 md:space-y-4">
+                  <input name="email" type="email" placeholder="Correo Electrónico" className={getInputClass('email')} onChange={(e) => handleInputChange(e, 'email')} value={formData.email} disabled={isAuthenticated || isCodeSent} />
+                  <input name="name" type="text" placeholder="Nombre Completo" className={getInputClass('name')} onChange={(e) => handleInputChange(e, 'name')} value={formData.name} />
                   <input name="dni" type="text" inputMode="numeric" placeholder="DNI / CUIT" className={getInputClass('dni')} onChange={(e) => handleInputChange(e, 'dni')} value={formData.dni} />
-                  <input name="phone" type="tel" inputMode="numeric" placeholder="TELÉFONO" className={getInputClass('phone')} onChange={(e) => handleInputChange(e, 'phone')} value={formData.phone} />
+                  <input name="phone" type="tel" inputMode="numeric" placeholder="Teléfono" className={getInputClass('phone')} onChange={(e) => handleInputChange(e, 'phone')} value={formData.phone} />
+                  
                   {shippingMethod === 'Standard' && (
-                    <div className="animate-in fade-in slide-in-from-top-4 duration-300 space-y-2 md:space-y-3">
-                      <input name="address" type="text" placeholder="DIRECCIÓN" className={getInputClass('address')} onChange={(e) => handleInputChange(e, 'address')} value={formData.address} />
-                      <div className="grid grid-cols-2 gap-2 md:gap-3">
-                        <input name="city" type="text" placeholder="CIUDAD" className={getInputClass('city')} onChange={(e) => handleInputChange(e, 'city')} value={formData.city} />
-                        <input name="zip" type="text" inputMode="numeric" placeholder="CP" className={getInputClass('zip')} onChange={(e) => handleInputChange(e, 'zip')} value={formData.zip} />
+                    <div className="animate-in fade-in slide-in-from-top-4 duration-300 space-y-3 md:space-y-4 pt-2">
+                      <input name="address" type="text" placeholder="Dirección Completa" className={getInputClass('address')} onChange={(e) => handleInputChange(e, 'address')} value={formData.address} />
+                      <div className="grid grid-cols-2 gap-3 md:gap-4">
+                        <input name="city" type="text" placeholder="Ciudad" className={getInputClass('city')} onChange={(e) => handleInputChange(e, 'city')} value={formData.city} />
+                        <input name="zip" type="text" inputMode="numeric" placeholder="C.P." className={getInputClass('zip')} onChange={(e) => handleInputChange(e, 'zip')} value={formData.zip} />
                       </div>
                     </div>
                   )}
@@ -281,68 +291,79 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
             {step === 2 && (
               // ... (código pago)
               <div className="animate-in slide-in-from-right duration-300">
-                <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter mb-3 text-black">Método de Pago</h3>
-                <div className="space-y-3 mb-5">
+                <h3 className="text-2xl md:text-3xl font-lilita text-brand-primary tracking-wide mb-4">Método de Pago</h3>
+                
+                <div className="space-y-3 mb-6">
                   {(['Efectivo', 'Transferencia', 'Tarjeta'] as const).map((method) => (
-                    <label key={method} onClick={() => setPaymentMethod(method)} className={`block border p-3 cursor-pointer transition-all ${paymentMethod === method ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                    <label key={method} onClick={() => setPaymentMethod(method)} className={`block border rounded-xl p-4 cursor-pointer transition-all shadow-sm ${paymentMethod === method ? 'border-brand-primary bg-orange-50' : 'border-gray-200 bg-white hover:border-brand-primary hover:bg-gray-50'}`}>
                       <div className="flex items-center space-x-3 md:space-x-4">
-                        <div className={`w-3 h-3 md:w-4 md:h-4 border flex items-center justify-center shrink-0 ${paymentMethod === method ? 'border-black' : 'border-gray-300'}`}>
-                          {paymentMethod === method && <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-black" />}
+                        {/* Radio button circular suave */}
+                        <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${paymentMethod === method ? 'border-brand-primary' : 'border-gray-300'}`}>
+                          {paymentMethod === method && <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-brand-primary animate-in zoom-in duration-200" />}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-black uppercase tracking-widest">{method}</span>
-                            {(method === 'Efectivo' || method === 'Transferencia') && <span className="text-[9px] bg-black text-white px-2 py-1 font-bold uppercase tracking-widest">10% OFF</span>}
+                            <span className="text-sm font-fredoka font-bold text-gray-800 uppercase tracking-wide">{method}</span>
+                            {/* Píldora de descuento curvo */}
+                            {(method === 'Efectivo' || method === 'Transferencia') && <span className="text-[10px] bg-brand-primary text-white px-3 py-1 rounded-full font-fredoka font-bold uppercase tracking-widest shadow-sm">10% OFF</span>}
                           </div>
                         </div>
                       </div>
                     </label>
                   ))}
                 </div>
-                <div className="bg-gray-50 p-4 rounded-sm space-y-1">
-                  <div className="flex justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest"><span>Subtotal</span><Price amount={subtotal} /></div>
-                  {discount > 0 && <div className="flex justify-between text-[10px] font-bold text-green-600 uppercase tracking-widest"><span>Descuento</span><span>-<Price amount={discount} /></span></div>}
-                  <div className="flex justify-between text-xs font-black uppercase tracking-widest pt-2 border-t border-gray-200 mt-1 text-black"><span>Total a pagar</span><Price amount={total} /></div>
+
+                <div className="bg-orange-50 p-5 rounded-2xl space-y-2 border border-orange-100 shadow-inner">
+                  <div className="flex justify-between text-xs font-fredoka font-semibold text-gray-500 uppercase tracking-widest"><span>Subtotal</span><Price amount={subtotal} /></div>
+                  {discount > 0 && <div className="flex justify-between text-xs font-fredoka font-bold text-brand-primary uppercase tracking-widest"><span>Descuento</span><span>-<Price amount={discount} /></span></div>}
+                  <div className="flex justify-between text-sm md:text-base font-fredoka font-black uppercase tracking-widest pt-3 border-t border-orange-200 mt-2 text-gray-800"><span>Total a pagar</span><Price amount={total} className="text-brand-primary" /></div>
                 </div>
               </div>
             )}
 
             {step === 3 && (
               // ... (código verificación)
-               <div className="animate-in slide-in-from-right duration-300 flex flex-col items-center py-4">
-                <i className="fa-solid fa-shield-check text-4xl text-black mb-4"></i>
-                <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-black mb-1">Seguridad</h3>
+               <div className="animate-in slide-in-from-right duration-300 flex flex-col items-center py-6">
+                <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4 text-brand-primary">
+                  <i className="fa-solid fa-shield-check text-3xl"></i>
+                </div>
+                <h3 className="text-2xl md:text-3xl font-lilita text-brand-primary tracking-wide mb-2">Seguridad</h3>
                 
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest text-center mb-6">
-                  Enviamos un pin a <span className="text-black">{formData.email}</span><br />
-                  <span className="text-gray-400 text-[8px] block mt-1">VÁLIDO POR 10 MINUTOS</span>
+                <p className="text-xs font-fredoka text-gray-500 uppercase tracking-wider text-center mb-8">
+                  Enviamos un pin a <span className="font-bold text-gray-800 block mt-1">{formData.email}</span>
+                  <span className="text-brand-primary text-[10px] font-bold block mt-2">VÁLIDO POR 10 MINUTOS</span>
                 </p>
                 
-                <input type="text" placeholder="000000" value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} maxLength={6} className="w-full max-w-[200px] border-b border-gray-200 py-4 text-3xl font-black text-black focus:border-black outline-none tracking-[12px] placeholder:text-gray-200 transition-colors bg-transparent text-center mb-2" />
+                {/* Input OTP redondeado y grande */}
+                <input type="text" placeholder="000000" value={otpCode} onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))} maxLength={6} className="w-full max-w-55 bg-gray-50 border-2 border-gray-200 rounded-2xl py-4 text-3xl font-fredoka font-black text-brand-primary focus:border-brand-primary focus:bg-white outline-none tracking-[8px] placeholder:text-gray-300 transition-colors text-center mb-4 shadow-inner" />
                 
                 {/* Muestro expiración siempre, y manejar el botón de reenvío con el cooldown */}
-                <div className="flex flex-col items-center mb-6">
+                <div className="flex flex-col items-center mb-8">
                   {cooldown > 0 ? (
-                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                      ¿No lo recibiste? Reenviar en {formatTime(cooldown)}
+                    <p className="text-[11px] font-fredoka font-bold text-gray-400 uppercase tracking-widest">
+                      Reenviar en {formatTime(cooldown)}
                     </p>
                   ) : (
-                    <button type="button" onClick={() => sendOtp(formData.email)} className="text-[10px] font-black text-black underline uppercase tracking-widest hover:text-gray-500 transition-colors cursor-pointer">
+                    <button type="button" onClick={() => sendOtp(formData.email)} className="text-[11px] font-fredoka font-bold text-brand-primary underline uppercase tracking-widest hover:text-orange-600 transition-colors cursor-pointer">
                       Reenviar código
                     </button>
                   )}
                 </div>
 
-                <button type="button" onClick={() => { clearOtpData(); setStep(1); }} className="mt-4 text-[9px] font-bold text-gray-400 underline uppercase tracking-widest hover:text-black cursor-pointer">¿Escribiste mal tu correo?</button>
+                <button type="button" onClick={() => { clearOtpData(); setStep(1); }} className="mt-4 text-[10px] font-fredoka font-medium text-gray-400 hover:text-gray-800 transition-colors cursor-pointer">¿Escribiste mal tu correo?</button>
               </div>
             )}
           </div>
 
-          <div className="p-4 border-t border-gray-100 mt-auto shrink-0 bg-white">
-            <div className="flex space-x-4">
-              {step > 1 && <button onClick={() => setStep(step - 1)} disabled={loading || otpLoading} className="px-8 border border-gray-200 text-[10px] font-black uppercase tracking-[3px] hover:bg-gray-50 text-black transition-colors disabled:opacity-50 cursor-pointer">Atrás</button>}
-              <button onClick={step < 3 ? handleNext : handleVerifyAndPay} disabled={loading || otpLoading || (step === 3 && (otpCode.length < 6 || timeLeft === 0))} className="flex-1 bg-black text-white py-4 text-[11px] font-black uppercase tracking-[4px] relative flex items-center justify-center transition-all hover:bg-gray-900 active:scale-[0.98] disabled:opacity-50 cursor-pointer">
-                {(loading || otpLoading) ? <i className="fa-solid fa-circle-notch fa-spin"></i> : step === 2 ? 'CONFIRMAR' : step === 3 ? 'Verificar y Pagar' : 'Continuar'}
+          <div className="p-4 md:p-6 border-t border-gray-100 mt-auto shrink-0 bg-white">
+            <div className="flex space-x-3 md:space-x-4">
+              {step > 1 && (
+                <button onClick={() => setStep(step - 1)} disabled={loading || otpLoading} className="px-6 md:px-8 rounded-full border-2 border-gray-200 text-xs font-fredoka font-bold uppercase tracking-wider hover:bg-orange-50 hover:border-brand-primary hover:text-brand-primary text-gray-600 transition-colors disabled:opacity-50 cursor-pointer">
+                  Atrás
+                </button>
+              )}
+              <button onClick={step < 3 ? handleNext : handleVerifyAndPay} disabled={loading || otpLoading || (step === 3 && (otpCode.length < 6 || timeLeft === 0))} className="flex-1 rounded-full bg-brand-primary text-white py-4 text-xs md:text-sm font-fredoka font-bold uppercase tracking-wider relative flex items-center justify-center transition-all hover:bg-orange-600 hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:shadow-none cursor-pointer">
+                {(loading || otpLoading) ? <i className="fa-solid fa-circle-notch fa-spin"></i> : step === 2 ? 'Confirmar Compra' : step === 3 ? 'Verificar y Pagar' : 'Continuar'}
               </button>
             </div>
           </div>
