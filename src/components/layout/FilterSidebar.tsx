@@ -3,51 +3,21 @@ import { useApp } from '@/src/context/AppContext';
 
 interface FilterSidebarProps {
   activeFilters: { 
-    sizeFilter: string | null; 
-    colorFilter: string | null; 
+    sizeFilter: string | null; // Ahora representa "Peso" (Ej: 3kg, 15kg)
+    colorFilter: string | null; // Ahora representa "Edad/Tamaño" (Ej: Mini Adulto, Cachorro)
     priceFilter: string | null;
     searchTerm?: string | null;
-    brandFilter?: string | null; // NUEVO
+    brandFilter?: string | null;
   };
   categories?: string[];               
   activeCategory?: string;             
-  brands?: string[];             // NUEVO
-  activeBrand?: string | null;   // NUEVO
+  brands?: string[];             
+  activeBrand?: string | null;   
   onCategoryChange?: (c: string) => void; 
   onFilterChange: (key: string, value: string | null) => void;
   onClearFilters: () => void;
   onCloseMobile?: () => void;
 }
-
-// Mapa Maestro de Normalización y Color EXTENDIDO
-const COLOR_SYSTEM: Record<string, { hex: string, group: string }> = {
-  // Básicos
-  'Negro': { hex: '#000000', group: 'Negro' },
-  'NEGRO': { hex: '#000000', group: 'Negro' },
-  'Blanco': { hex: '#FFFFFF', group: 'Blanco' },
-  'BLANCO': { hex: '#FFFFFF', group: 'Blanco' },
-  
-  // Grises
-  'Gris Oxford': { hex: '#4B4B4B', group: 'Gris' },
-  'Gris Melange': { hex: '#B2B2B2', group: 'Gris' },
-  'Gris': { hex: '#808080', group: 'Gris' },
-  'GRIS': { hex: '#808080', group: 'Gris' },
-  
-  // Azules y Celestes
-  'Azul Navy': { hex: '#1B2A4A', group: 'Azul' },
-  'Dark Blue': { hex: '#1C3557', group: 'Azul' },
-  'Azul': { hex: '#292d8e', group: 'Azul' },
-  'AZUL': { hex: '#292d8e', group: 'Azul' },
-  'Celeste claro': { hex: '#ADD8E6', group: 'Celeste Claro' },
-  'CELESTE CLARO': { hex: '#ADD8E6', group: 'Celeste Claro' },
-  
-  // Otros
-  'Bordó': { hex: '#6B1A1A', group: 'Rojo' },
-  'Beige': { hex: '#d3b47b', group: 'Beige' },
-  'Verde Militar': { hex: '#4A5240', group: 'Verde' },
-};
-
-const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL'];
 
 // Función para formatear el input con puntitos de miles
 const formatPriceInput = (value: string) => {
@@ -105,38 +75,32 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     }
   };
 
+  // Pesos (Reemplaza a Talle)
   const sizes = useMemo(() => {
     const allSizes = allProducts.flatMap(p => 
       p.variants?.flatMap(v => v.sizes.map(s => s.size.toString())) || []
     );
     
+    // Eliminado el hardcodeo de SIZE_ORDER (S, M, L). Ahora ordena numéricamente los kg si es posible
     const unique = Array.from(new Set(allSizes));
-    return unique.sort((a: string, b: string) => {
-      const indexA = SIZE_ORDER.indexOf(a.toUpperCase());
-      const indexB = SIZE_ORDER.indexOf(b.toUpperCase());
+    return unique.sort((a, b) => {
+      const numA = parseFloat(a.replace(/[^\d.-]/g, ''));
+      const numB = parseFloat(b.replace(/[^\d.-]/g, ''));
       
-      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-      if (indexA !== -1) return -1;
-      if (indexB !== -1) return 1;
-      
-      return parseInt(a) - parseInt(b);
+      if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+      }
+      return a.localeCompare(b);
     });
   }, [allProducts]);
 
+  // Edades/Tamaños (Reemplaza a Color)
   const colors = useMemo(() => {
     const rawColors = allProducts.flatMap(p => p.variants?.map(v => v.color.name) || []);
-    const groups = rawColors.map(name => {
-      const mapped = COLOR_SYSTEM[name]?.group || COLOR_SYSTEM[name.toUpperCase()]?.group;
-      if (mapped) return mapped;
-      return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-    });
-    return Array.from(new Set(groups));
+    // Ya no usamos COLOR_SYSTEM. Devolvemos el array único directamente (Ej: "Mini Adulto", "Cachorro")
+    return Array.from(new Set(rawColors.filter(c => c !== 'ÚNICO'))); // Ocultamos "ÚNICO" si el backend lo tira por default
   }, [allProducts]);
 
-  const getHexForGroup = (groupName: string) => {
-    const found = Object.values(COLOR_SYSTEM).find(c => c.group.toLowerCase() === groupName.toLowerCase());
-    return found ? found.hex : '#ccc';
-  };
 
   const getPriceLabel = (filterStr: string) => {
     const [min, max] = filterStr.split('-');
@@ -166,31 +130,28 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const activeColorsArray = activeFilters.colorFilter ? activeFilters.colorFilter.split(',') : [];
 
   return (
-    // Reordenamos el flujo visual (UX Standard)
-    // Aplicamos padding top condicional solo si NO hay filtros activos para compensar el pt-0 del padre en mobile
     <div className={`space-y-6 md:space-y-8 relative ${!hasActiveFilters ? 'pt-6 lg:pt-0' : ''}`}>
       
-      {/* SECCIÓN FILTROS ACTIVOS (CHIPS) - Máscara Sólida Premium */}
+      {/* SECCIÓN FILTROS ACTIVOS (CHIPS) */}
       {hasActiveFilters && (
-        // El 'pt-6 lg:pt-0' asegura que cuando el chip esté arriba de todo, respete el diseño original.
-        <div className="sticky top-0 z-30 bg-white pt-6 lg:pt-0 pb-4 -mx-6 px-6 lg:mx-0 lg:px-0 lg:-mr-4 lg:pr-4 border-b border-gray-100 lg:border-gray-200 shadow-sm lg:shadow-none mb-6">
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-sm">
+        <div className="sticky top-0 z-30 bg-white pt-6 lg:pt-0 pb-4 -mx-6 px-6 lg:mx-0 lg:px-0 lg:-mr-4 lg:pr-4 border-b border-gray-100 lg:border-none shadow-sm lg:shadow-none mb-6">
+          <div className="p-5 bg-orange-50 border border-orange-100 rounded-2xl shadow-inner">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[10px] font-black uppercase tracking-[2px] text-black">Filtros Activos</h3>
+              <h3 className="text-xs font-fredoka font-bold uppercase tracking-wider text-brand-primary">Filtros Activos</h3>
               <button 
                 onClick={handleClearAll}
-                className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors cursor-pointer flex items-center gap-1"
+                className="text-[10px] font-fredoka font-bold uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors cursor-pointer flex items-center gap-1"
               >
                 <span>✕</span> Limpiar
               </button>
             </div>
             
-            <div className="flex flex-wrap gap-2 max-h-30 overflow-y-auto no-scrollbar">
+            <div className="flex flex-wrap gap-2 max-h-30 overflow-y-auto custom-scrollbar">
               
               {activeCategory && activeCategory !== 'Todos' && (
                 <button 
                   onClick={() => onCategoryChange && onCategoryChange('Todos')}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-[10px] font-bold uppercase transition-colors rounded-full group cursor-pointer shadow-xs"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
                   Categoría: {activeCategory}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
@@ -200,7 +161,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               {activeFilters.searchTerm && (
                 <button 
                   onClick={() => onFilterChange('search', null)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-[10px] font-bold uppercase transition-colors rounded-full group cursor-pointer shadow-xs"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
                   Búsqueda: {activeFilters.searchTerm}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
@@ -211,7 +172,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 <button 
                   key={`chip-brand-${brand}`}
                   onClick={() => onFilterChange('marca', toggleFilter(activeFilters.brandFilter, brand))}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-[10px] font-bold uppercase transition-colors rounded-full group cursor-pointer shadow-xs"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
                   Marca: {brand}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
@@ -221,10 +182,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               {activeSizesArray.map(size => (
                 <button 
                   key={`chip-size-${size}`}
-                  onClick={() => onFilterChange('talle', toggleFilter(activeFilters.sizeFilter, size))}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-[10px] font-bold uppercase transition-colors rounded-full group cursor-pointer shadow-xs"
+                  onClick={() => onFilterChange('talle', toggleFilter(activeFilters.sizeFilter, size))} // La URL sigue usando 'talle' por retrocompatibilidad
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
-                  Talle: {size}
+                  Peso: {size}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
                 </button>
               ))}
@@ -232,10 +193,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               {activeColorsArray.map(color => (
                 <button 
                   key={`chip-color-${color}`}
-                  onClick={() => onFilterChange('color', toggleFilter(activeFilters.colorFilter, color))}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-[10px] font-bold uppercase transition-colors rounded-full group cursor-pointer shadow-xs"
+                  onClick={() => onFilterChange('color', toggleFilter(activeFilters.colorFilter, color))} // La URL sigue usando 'color' por retrocompatibilidad
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
-                  Color: {color}
+                  {color}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
                 </button>
               ))}
@@ -243,7 +204,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               {activeFilters.priceFilter && (
                 <button 
                   onClick={() => onFilterChange('precio', null)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-[10px] font-bold uppercase transition-colors rounded-full group cursor-pointer shadow-xs"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
                   Precio: {getPriceLabel(activeFilters.priceFilter)}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
@@ -257,16 +218,18 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* 1. SECCIÓN CATEGORÍAS */}
       {categories && categories.length > 0 && (
         <div>
-          <h3 className="text-[10px] font-black uppercase tracking-[4px] mb-6 text-gray-400">Categorías</h3>
-          <div className="flex flex-col items-start gap-2.5">
+          <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500">Categorías</h3>
+          <div className="flex flex-col items-start gap-3">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => onCategoryChange && onCategoryChange(cat)}
-                className={`text-[10px] uppercase tracking-tighter transition-colors cursor-pointer text-left ${
-                  activeCategory === cat ? 'text-black font-black' : 'text-gray-500 font-bold hover:text-black'
+                className={`text-sm font-fredoka transition-colors cursor-pointer text-left flex items-center group ${
+                  activeCategory === cat ? 'text-brand-primary font-bold' : 'text-gray-600 font-medium hover:text-brand-primary'
                 }`}
               >
+                {/* Indicador de categoría seleccionada */}
+                <span className={`w-1.5 h-1.5 rounded-full mr-2 transition-all duration-300 ${activeCategory === cat ? 'bg-brand-primary' : 'bg-transparent group-hover:bg-orange-200'}`}></span>
                 {cat}
               </button>
             ))}
@@ -277,18 +240,22 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       {/* 2. SECCIÓN MARCAS */}
       {brands && brands.length > 0 && (
         <div>
-          <h3 className="text-[10px] font-black uppercase tracking-[4px] mb-6 text-gray-400">Marcas</h3>
-          <div className="flex flex-col items-start gap-2.5">
+          <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Marcas</h3>
+          <div className="flex flex-col items-start gap-3">
             {brands.map((brand) => {
               const isActive = activeBrandsArray.includes(brand);
               return (
                 <button
                   key={brand}
                   onClick={() => onFilterChange('marca', toggleFilter(activeFilters.brandFilter, brand))}
-                  className={`text-[10px] uppercase tracking-tighter transition-colors cursor-pointer text-left flex items-center gap-2 ${
-                    isActive ? 'text-black font-black' : 'text-gray-500 font-bold hover:text-black'
+                  className={`text-sm font-fredoka transition-colors cursor-pointer text-left flex items-center gap-2 group ${
+                    isActive ? 'text-brand-primary font-bold' : 'text-gray-600 font-medium hover:text-brand-primary'
                   }`}
                 >
+                  {/* Checkbox visual redondeado */}
+                  <div className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${isActive ? 'bg-brand-primary border-brand-primary' : 'border-gray-300 group-hover:border-brand-primary'}`}>
+                      {isActive && <i className="fa-solid fa-check text-[10px] text-white"></i>}
+                  </div>
                   {brand}
                 </button>
               );
@@ -297,83 +264,87 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
       )}
 
-      {/* 3. SECCIÓN TALLE */}
-      <div>
-        <h3 className="text-[10px] font-black uppercase tracking-[4px] mb-6 text-gray-400">Talle</h3>
-        <div className="flex flex-wrap gap-2">
-          {sizes.map((size) => {
-            const isActive = activeSizesArray.includes(size);
-            return (
-              <button 
-                key={size} 
-                onClick={() => onFilterChange('talle', toggleFilter(activeFilters.sizeFilter, size))} 
-                className={`w-10 h-10 border flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer ${isActive ? 'bg-black text-white border-black' : 'bg-white border-gray-200 hover:border-black'}`}
-              >
-                {size}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {/* 3. SECCIÓN PESO (Reemplaza a Talle) */}
+      {sizes && sizes.length > 0 && (
+          <div>
+            <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Peso</h3>
+            <div className="flex flex-wrap gap-2.5">
+              {sizes.map((size) => {
+                const isActive = activeSizesArray.includes(size);
+                return (
+                  <button 
+                    key={size} 
+                    onClick={() => onFilterChange('talle', toggleFilter(activeFilters.sizeFilter, size))} // La key URL es 'talle'
+                    className={`min-w-12 px-3 h-10 rounded-xl border-2 flex items-center justify-center text-sm font-fredoka font-bold transition-all cursor-pointer ${isActive ? 'bg-brand-primary text-white border-brand-primary shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-primary hover:text-brand-primary'}`}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+      )}
 
-      {/* 4. SECCIÓN COLOR */}
-      <div>
-        <h3 className="text-[10px] font-black uppercase tracking-[4px] mb-6 text-gray-400">Color</h3>
-        <div className="space-y-2">
-          {colors.map((col) => {
-            const isActive = activeColorsArray.includes(col);
-            return (
-              <button 
-                key={col} 
-                onClick={() => onFilterChange('color', toggleFilter(activeFilters.colorFilter, col))} 
-                className="flex items-center group cursor-pointer"
-              >
-                <span 
-                  className="w-4 h-4 rounded-full border border-gray-200 mr-3 transition-transform group-hover:scale-110"
-                  style={{ backgroundColor: getHexForGroup(col) }} 
-                />
-                <span className={`text-[10px] uppercase tracking-tighter ${isActive ? 'text-black font-black' : 'text-gray-500 font-bold hover:text-black'}`}>
-                  {col}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      {/* 4. SECCIÓN EDAD/TAMAÑO (Reemplaza a Color) */}
+      {colors && colors.length > 0 && (
+          <div>
+            <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Edad y Tamaño</h3>
+            <div className="flex flex-col items-start gap-3">
+              {colors.map((col) => {
+                const isActive = activeColorsArray.includes(col);
+                return (
+                  <button 
+                    key={col} 
+                    onClick={() => onFilterChange('color', toggleFilter(activeFilters.colorFilter, col))} // La key URL es 'color'
+                    className={`text-sm font-fredoka transition-colors cursor-pointer text-left flex items-center gap-2 group ${
+                        isActive ? 'text-brand-primary font-bold' : 'text-gray-600 font-medium hover:text-brand-primary'
+                      }`}
+                  >
+                     {/* Checkbox visual redondeado (ya no mostramos la bolita de color hexadecimal) */}
+                    <div className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${isActive ? 'bg-brand-primary border-brand-primary' : 'border-gray-300 group-hover:border-brand-primary'}`}>
+                        {isActive && <i className="fa-solid fa-check text-[10px] text-white"></i>}
+                    </div>
+                    <span>{col}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+      )}
 
       {/* 5. SECCIÓN PRECIO (ÚLTIMA) */}
       <div>
-        <h3 className="text-[10px] font-black uppercase tracking-[4px] mb-6 text-gray-400">Precio</h3>
-        <div className="flex items-center gap-3 mb-5">
+        <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Precio</h3>
+        <div className="flex items-center gap-3 mb-4">
           <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none">$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-fredoka pointer-events-none">$</span>
             <input
               type="text"
               inputMode="numeric"
               placeholder="Mínimo"
               value={minPrice}
               onChange={(e) => setMinPrice(formatPriceInput(e.target.value))}
-              className="w-full border border-gray-200 pl-6 pr-3 py-2.5 text-[16px] md:text-xs text-right focus:outline-none focus:border-black transition-colors rounded-sm placeholder:text-gray-300"
+              className="w-full border-2 border-gray-100 bg-gray-50 pl-7 pr-3 py-2.5 text-[16px] md:text-sm font-fredoka text-right focus:outline-none focus:border-brand-primary focus:bg-white transition-colors rounded-xl placeholder:text-gray-400"
             />
           </div>
-          <span className="text-gray-400 text-[10px] font-bold uppercase">a</span>
+          <span className="text-gray-400 text-xs font-fredoka font-bold">a</span>
           <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none">$</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-fredoka pointer-events-none">$</span>
             <input
               type="text"
               inputMode="numeric"
               placeholder="Máximo"
               value={maxPrice}
               onChange={(e) => setMaxPrice(formatPriceInput(e.target.value))}
-              className="w-full border border-gray-200  pl-6 pr-3 py-2.5  text-[16px] md:text-xs text-right focus:outline-none focus:border-black transition-colors rounded-sm placeholder:text-gray-300"
+              className="w-full border-2 border-gray-100 bg-gray-50 pl-7 pr-3 py-2.5 text-[16px] md:text-sm font-fredoka text-right focus:outline-none focus:border-brand-primary focus:bg-white transition-colors rounded-xl placeholder:text-gray-400"
             />
           </div>
         </div>
         <button
           onClick={handleApplyPrice}
-          className="w-full bg-black text-white py-3 px-4 text-[11px] font-black uppercase tracking-[4px] hover:bg-gray-900 active:scale-[0.98] transition-all cursor-pointer"
+          className="w-full bg-brand-primary rounded-full text-white py-3 px-4 text-xs font-fredoka font-bold uppercase tracking-wider hover:bg-orange-600 active:scale-[0.98] transition-all cursor-pointer shadow-sm"
         >
-          Aplicar
+          Aplicar Rango
         </button>
       </div>
 

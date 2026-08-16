@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { useSearchParams, useOutletContext, useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async'; // NUEVO: Importamos Helmet para SEO dinámico
+import { Helmet } from 'react-helmet-async';
 
 // Context & Hooks
 import { useApp } from '@/src/context/AppContext';
@@ -53,9 +53,9 @@ const Products: React.FC = () => {
         ? formatCategoryUrl(paramCategory)
         : searchParams.get('categoria') || 'Todos';
 
-    const brandFilter = searchParams.get('marca'); // NUEVO
-    const sizeFilter = searchParams.get('talle');
-    const colorFilter = searchParams.get('color');
+    const brandFilter = searchParams.get('marca');
+    const sizeFilter = searchParams.get('peso'); // CAMBIADO: De 'talle' a 'peso'
+    const colorFilter = searchParams.get('edad_tamano'); // CAMBIADO: De 'color' a 'edad_tamano'
     const priceFilter = searchParams.get('precio');
     const searchTerm = searchParams.get('search') || '';
 
@@ -65,11 +65,11 @@ const Products: React.FC = () => {
         sortBy, 
         setSortBy,
         categories,
-        brands, // NUEVO
+        brands, 
         setActiveCategory,
         activeCategory,
-        setActiveBrand, // NUEVO
-        activeBrand, // NUEVO
+        setActiveBrand,
+        activeBrand, 
         setActiveSize,
         setActiveColor,
         setActivePrice
@@ -81,7 +81,7 @@ const Products: React.FC = () => {
     // 4. SINCRONIZACIÓN: URL -> HOOK
     useEffect(() => {
         setActiveCategory(isOffersRoute ? 'Todos' : initialCategory);
-        setActiveBrand(brandFilter); // NUEVO
+        setActiveBrand(brandFilter); 
         setActiveSize(sizeFilter);
         setActiveColor(colorFilter);
         setActivePrice(priceFilter);
@@ -112,16 +112,15 @@ const Products: React.FC = () => {
             navigate(`/category/${newCategory.toLowerCase().replace(/\s+/g, '-')}${queryString}`);
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        // ELIMINADO: setIsMobileFiltersOpen(false); para que el drawer quede abierto a decisión del usuario
     };
 
-    // Título Visual (con HTML y Fueguitos)
+    // Título Visual (adaptado a Pet Shop)
     const pageTitle = searchTerm
         ? 'BÚSQUEDA'
         : isOffersRoute 
             ? (
                 <span className="flex items-center gap-3">
-                    OFERTAS <i className="fa-solid fa-fire text-orange-500 animate-pulse text-[0.8em]"></i>
+                    OFERTAS <i className="fa-solid fa-tags text-brand-primary text-[0.8em]"></i>
                 </span>
               )
             : (activeCategory === 'Todos' ? 'CATÁLOGO' : activeCategory);
@@ -148,7 +147,8 @@ const Products: React.FC = () => {
     if (loading) {
         return (
         <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+            {/* Animación de carga naranja */}
+            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-brand-primary"></div>
         </div>
         );
     }
@@ -159,9 +159,9 @@ const Products: React.FC = () => {
             {/* --- INYECCIÓN SEO DINÁMICO --- */}
             <Helmet>
                 <title>{`ALIMENTO AHORA | ${metaTitle}`}</title>
-                <meta name="description" content={`Explorá nuestra colección de ${metaTitle.toLowerCase()} en ALIMENTO AHORA. Indumentaria urbana y streetwear con envíos a todo el país.`} />
+                <meta name="description" content={`Explorá nuestra colección de ${metaTitle.toLowerCase()} en ALIMENTO AHORA. El mejor alimento balanceado con envíos a todo el país.`} />
                 <meta property="og:title" content={`ALIMENTO AHORA | ${metaTitle}`} />
-                <meta property="og:description" content={`Descubrí lo mejor en ${metaTitle.toLowerCase()}. Calidad premium y estilo urbano.`} />
+                <meta property="og:description" content={`Descubrí lo mejor en ${metaTitle.toLowerCase()}. Nutrición premium para tu mascota.`} />
                 <meta property="og:url" content={window.location.href} />
             </Helmet>
 
@@ -179,13 +179,13 @@ const Products: React.FC = () => {
             <div className="max-w-360 mx-auto px-4 md:px-6 w-full flex flex-col lg:flex-row gap-12 mt-8">
                 
                 {/* SIDEBAR DESKTOP */}
-                <aside className="hidden lg:block w-64 shrink-0 sticky top-44 self-start max-h-[calc(100vh-14rem)] overflow-y-auto no-scrollbar pb-8 pr-4">
+                <aside className="hidden lg:block w-64 shrink-0 sticky top-44 self-start max-h-[calc(100vh-14rem)] overflow-y-auto custom-scrollbar pb-8 pr-4">
                     <FilterSidebar 
                         activeFilters={{ sizeFilter, colorFilter, priceFilter, searchTerm, brandFilter }}
                         categories={categories}
                         activeCategory={activeCategory}
-                        brands={brands} // NUEVO
-                        activeBrand={activeBrand} // NUEVO
+                        brands={brands}
+                        activeBrand={activeBrand}
                         onCategoryChange={handleCategoryChange}
                         onFilterChange={handleFilterChange}
                         onClearFilters={handleClearFilters}
@@ -204,37 +204,36 @@ const Products: React.FC = () => {
             {/* DRAWER MOBILE */}
             <div className={`fixed inset-0 z-50 flex lg:hidden ${isMobileFiltersOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
                 <div 
-                    className={`absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer ui-backdrop ${isMobileFiltersOpen ? 'is-open' : ''}`} 
+                    className={`absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer ui-backdrop ${isMobileFiltersOpen ? 'is-open' : ''}`} 
                     onClick={() => setIsMobileFiltersOpen(false)}
                 />
-                <div className={`absolute top-0 left-0 h-full w-4/5 max-w-75 bg-white shadow-2xl flex flex-col ui-slide-panel ui-slide-left ${isMobileFiltersOpen ? 'is-open' : ''}`}>
+                <div className={`absolute top-0 left-0 h-full w-4/5 max-w-75 bg-white rounded-r-3xl shadow-2xl flex flex-col ui-slide-panel ui-slide-left ${isMobileFiltersOpen ? 'is-open' : ''}`}>
                     <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                        <h2 className="text-xl font-black uppercase tracking-tighter">Filtros</h2>
+                        <h2 className="text-2xl font-lilita text-brand-primary tracking-wide">Filtros</h2>
                         <button 
                             onClick={() => setIsMobileFiltersOpen(false)}
-                            className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer"
+                            className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full hover:bg-orange-50 hover:text-brand-primary transition-colors cursor-pointer text-gray-500"
                         >
                             <i className="fa-solid fa-xmark"></i>
                         </button>
                     </div>
-                    {/* SOLUCIÓN UX MASTER: px-6 pb-6 pt-0 (Removimos el padding top que causaba la fuga de scroll) */}
-                    <div className="px-6 pb-6 pt-0 overflow-y-auto flex-1 custom-scrollbar">
+                    {/* Padding ajustado para Mobile */}
+                    <div className="px-6 pb-6 pt-6 overflow-y-auto flex-1 custom-scrollbar">
                         <FilterSidebar 
                             activeFilters={{ sizeFilter, colorFilter, priceFilter, searchTerm, brandFilter }}
                             categories={categories}
                             activeCategory={activeCategory}
-                            brands={brands} // NUEVO
-                            activeBrand={activeBrand} // NUEVO
+                            brands={brands}
+                            activeBrand={activeBrand}
                             onCategoryChange={handleCategoryChange}
                             onFilterChange={handleFilterChange}
                             onClearFilters={handleClearFilters}
-                            // ELIMINADO: onCloseMobile={() => setIsMobileFiltersOpen(false)} para que los chips no cierren el panel
                         />
                     </div>
-                    <div className="p-6 border-t border-gray-100">
+                    <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-br-3xl">
                         <button 
                             onClick={() => setIsMobileFiltersOpen(false)}
-                            className="w-full bg-black text-white py-4 text-[11px] font-black uppercase tracking-[4px] active:scale-[0.98] transition-all cursor-pointer"
+                            className="w-full bg-brand-primary rounded-full text-white py-4 text-sm font-fredoka font-bold uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer shadow-md"
                         >
                             Ver Resultados
                         </button>
