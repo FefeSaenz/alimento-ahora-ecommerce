@@ -30,9 +30,9 @@ const ProductDetail: React.FC = () => {
     return allProducts.find(p => p.slug === slug || p.id === slug);
   }, [allProducts, slug]);
 
-  // 2. ESTADOS LOCALES
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  // 2. ESTADOS LOCALES (Adaptados a Pet Shop)
+  const [selectedColor, setSelectedColor] = useState<string | null>(null); // Funcionará como "Edad/Tamaño" o Variante Principal
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);   // Funcionará como "Peso" (Ej: 3kg)
   const [mainImage, setMainImage] = useState<string>('');
   const [error, setError] = useState<string>('');
 
@@ -40,24 +40,23 @@ const ProductDetail: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  // 3. INICIALIZAR DATA (Basado en tu interfaz Product)
+  // 3. INICIALIZAR DATA
   useEffect(() => {
     if (product) {
-      // Usamos el array de images que definí en product.types.ts
       if (product.images && product.images.length > 0) {
         setMainImage(product.images[0]);
       } else {
         setMainImage('');
       }
       
-      // Seleccionamos el primer color si hay variantes
+      // Seleccionamos la primera variante disponible (Ej: Mini Adulto)
       if (product.variants && product.variants.length > 0) {
         setSelectedColor(product.variants[0].color.name);
       }
       
       setSelectedSize(null);
       setError('');
-      setCurrentSlide(0); // Reiniciamos el slider al cambiar de producto
+      setCurrentSlide(0); 
     }
   }, [product]);
 
@@ -74,7 +73,7 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  // 4. LÓGICA DE VARIANTES
+  // 4. LÓGICA DE VARIANTES (Adaptadas a Pet Shop)
   const availableColors = useMemo(() => {
     if (!product?.variants) return [];
     return Array.from(new Set(product.variants.map(v => v.color.name)));
@@ -87,15 +86,14 @@ const ProductDetail: React.FC = () => {
     return variant ? variant.sizes : []; 
   }, [product, selectedColor]);
 
-  // 5. MANEJADOR DEL CARRITO (Respetando tu interfaz CartItem)
+  // 5. MANEJADOR DEL CARRITO
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
-      setError('Por favor, selecciona Talle y Color antes de agregar.');
+      setError('Por favor, selecciona el peso y la variante antes de agregar al carrito.');
       return;
     }
     
     if (product) {
-      // Buscamos la variante exacta que eligió el usuario
       const chosenVariantGroup = product.variants.find(v => v.color.name === selectedColor);
       const chosenSizeObj = chosenVariantGroup?.sizes.find(s => s.size.toString() === selectedSize);
       
@@ -134,7 +132,7 @@ const ProductDetail: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-brand-primary"></div>
       </div>
     );
   }
@@ -142,9 +140,9 @@ const ProductDetail: React.FC = () => {
   if (!product) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-4xl md:text-6xl font-black italic-pulso uppercase tracking-tighter mb-4">Producto no encontrado</h1>
-        <p className="text-gray-500 mb-8 font-bold uppercase tracking-widest text-sm">El artículo que buscás ya no está disponible.</p>
-        <Link to="/productos" className="bg-black text-white px-8 py-4 text-[10px] font-black uppercase tracking-[3px] hover:bg-gray-900 transition-colors">
+        <h1 className="text-4xl md:text-5xl font-lilita text-brand-primary tracking-wide mb-4">Producto no encontrado</h1>
+        <p className="text-gray-500 mb-8 font-fredoka font-medium text-sm">El artículo que buscás ya no está disponible o no existe.</p>
+        <Link to="/productos" className="bg-brand-primary text-white px-8 py-4 rounded-full text-sm font-fredoka font-bold uppercase tracking-wider hover:bg-orange-600 shadow-md hover:shadow-lg transition-all">
           Volver al catálogo
         </Link>
       </div>
@@ -153,125 +151,112 @@ const ProductDetail: React.FC = () => {
 
   // 7. RENDERIZADO PRINCIPAL
   return (
-    // Envolvemos todo en un Fragment para poder poner el Carousel AFUERA del contenedor
-    <div className='flex flex-col gap-16 pb-16 animate-in fade-in duration-500'>
+    <div className='flex flex-col gap-12 lg:gap-16 pb-16 animate-in fade-in duration-500'>
 
-      {/* --- 2. ACÁ INYECTAMOS EL SEO DINÁMICO --- */}
+      {/* --- INYECCIÓN SEO DINÁMICO --- */}
       <Helmet>
-        {/* Título en la pestaña del navegador */}
         <title>{`ALIMENTO AHORA | ${product.name}`}</title>
-        <meta name="description" content={product.description || `Comprá ${product.name} online en ALIMENTO AHORA Wear.`} />
+        <meta name="description" content={product.description || `Comprá ${product.name} online en ALIMENTO AHORA. Nutrición premium con envío a domicilio.`} />
         
-        {/* Open Graph (WhatsApp, Facebook, Instagram, LinkedIn) */}
         <meta property="og:type" content="product" />
         <meta property="og:title" content={`ALIMENTO AHORA | ${product.name}`} />
-        <meta property="og:description" content={product.description || `Descubrí nuestra nueva colección. ${product.name} disponible ahora.`} />
+        <meta property="og:description" content={product.description || `Descubrí el mejor alimento balanceado. ${product.name} disponible ahora.`} />
         <meta property="og:image" content={mainImage || (product.images && product.images[0]) || ''} />
         <meta property="og:url" content={window.location.href} />
         
-        {/* Twitter Cards (También lo usan Discord y Telegram) */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`ALIMENTO AHORA | ${product.name}`} />
         <meta name="twitter:image" content={mainImage || (product.images && product.images[0]) || ''} />
       </Helmet>
       
-      {/* AJUSTE ESPACIADO BREADCRUMBS: Redujimos pt-10 a pt-6 para achicar el margen superior general */}
       <div className="max-w-360 mx-auto px-6 pt-6 w-full">
         
-        {/* BREADCRUMBS UNIFICADOS */}
-        {/* AJUSTE ESPACIADO BREADCRUMBS: Sacamos el md:mb-10 y lo dejamos en mb-6 para achicar el margen inferior */}
+        {/* BREADCRUMBS */}
         <Breadcrumbs 
           className='mb-6'
           items={[
-            { label: 'Catálogo', href: '/productos' }, // Agregamos Catálogo como padre universal
+            { label: 'Catálogo', href: '/productos' }, 
             { label: product.category, href: `/category/${product.category.toLowerCase().replace(/\s+/g, '-')}` },
             { label: product.name }
           ]} 
         />
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-20">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
           
           {/* 1. VISTA MOBILE / TABLET (Slider con Dots y Flechas) */}
           <div className="lg:hidden w-full md:max-w-125 md:mx-auto flex flex-col relative">
             
             {/* Etiqueta de Oferta Superpuesta */}
             {(product.discount_percentage || (product.original_price && product.original_price > product.price)) ? (
-              <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 text-[10px] font-black uppercase tracking-[3px] z-20 rounded-sm pointer-events-none shadow-md">
-                {product.discount_percentage ? `-${product.discount_percentage}%` : 'Oferta'}
+              <div className="absolute top-4 left-4 bg-brand-primary text-white px-4 py-1.5 text-[10px] font-fredoka font-bold uppercase tracking-wider z-20 rounded-full pointer-events-none shadow-md">
+                {product.discount_percentage ? `-${product.discount_percentage}% OFF` : 'Oferta'}
               </div>
             ) : null}
 
             {/* Contenedor del Carrusel Native Scroll Snap */}
+            {/* Cambiamos aspect-4/5 por aspect-square que suele quedar mejor para bolsas de alimento */}
             <div 
               ref={sliderRef}
-              className="flex w-full overflow-x-auto snap-x snap-mandatory no-scrollbar rounded-sm bg-gray-50"
+              className="flex w-full overflow-x-auto snap-x snap-mandatory no-scrollbar rounded-2xl bg-white border border-gray-100 shadow-sm"
               onScroll={(e) => {
                 const scrollLeft = e.currentTarget.scrollLeft;
                 const width = e.currentTarget.clientWidth;
-                // Calculamos en qué foto estamos parados
                 setCurrentSlide(Math.round(scrollLeft / width));
               }}
             >
               {product.images && product.images.length > 0 ? (
                 product.images.map((img: string, idx: number) => (
-                  <div key={idx} className="w-full shrink-0 snap-center relative aspect-4/5">
+                  <div key={idx} className="w-full shrink-0 snap-center relative aspect-square p-6">
                     <img 
                       src={img} 
                       alt={`${product.name} ${idx + 1}`} 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   </div>
                 ))
               ) : (
-                <div className="w-full shrink-0 snap-center aspect-4/5 flex items-center justify-center text-gray-300 text-xs font-bold uppercase tracking-widest">
+                <div className="w-full shrink-0 snap-center aspect-square flex items-center justify-center text-gray-400 text-sm font-fredoka font-bold tracking-wider">
                   Sin Imagen
                 </div>
               )}
             </div>
 
-            {/* CONTROLES: Flechas y Puntos (Siempre visibles) */}
-            <div className="flex items-center justify-between w-full mt-4">
-              
-              {/* Flecha Izquierda */}
+            {/* CONTROLES: Flechas y Puntos */}
+            <div className="flex items-center justify-between w-full mt-4 px-2">
               <button 
                 onClick={handlePrevSlide}
                 disabled={currentSlide === 0}
-                className="text-black hover:opacity-70 transition-opacity py-2 pr-4 cursor-pointer disabled:opacity-30 disabled:cursor-default"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-500 hover:text-brand-primary hover:bg-orange-50 transition-colors disabled:opacity-30 disabled:cursor-default"
               >
-                <i className="fa-solid fa-arrow-left text-lg"></i>
+                <i className="fa-solid fa-chevron-left text-sm"></i>
               </button>
 
-              {/* Puntos Indicadores (Dots) circulares */}
-              <div className="flex justify-center items-center gap-2.5">
-                {/* Forzamos a que renderice 1 dot aunque no haya imágenes, o mapee las reales */}
+              <div className="flex justify-center items-center gap-2">
                 {(product.images && product.images.length > 0 ? product.images : ['placeholder']).map((_, idx) => (
                   <div 
                     key={idx} 
                     className={`rounded-full transition-all duration-300 ${
                       currentSlide === idx 
-                        ? 'w-2 h-2 bg-black scale-110' 
-                        : 'w-2 h-2 bg-gray-300'
+                        ? 'w-6 h-2 bg-brand-primary' 
+                        : 'w-2 h-2 bg-gray-200'
                     }`}
                   />
                 ))}
               </div>
 
-              {/* Flecha Derecha */}
               <button 
                 onClick={handleNextSlide}
                 disabled={!product.images || currentSlide === product.images.length - 1 || product.images.length === 0}
-                className="text-black hover:opacity-70 transition-opacity py-2 pl-4 cursor-pointer disabled:opacity-30 disabled:cursor-default"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-500 hover:text-brand-primary hover:bg-orange-50 transition-colors disabled:opacity-30 disabled:cursor-default"
               >
-                <i className="fa-solid fa-arrow-right text-lg"></i>
+                <i className="fa-solid fa-chevron-right text-sm"></i>
               </button>
-
             </div>
           </div>
 
           {/* 2. VISTA DESKTOP (Miniaturas + Foto Gigante) */}
-          {/* AJUSTE NOTEBOOK: Limitamos el ancho max a 480px en lg para que la foto no explote en pantallas 720p, 
-              pero vuelve a estar libre (xl:max-w-none) para tu monitor 4K. */}
-          <div className="hidden lg:flex w-full lg:w-1/2 lg:max-w-120 xl:max-w-none flex-row gap-6">
+          {/* CORRECCIÓN: Agregamos items-start para que la foto no se centre verticalmente si la columna derecha crece */}
+          <div className="hidden lg:flex w-full lg:w-1/2 lg:max-w-120 xl:max-w-none flex-row gap-6 items-start">
             
             {/* Miniaturas (Verticales) */}
             {product.images && product.images.length > 0 && (
@@ -280,37 +265,38 @@ const ProductDetail: React.FC = () => {
                   <button 
                     key={idx} 
                     onClick={() => setMainImage(img)}
-                    className={`w-full aspect-4/5 shrink-0 transition-all cursor-pointer rounded-sm flex group overflow-hidden ${
+                    className={`w-full aspect-square shrink-0 transition-all cursor-pointer rounded-xl flex items-center justify-center bg-white group overflow-hidden border-2 ${
                       mainImage === img 
-                        ? 'z-10 p-0 border-0 outline-none appearance-none ring-1 ring-black/10' 
-                        : 'hover:opacity-80 p-0 border-0 outline-none appearance-none bg-transparent'
+                        ? 'border-brand-primary shadow-sm' 
+                        : 'border-transparent hover:border-gray-200'
                     }`}
                   >
                     <img 
                       src={img} 
                       alt={`${product.name} thumbnail ${idx + 1}`} 
-                      className="block w-full h-full object-cover rounded-sm transition-transform duration-300 scale-[1.01] group-hover:scale-105" 
+                      className="block w-full h-full object-contain p-2 transition-transform duration-300 scale-[1.01] group-hover:scale-110" 
                     />
                   </button>
                 ))}
               </div> 
             )}
 
-            {/* Imagen Principal */}
-            <div className="flex-1 aspect-4/5 bg-gray-50 rounded-sm overflow-hidden relative group flex">
+            {/* Imagen Principal Desktop */}
+            <div className="flex-1 min-h-125 xl:min-h-150 bg-white border border-gray-100 rounded-3xl overflow-hidden relative group flex shadow-sm items-center justify-center py-4">
               {(product.discount_percentage || (product.original_price && product.original_price > product.price)) ? (
-                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 text-[10px] font-black uppercase tracking-[3px] z-20 rounded-sm pointer-events-none shadow-md">
-                  {product.discount_percentage ? `-${product.discount_percentage}%` : 'Oferta'}
+                <div className="absolute top-6 left-6 bg-brand-primary text-white px-4 py-2 text-xs font-fredoka font-bold uppercase tracking-wider z-20 rounded-full pointer-events-none shadow-md">
+                  {product.discount_percentage ? `-${product.discount_percentage}% OFF` : 'Oferta'}
                 </div>
               ) : null}
+              
               {mainImage ? (
                 <img 
                   src={mainImage} 
                   alt={product.name} 
-                  className="w-full h-full object-cover object-center scale-[1.01] group-hover:scale-[1.03] transition-transform duration-700 block"
+                  className="w-full h-full max-h-[90%] object-contain p-2 transition-transform duration-700 group-hover:scale-105 block"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs font-bold uppercase tracking-widest">
+                <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm font-fredoka font-bold uppercase tracking-widest">
                   Sin Imagen
                 </div>
               )}
@@ -318,41 +304,40 @@ const ProductDetail: React.FC = () => {
             
           </div>
 
-          {/* INFO Y COMPRA (Columna Derecha / Abajo)    */}
-          <div className="w-full lg:w-1/2 flex flex-col">
-            {/* Etiqueta / Tag */}
-            {product.tags && (
-              <span className="inline-block bg-black text-white text-[9px] font-black uppercase tracking-[3px] px-3 py-1.5 w-max mb-6 rounded-sm">
-                {Array.isArray(product.tags) ? product.tags[0] : product.tags}
-              </span>
-            )}
+          {/* 3. INFO Y COMPRA (Columna Derecha / Abajo) */}
+          <div className="w-full lg:w-[45%] flex flex-col pt-2 lg:pt-4">
+            
+            {/* Categoría / Tag */}
+            <span className="text-xs font-fredoka font-bold text-brand-primary uppercase tracking-wider mb-2">
+              {product.category}
+            </span>
 
             {/* Título */}
-            <h1 className="text-3xl md:text-5xl font-black italic-pulso uppercase tracking-tighter mb-2 leading-none">
+            <h1 className="text-3xl md:text-5xl font-lilita text-gray-800 tracking-wide mb-3 leading-tight">
               {product.name}
             </h1>
 
             {/* SKU y Rating */}
-            <div className="flex flex-wrap items-center gap-4 mb-6 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+            <div className="flex flex-wrap items-center gap-4 mb-6 text-[11px] font-fredoka font-bold uppercase text-gray-400 bg-gray-50 w-max px-3 py-1 rounded-md">
               {product.base_sku && <span>SKU: {product.base_sku}</span>}
             </div>
 
             {/* Precio */}
             <div className="mb-8 flex items-center gap-4">
-                <Price amount={product.price} className="text-2xl font-bold" />
+                <Price amount={product.price} className="text-3xl lg:text-4xl font-fredoka font-black text-black" />
                 {product.original_price && (
-                  <span className="text-lg text-gray-400 line-through">${product.original_price.toLocaleString('es-AR')}</span>
+                  <span className="text-lg font-fredoka text-gray-400 line-through">${product.original_price.toLocaleString('es-AR')}</span>
                 )}
             </div>
 
-            {/* Selector de Color */}
-            {availableColors.length > 0 && (
-              <div className="mb-8 border-b border-gray-100 pb-8">
+            {/* Selector de Opción Principal (Ej: Edad, Tamaño de Mordida) */}
+            {availableColors.length > 0 && availableColors[0] !== 'ÚNICO' && (
+              <div className="mb-6 border-b border-gray-100 pb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-black uppercase tracking-[2px] text-gray-500">Color</span>
-                  <span className="text-[10px] font-black uppercase tracking-[2px] text-black bg-gray-50 px-3 py-1 rounded-full">{selectedColor}</span>
+                  <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-500">Variante</span>
+                  <span className="text-[10px] font-fredoka font-bold uppercase tracking-wider text-brand-primary bg-orange-50 px-3 py-1 rounded-full">{selectedColor}</span>
                 </div>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2">
                   {availableColors.map(color => (
                     <button
                       key={color}
@@ -361,13 +346,15 @@ const ProductDetail: React.FC = () => {
                         setSelectedSize(null);
                         setError('');
                         
-                        const variant = product.variants.find(v => v.color.name === color);
+                        const variant = product.variants?.find(v => v.color.name === color);
                         if (variant?.color.image) {
                           setMainImage(variant.color.image);
                         }
                       }}
-                      className={`px-4 py-2 border rounded-sm text-[10px] font-bold uppercase transition-all whitespace-nowrap cursor-pointer ${
-                        selectedColor === color ? 'border-black bg-black text-white' : 'border-gray-200 bg-white hover:border-black text-gray-600'
+                      className={`px-4 py-2 border rounded-full text-xs font-fredoka font-bold transition-all whitespace-nowrap cursor-pointer shadow-sm ${
+                        selectedColor === color 
+                          ? 'border-brand-primary bg-brand-primary text-white shadow-md' 
+                          : 'border-gray-200 bg-white hover:border-brand-primary hover:text-brand-primary text-gray-600'
                       }`}
                     >
                       {color}
@@ -377,14 +364,13 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Selector de Talles */}
+            {/* Selector de Pesos (Bolsas) */}
             {availableSizes.length > 0 && (
-              <div className="mb-10">
+              <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-black uppercase tracking-[2px] text-gray-500">Talle</span>
-                  <button className="text-[9px] font-black uppercase tracking-[2px] text-gray-400 underline hover:text-black cursor-pointer">Guía de talles</button>
+                  <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-500">Seleccionar Peso</span>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {availableSizes.map(sizeObj => (
                     <button
                       key={sizeObj.size}
@@ -393,12 +379,12 @@ const ProductDetail: React.FC = () => {
                         setSelectedSize(sizeObj.size.toString());
                         setError('');
                       }}
-                      className={`w-12 h-12 border flex items-center justify-center text-[11px] font-bold transition-all  ${
+                      className={`px-4 min-w-14 h-12 border rounded-xl flex items-center justify-center text-sm font-fredoka font-bold transition-all shadow-sm ${
                         !sizeObj.available 
-                          ? 'bg-gray-100 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through' 
+                          ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through shadow-none' 
                           : selectedSize === sizeObj.size.toString() 
-                            ? 'bg-black text-white border-black cursor-pointer' 
-                            : 'bg-white border-gray-200 hover:border-black text-gray-800 cursor-pointer'
+                            ? 'bg-black text-white border-black shadow-md' 
+                            : 'bg-white border-gray-200 hover:border-brand-primary hover:text-brand-primary text-gray-700 cursor-pointer'
                       }`}
                     >
                       {sizeObj.size}
@@ -406,82 +392,88 @@ const ProductDetail: React.FC = () => {
                   ))}
                 </div>
                 
-                {/* Error Message */}
-                {error && (
-                  <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mt-4 animate-pulse">
-                    {error}
-                  </p>
-                )}
+                {/* CORRECCIÓN DE LAYOUT SHIFT: 
+                    En vez de inyectar el div de la nada (y empujar todo), dejamos un espacio 
+                    invisible (min-h-[52px]) que siempre está ahí, y el mensaje solo se dibuja 
+                    adentro cuando hace falta. */}
+                <div className="min-h-13 mt-4">
+                  {error && (
+                    <div className="bg-red-50 text-red-500 text-xs font-fredoka font-bold tracking-wider p-3 rounded-xl border border-red-100 animate-in slide-in-from-top-2">
+                      <i className="fa-solid fa-circle-exclamation mr-2"></i> {error}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
             {/* Add to Cart Button */}
             <button 
               onClick={handleAddToCart}
-              className="w-full bg-black text-white py-5 text-xs font-black uppercase tracking-[4px] hover:bg-gray-900 transition-colors active:scale-[0.99] mb-8 cursor-pointer rounded-sm"
+              // CORRECCIÓN DE LAYOUT SHIFT: Le sacamos el mb-8 al botón (lo empujaba el gap de arriba en realidad)
+              className="w-full bg-brand-primary text-white py-4 md:py-5 rounded-full text-sm md:text-base font-fredoka font-bold uppercase tracking-wider hover:bg-orange-600 hover:shadow-lg transition-all active:scale-[0.98] mb-8 cursor-pointer shadow-md flex items-center justify-center gap-3"
             >
-              Agregar al Carrito
+              <i className="fa-solid fa-cart-plus"></i> Agregar al Carrito
             </button>
 
-            {/* Description y Detalles (Type-Safe) */}
-            <div className="border-t border-gray-100 pt-8 mt-4 space-y-8">
-              <div>
-                <h3 className="text-[12px] font-black uppercase tracking-[2px] text-black mb-4">Descripción</h3>
-                <p className="text-sm text-gray-500 leading-relaxed whitespace-pre-line">
-                  {product.description || 'Prenda premium diseñada para el uso urbano diario. Ofrece la combinación ideal entre confort duradero y cortes contemporáneos.'}
-                </p>
-              </div>
-              
-              {(product.brand || product.material || product.category || product.subcategory || product.gender) && (
+            {/* Detalles Tipo Acordeón Fijo */}
+            <div className="border border-gray-100 rounded-3xl overflow-hidden bg-white shadow-sm">
+              <div className="p-6 md:p-8 space-y-6">
+                
                 <div>
-                  <h3 className="text-[12px] font-black uppercase tracking-[2px] text-black mb-4">Detalles</h3>
-                  
-                  <ul className="space-y-3">
-                    {product.brand && (
-                      <li className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-gray-400 min-w-24">Marca:</span> 
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-black bg-gray-50 px-2 py-1">{product.brand}</span>
-                      </li>
-                    )}
-                    {product.material && (
-                      <li className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-gray-400 min-w-24">Material:</span> 
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-black bg-gray-50 px-2 py-1">{product.material}</span>
-                      </li>
-                    )}
-                    {product.category && (
-                      <li className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-gray-400 min-w-24">Categoría:</span> 
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-black bg-gray-50 px-2 py-1">{product.category}</span>
-                      </li>
-                    )}
-                    {product.subcategory && (
-                      <li className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-gray-400 min-w-24">Estilo:</span> 
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-black bg-gray-50 px-2 py-1">{product.subcategory}</span>
-                      </li>
-                    )}
-                    {product.gender && (
-                      <li className="flex items-center gap-2">
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-gray-400 min-w-24">Género:</span> 
-                        <span className="text-[10px] font-black uppercase tracking-[2px] text-black bg-gray-50 px-2 py-1">{product.gender}</span>
-                      </li>
-                    )}
-                  </ul>
+                  <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider text-gray-800 mb-3 flex items-center gap-2">
+                    <i className="fa-solid fa-align-left text-brand-primary"></i> Descripción
+                  </h3>
+                  <p className="text-sm font-fredoka text-gray-500 leading-relaxed whitespace-pre-line">
+                    {product.description || 'Alimento balanceado premium formulado para brindar la mejor nutrición y energía a tu mascota en cada etapa de su vida.'}
+                  </p>
                 </div>
-              )}
+                
+                {(product.brand || product.material || product.category || product.subcategory || product.gender) && (
+                  <div className="pt-6 border-t border-gray-50">
+                    <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider text-gray-800 mb-4 flex items-center gap-2">
+                      <i className="fa-solid fa-list text-brand-primary"></i> Especificaciones
+                    </h3>
+                    
+                    <ul className="space-y-3">
+                      {product.brand && (
+                        <li className="flex items-center gap-4">
+                          <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-400 w-20">Marca:</span> 
+                          <span className="text-sm font-fredoka font-medium text-gray-800">{product.brand}</span>
+                        </li>
+                      )}
+                      {product.category && (
+                        <li className="flex items-center gap-4">
+                          <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-400 w-20">Categoría:</span> 
+                          <span className="text-sm font-fredoka font-medium text-gray-800">{product.category}</span>
+                        </li>
+                      )}
+                      {product.gender && (
+                        <li className="flex items-center gap-4">
+                          <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-400 w-20">Especie:</span> 
+                          <span className="text-sm font-fredoka font-medium text-gray-800">{product.gender}</span>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                )}
+
+              </div>
             </div>
 
           </div>
         </div>
       </div>
 
-      <ProductCarousel 
-        title="Trends"
-        variant='slim'
-        products={allProducts.filter(p => p.id !== product.id).slice(0, 8)} 
-        onAdd={setSelectedQuickView}
-      />
+      {/* Carrusel de Productos Relacionados */}
+      <div className="mt-8 border-t border-gray-100 pt-8">
+        <ProductCarousel 
+          title="Te puede interesar"
+          variant='slim'
+          products={allProducts.filter(p => p.id !== product.id).slice(0, 8)} 
+          onAdd={setSelectedQuickView}
+        />
+      </div>
+
     </div>
   );
 };

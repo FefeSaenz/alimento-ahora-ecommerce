@@ -69,9 +69,10 @@ El proyecto sigue una estructura modular y reactiva para facilitar su mantenimie
 - [x] **Rediseño de Layout base y ecosistema del Carrito (Footer, CartDrawer, CartSummary).**
 - [x] **Rediseño completo de Modales de Interacción (QuickView, Checkout, Perfil, Búsqueda) y finalización del Layout base.**
 - [x] **Adaptación visual y lógica de la vista de Catálogo (Products) y sus filtros satélite, transicionando del dominio de indumentaria al de Pet Shop (Pesos y Edades).**
+- [x] **Adaptación visual de la vista de Detalle de Producto (ProductDetail) y OrderSuccess.**
 
 ## 🛠️ Próximos Pasos
-- [ ] **Adaptación visual de la vista de Detalle de Producto (ProductDetail) y OrderSuccess.**
+- [ ] **Implementación de Galería Modal (Lightbox Pattern) en ProductDetail:** Reutilización del componente `<Modal>` arquitectónico para permitir la visualización en pantalla completa de las imágenes del producto, mejorando la UX sin agregar librerías de terceros pesadas.
 - [ ] **Ajuste de interfaces y Mappers para el nuevo modelo de datos (Bolsas, Kilos, Marcas de alimento).**
 - [ ] **Desconexión de UI del sistema de Autenticación y transformación del Checkout hacia un flujo de pedidos por WhatsApp.**
 
