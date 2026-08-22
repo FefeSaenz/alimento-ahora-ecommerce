@@ -11,6 +11,7 @@ import { Product } from '@/src/types/product.types';
 import Price from '@/src/components/ui/Price';
 import ProductCarousel from '@/src/components/ui/ProductCarousel';
 import Breadcrumbs from '@/src/components/ui/Breadcrumbs';
+import Modal from '@/src/components/ui/Modal';
 
 interface ProductDetailContext {
   setSelectedQuickView: (product: Product) => void;
@@ -35,6 +36,7 @@ const ProductDetail: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);   // Funcionará como "Peso" (Ej: 3kg)
   const [mainImage, setMainImage] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false);
 
   // Estado y Ref para controlar el Slider Mobile
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -194,7 +196,6 @@ const ProductDetail: React.FC = () => {
             ) : null}
 
             {/* Contenedor del Carrusel Native Scroll Snap */}
-            {/* Cambiamos aspect-4/5 por aspect-square que suele quedar mejor para bolsas de alimento */}
             <div 
               ref={sliderRef}
               className="flex w-full overflow-x-auto snap-x snap-mandatory no-scrollbar rounded-2xl bg-white border border-gray-100 shadow-sm"
@@ -206,7 +207,14 @@ const ProductDetail: React.FC = () => {
             >
               {product.images && product.images.length > 0 ? (
                 product.images.map((img: string, idx: number) => (
-                  <div key={idx} className="w-full shrink-0 snap-center relative aspect-square p-6">
+                  <div 
+                    key={idx} 
+                    className="w-full shrink-0 snap-center relative aspect-square p-6"
+                    onClick={() => {
+                      setMainImage(img);
+                      setIsGalleryOpen(true);
+                    }}
+                  >
                     <img 
                       src={img} 
                       alt={`${product.name} ${idx + 1}`} 
@@ -282,13 +290,21 @@ const ProductDetail: React.FC = () => {
             )}
 
             {/* Imagen Principal Desktop */}
-            <div className="flex-1 min-h-125 xl:min-h-150 bg-white border border-gray-100 rounded-3xl overflow-hidden relative group flex shadow-sm items-center justify-center py-4">
+            <div 
+              onClick={() => mainImage && setIsGalleryOpen(true)}
+              className="flex-1 min-h-125 xl:min-h-150 bg-white border border-gray-100 rounded-3xl overflow-hidden relative group flex shadow-sm items-center justify-center py-4 cursor-zoom-in"
+            >
               {(product.discount_percentage || (product.original_price && product.original_price > product.price)) ? (
                 <div className="absolute top-6 left-6 bg-brand-primary text-white px-4 py-2 text-xs font-fredoka font-bold uppercase tracking-wider z-20 rounded-full pointer-events-none shadow-md">
                   {product.discount_percentage ? `-${product.discount_percentage}% OFF` : 'Oferta'}
                 </div>
               ) : null}
               
+              {/* Icono de Lupa flotante (Aparece en hover) */}
+              <div className="absolute top-6 right-6 w-10 h-10 bg-white/80 backdrop-blur-sm text-brand-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-sm pointer-events-none">
+                <i className="fa-solid fa-magnifying-glass-plus"></i>
+              </div>
+
               {mainImage ? (
                 <img 
                   src={mainImage} 
@@ -473,6 +489,24 @@ const ProductDetail: React.FC = () => {
           onAdd={setSelectedQuickView}
         />
       </div>
+
+      {/* --- MODAL DE GALERÍA (ZOOM) --- */}
+      <Modal isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} maxWidth="max-w-5xl">
+        <div className="relative w-full h-[85vh] bg-white rounded-3xl flex items-center justify-center p-4">
+          <button 
+            onClick={() => setIsGalleryOpen(false)}
+            className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-500 hover:text-brand-primary hover:bg-orange-50 transition-colors cursor-pointer shadow-sm"
+          >
+            <i className="fa-solid fa-xmark text-xl"></i>
+          </button>
+          
+          <img 
+            src={mainImage} 
+            alt={product.name} 
+            className="w-full h-full object-contain"
+          />
+        </div>
+      </Modal>
 
     </div>
   );
