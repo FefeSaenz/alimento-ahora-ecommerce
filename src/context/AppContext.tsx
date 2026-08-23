@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getFrontData } from '@/src/api/axios';
 import { Product } from '@/src/types/product.types';
-import { mapApiDressToProduct, extractUniqueCategories } from '@/src/utils/mappers';
+import { mapApiProductToProduct, extractUniqueCategories } from '@/src/utils/mappers';
 import { MenuItem, ApiResponse } from '@/src/types/api';
 
 interface AppContextType {
@@ -69,7 +69,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           setFrontConfig(response); 
 
           // 1. Pasamos los datos crudos por la máquina traductora
-          const mappedProducts = response.products.map(mapApiDressToProduct);
+          // LLAMAMOS AL NUEVO MAPPER:
+          const mappedProducts = response.products.map(mapApiProductToProduct);
           setAllProducts(mappedProducts);
 
           // 2. Extraemos las categorías reales para no inventarlas

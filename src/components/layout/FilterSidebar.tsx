@@ -3,8 +3,8 @@ import { useApp } from '@/src/context/AppContext';
 
 interface FilterSidebarProps {
   activeFilters: { 
-    sizeFilter: string | null; // Ahora representa "Peso" (Ej: 3kg, 15kg)
-    colorFilter: string | null; // Ahora representa "Edad/Tamaño" (Ej: Mini Adulto, Cachorro)
+    weightFilter: string | null; 
+    ageSizeFilter: string | null; 
     priceFilter: string | null;
     searchTerm?: string | null;
     brandFilter?: string | null;
@@ -75,14 +75,16 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     }
   };
 
-  // Pesos (Reemplaza a Talle)
-  const sizes = useMemo(() => {
+  // Pesos 
+  const weights = useMemo(() => {
     const allSizes = allProducts.flatMap(p => 
       p.variants?.flatMap(v => v.sizes.map(s => s.size.toString())) || []
     );
     
-    // Eliminado el hardcodeo de SIZE_ORDER (S, M, L). Ahora ordena numéricamente los kg si es posible
-    const unique = Array.from(new Set(allSizes));
+    // Eliminamos el talle 'U' (Único) de la lista de filtros de peso
+    const filteredSizes = allSizes.filter(s => s.toUpperCase() !== 'U');
+
+    const unique = Array.from(new Set(filteredSizes));
     return unique.sort((a, b) => {
       const numA = parseFloat(a.replace(/[^\d.-]/g, ''));
       const numB = parseFloat(b.replace(/[^\d.-]/g, ''));
@@ -94,13 +96,27 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     });
   }, [allProducts]);
 
-  // Edades/Tamaños (Reemplaza a Color)
-  const colors = useMemo(() => {
+  // Edades/Tamaños
+  const ageSizes = useMemo(() => {
     const rawColors = allProducts.flatMap(p => p.variants?.map(v => v.color.name) || []);
-    // Ya no usamos COLOR_SYSTEM. Devolvemos el array único directamente (Ej: "Mini Adulto", "Cachorro")
-    return Array.from(new Set(rawColors.filter(c => c !== 'ÚNICO'))); // Ocultamos "ÚNICO" si el backend lo tira por default
-  }, [allProducts]);
+    
+    // Normalizamos: Primera letra de cada palabra en mayúscula para evitar duplicados ("Mini adult" vs "Mini Adult")
+    // y manejamos "ÚNICO" para que quede prolijo como "Único".
+    const normalized = rawColors.map(name => {
+      // Caso especial manual para Único
+      if (name.toLowerCase() === 'único' || name.toLowerCase() === 'unico') {
+        return 'Único';
+      }
+      
+      // Separamos por espacios, ponemos la 1ra letra en mayúscula y el resto en minúscula
+      return name.trim().split(/\s+/).map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      ).join(' ');
+    });
 
+    // Devolvemos los únicos, sin ocultar ninguno.
+    return Array.from(new Set(normalized.filter(c => c !== ''))); 
+  }, [allProducts]);
 
   const getPriceLabel = (filterStr: string) => {
     const [min, max] = filterStr.split('-');
@@ -111,8 +127,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   const hasActiveFilters = 
-    !!(activeFilters.sizeFilter || 
-    activeFilters.colorFilter || 
+    !!(activeFilters.weightFilter || 
+    activeFilters.ageSizeFilter || 
     activeFilters.priceFilter || 
     activeFilters.searchTerm ||
     activeFilters.brandFilter ||
@@ -126,8 +142,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   const activeBrandsArray = activeFilters.brandFilter ? activeFilters.brandFilter.split(',') : [];
-  const activeSizesArray = activeFilters.sizeFilter ? activeFilters.sizeFilter.split(',') : [];
-  const activeColorsArray = activeFilters.colorFilter ? activeFilters.colorFilter.split(',') : [];
+  const activeWeightsArray = activeFilters.weightFilter ? activeFilters.weightFilter.split(',') : [];
+  const activeAgeSizesArray = activeFilters.ageSizeFilter ? activeFilters.ageSizeFilter.split(',') : [];
 
   return (
     <div className={`space-y-6 md:space-y-8 relative ${!hasActiveFilters ? 'pt-6 lg:pt-0' : ''}`}>
@@ -179,24 +195,24 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </button>
               ))}
               
-              {activeSizesArray.map(size => (
+              {activeWeightsArray.map(weight => (
                 <button 
-                  key={`chip-size-${size}`}
-                  onClick={() => onFilterChange('talle', toggleFilter(activeFilters.sizeFilter, size))} // La URL sigue usando 'talle' por retrocompatibilidad
+                  key={`chip-weight-${weight}`}
+                  onClick={() => onFilterChange('peso', toggleFilter(activeFilters.weightFilter, weight))}
                   className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
-                  Peso: {size}
+                  Peso: {weight}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
                 </button>
               ))}
               
-              {activeColorsArray.map(color => (
+              {activeAgeSizesArray.map(ageSize => (
                 <button 
-                  key={`chip-color-${color}`}
-                  onClick={() => onFilterChange('color', toggleFilter(activeFilters.colorFilter, color))} // La URL sigue usando 'color' por retrocompatibilidad
+                  key={`chip-ageSize-${ageSize}`}
+                  onClick={() => onFilterChange('edad_tamano', toggleFilter(activeFilters.ageSizeFilter, ageSize))} 
                   className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
-                  {color}
+                  {ageSize}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
                 </button>
               ))}
@@ -264,20 +280,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
       )}
 
-      {/* 3. SECCIÓN PESO (Reemplaza a Talle) */}
-      {sizes && sizes.length > 0 && (
+      {/* 3. SECCIÓN PESO */}
+      {weights && weights.length > 0 && (
           <div>
             <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Peso</h3>
             <div className="flex flex-wrap gap-2.5">
-              {sizes.map((size) => {
-                const isActive = activeSizesArray.includes(size);
+              {weights.map((weight) => {
+                const isActive = activeWeightsArray.includes(weight);
                 return (
                   <button 
-                    key={size} 
-                    onClick={() => onFilterChange('talle', toggleFilter(activeFilters.sizeFilter, size))} // La key URL es 'talle'
+                    key={weight} 
+                    onClick={() => onFilterChange('peso', toggleFilter(activeFilters.weightFilter, weight))} 
                     className={`min-w-12 px-3 h-10 rounded-xl border-2 flex items-center justify-center text-sm font-fredoka font-bold transition-all cursor-pointer ${isActive ? 'bg-brand-primary text-white border-brand-primary shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-primary hover:text-brand-primary'}`}
                   >
-                    {size}
+                    {weight}
                   </button>
                 );
               })}
@@ -285,26 +301,25 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
       )}
 
-      {/* 4. SECCIÓN EDAD/TAMAÑO (Reemplaza a Color) */}
-      {colors && colors.length > 0 && (
+      {/* 4. SECCIÓN EDAD/TAMAÑO */}
+      {ageSizes && ageSizes.length > 0 && (
           <div>
             <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Edad y Tamaño</h3>
             <div className="flex flex-col items-start gap-3">
-              {colors.map((col) => {
-                const isActive = activeColorsArray.includes(col);
+              {ageSizes.map((ageSize) => {
+                const isActive = activeAgeSizesArray.includes(ageSize);
                 return (
                   <button 
-                    key={col} 
-                    onClick={() => onFilterChange('color', toggleFilter(activeFilters.colorFilter, col))} // La key URL es 'color'
+                    key={ageSize} 
+                    onClick={() => onFilterChange('edad_tamano', toggleFilter(activeFilters.ageSizeFilter, ageSize))}
                     className={`text-sm font-fredoka transition-colors cursor-pointer text-left flex items-center gap-2 group ${
                         isActive ? 'text-brand-primary font-bold' : 'text-gray-600 font-medium hover:text-brand-primary'
                       }`}
                   >
-                     {/* Checkbox visual redondeado (ya no mostramos la bolita de color hexadecimal) */}
                     <div className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${isActive ? 'bg-brand-primary border-brand-primary' : 'border-gray-300 group-hover:border-brand-primary'}`}>
                         {isActive && <i className="fa-solid fa-check text-[10px] text-white"></i>}
                     </div>
-                    <span>{col}</span>
+                    <span>{ageSize}</span>
                   </button>
                 );
               })}

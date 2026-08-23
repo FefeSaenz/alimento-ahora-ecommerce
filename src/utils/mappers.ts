@@ -1,107 +1,95 @@
-// utils/mappers.ts
 import { Product, ProductVariant, Order } from '@/src/types/product.types';
-import { ApiDress } from '@/src/types/api';
-
-// 🛟 DICCIONARIO DE RESCATE: Traduce Hex a Palabras si el sistema de gestión falla
-const colorDictionary: Record<string, string> = {
-  '#000000': 'NEGRO',
-  '#ffffff': 'BLANCO',
-  '#f7f7f7': 'BLANCO',
-  '#f5f5f5': 'BLANCO',
-  '#ff0000': 'ROJO',
-  '#0000ff': 'AZUL',
-  // Podés sumar más a futuro si usan otros colores seguido
-};
+import { ApiProduct } from '@/src/types/api';
 
 /**
- * Adapter Pattern: Transforma un producto de la API al formato estandarizado de la UI.
+ * Adapter Pattern: Transforma un producto de la API (Alimento) al formato estandarizado de la UI.
  */
-export const mapApiDressToProduct = (apiDress: ApiDress): Product => {
+export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
   const groupedVariants: Record<string, ProductVariant> = {};
 
-  if (apiDress.dress_variants && apiDress.dress_variants.length > 0) {
-    apiDress.dress_variants.forEach((v) => {
+  if (apiProduct.product_variants && apiProduct.product_variants.length > 0) {
+    apiProduct.product_variants.forEach((v) => {
       
-      // Aseguramos que el Hex esté en minúsculas para buscarlo en el diccionario
-      const safeHex = (v.variant_hex || '#000000').toLowerCase().trim(); 
+      // 1. PRESENTACIÓN (Ex Color): Ej -> "Mini Adulto", "Cachorro", "Salmón"
+      const presentationName = v.variant_presentation ? v.variant_presentation.trim() : 'ÚNICO';
+      const safeHex = (v.variant_hex || '').toLowerCase().trim(); 
 
-      // 1. LIMPIEZA DE COLOR INTELIGENTE
-      let colorName = v.variant_color ? v.variant_color.trim().toUpperCase() : '';
-      
-      // Si el sistema de gestión mandó el nombre vacío, lo adivinamos usando el Hex
-      if (colorName === '') {
-        colorName = colorDictionary[safeHex] || `COLOR ${safeHex.toUpperCase()}`;
-      }
+      const variantKey = presentationName;
 
-      // Agrupamos usando el nombre final ya corregido
-      const colorKey = colorName;
-
-      if (!groupedVariants[colorKey]) {
-        groupedVariants[colorKey] = {
-          color: {
-            name: colorName, 
-            hex: safeHex,
-            image: v.variant_picture,
+      if (!groupedVariants[variantKey]) {
+        groupedVariants[variantKey] = {
+          color: { 
+            name: presentationName, 
+            hex: safeHex || '#cccccc',
           },
           sizes: [],
         };
       }
 
-      // 2. MANEJO DE STOCK (Acá ocurre la magia del tachado)
-      groupedVariants[colorKey].sizes.push({
-        size: v.variant_size,
-        sku: v.variant_sku || apiDress.dress_sku,
-        // Agregamos el ID único de la variante que nos manda el backend:
+      // 2. CONTENIDO Y STOCK (Ex Talles): Ej -> "3kg", "15kg"
+      // Defensa estricta contra undefined para evitar crashes con toString()
+      const fallbackSku = apiProduct.product_sku !== undefined && apiProduct.product_sku !== null 
+        ? apiProduct.product_sku.toString() 
+        : '';
+
+      groupedVariants[variantKey].sizes.push({
+        size: v.variant_content || 'U', 
+        sku: v.variant_sku || fallbackSku,
         variant_id: v.variant_id, 
         stock: v.variant_stock !== null ? v.variant_stock : 99,
         available: v.variant_stock === null || v.variant_stock > 0, 
       });
     });
   } else {
-    // Escudo extremo por si mandan un producto sin ninguna variante
-    groupedVariants['NEGRO'] = {
-      color: { name: 'NEGRO', hex: '#000000' },
-      sizes: [{ size: 'U', sku: apiDress.dress_sku, stock: 10, available: true }]
+    // Escudo extremo
+    const fallbackSku = apiProduct.product_sku !== undefined && apiProduct.product_sku !== null 
+      ? apiProduct.product_sku.toString() 
+      : '';
+
+    groupedVariants['ÚNICO'] = {
+      color: { name: 'ÚNICO', hex: '#cccccc' },
+      sizes: [{ size: 'U', sku: fallbackSku, stock: 10, available: true }]
     };
   }
 
+  // Defensa primaria del id
+  const productIdStr = apiProduct.product_bound !== undefined && apiProduct.product_bound !== null
+    ? apiProduct.product_bound.toString()
+    : 'ID_NOT_FOUND';
+
   return {
-    id: apiDress.dress_bound.toString(),
-    slug: apiDress.dress_slug,
-    name: apiDress.dress_name,
-    description: apiDress.dress_description,
-    price: apiDress.dress_price,
+    id: productIdStr,
+    slug: apiProduct.product_slug,
+    name: apiProduct.product_name,
+    description: apiProduct.product_description,
+    price: apiProduct.product_price,
     original_price: null,
     discount_percentage: null,
-    images: apiDress.dress_pictures || [],
-    category: apiDress.category_name,
-    base_sku: apiDress.dress_sku,
-    brand: apiDress.brand_name,
-    material: apiDress.dress_material,
+    images: apiProduct.product_pictures?.length > 0 
+      ? apiProduct.product_pictures 
+      : (apiProduct.product_picture ? [apiProduct.product_picture] : []),
+    category: apiProduct.category_name,
+    base_sku: apiProduct.product_sku !== undefined && apiProduct.product_sku !== null 
+      ? apiProduct.product_sku.toString() 
+      : '',
+    brand: apiProduct.brand_name || undefined,
+    material: apiProduct.product_composition || undefined, 
+    gender: apiProduct.product_species || undefined,
     active: true,
-    tags: apiDress.dress_highlight === 1 ? 'Destacado' : undefined, 
+    tags: apiProduct.product_highlight === 1 ? 'Destacado' : undefined, 
     variants: Object.values(groupedVariants),
   };
 };
 
-/**
- * Utilidad extra para extraer categorías únicas del catálogo
- */
 export const extractUniqueCategories = (products: Product[]): string[] => {
   const categories = products.map(p => p.category);
-  return Array.from(new Set(categories)); // Elimina duplicados
+  return Array.from(new Set(categories)); 
 };
 
-/**
- * Adapter Pattern (Strict): Transforma una Orden de la API al formato de la UI.
- * Basado en el endpoint exclusivo GET /shop/cart/{id}
- */
 export const mapOrderFromApi = (apiData: any): Order => {
-  // Buscamos la orden (dependiendo si el back la mandó suelta o adentro del array orders filtrado)
   const backOrder = apiData?.order?.order_id ? apiData.order : (apiData?.customer?.orders?.[0] || apiData);
   const backProfile = apiData?.profile || apiData?.customer?.profile;
 
-  // Validación amigable pero estricta
   if (!backOrder || (!backOrder.order_id && !backOrder.order_number)) {
     console.warn("⚠️ Aviso de parseo: El backend envió una estructura inesperada para la orden.", apiData);
     throw new Error("Estructura de datos de la orden inválida");
@@ -136,12 +124,12 @@ export const mapOrderFromApi = (apiData: any): Order => {
     items: (backOrder.order_items || []).map((item: any) => ({
       id: item.article_id?.toString() || '0',
       variant_id: item.variant_id,
-      name: item.dress_name || 'Producto',
+      name: item.product_name || 'Producto', // Chau dress_name
       price: item.item_cost || 0,
       quantity: item.item_count || 1,
-      selectedColor: item.variant_color || 'N/A',
-      selectedSize: item.variant_size || 'N/A',
-      selectedImage: item.dress_picture || undefined 
+      selectedColor: item.variant_presentation || 'N/A', // Chau variant_color
+      selectedSize: item.variant_content || 'N/A', // Chau variant_size
+      selectedImage: item.product_picture || undefined // Chau dress_picture
     }))
   };
 };

@@ -54,8 +54,8 @@ const Products: React.FC = () => {
         : searchParams.get('categoria') || 'Todos';
 
     const brandFilter = searchParams.get('marca');
-    const sizeFilter = searchParams.get('peso'); // CAMBIADO: De 'talle' a 'peso'
-    const colorFilter = searchParams.get('edad_tamano'); // CAMBIADO: De 'color' a 'edad_tamano'
+    const weightFilter = searchParams.get('peso'); // Ahora lee "peso" 
+    const ageSizeFilter = searchParams.get('edad_tamano'); // Ahora lee "edad_tamano"
     const priceFilter = searchParams.get('precio');
     const searchTerm = searchParams.get('search') || '';
 
@@ -70,8 +70,8 @@ const Products: React.FC = () => {
         activeCategory,
         setActiveBrand,
         activeBrand, 
-        setActiveSize,
-        setActiveColor,
+        setActiveWeight,
+        setActiveAgeSize,
         setActivePrice
     } = useProductFilters({ 
         products: combinedProducts, 
@@ -82,10 +82,10 @@ const Products: React.FC = () => {
     useEffect(() => {
         setActiveCategory(isOffersRoute ? 'Todos' : initialCategory);
         setActiveBrand(brandFilter); 
-        setActiveSize(sizeFilter);
-        setActiveColor(colorFilter);
+        setActiveWeight(weightFilter);
+        setActiveAgeSize(ageSizeFilter);
         setActivePrice(priceFilter);
-    }, [initialCategory, brandFilter, sizeFilter, colorFilter, priceFilter, setActiveCategory, setActiveBrand, setActiveSize, setActiveColor, setActivePrice, isOffersRoute]);
+    }, [initialCategory, brandFilter, weightFilter, ageSizeFilter, priceFilter, setActiveCategory, setActiveBrand, setActiveWeight, setActiveAgeSize, setActivePrice, isOffersRoute]);
     
     // 5. MANEJADORES DE FILTROS Y NAVEGACIÓN
     const handleFilterChange = (key: string, value: string | null) => {
@@ -181,7 +181,7 @@ const Products: React.FC = () => {
                 {/* SIDEBAR DESKTOP */}
                 <aside className="hidden lg:block w-64 shrink-0 sticky top-44 self-start max-h-[calc(100vh-14rem)] overflow-y-auto custom-scrollbar pb-8 pr-4">
                     <FilterSidebar 
-                        activeFilters={{ sizeFilter, colorFilter, priceFilter, searchTerm, brandFilter }}
+                        activeFilters={{ weightFilter, ageSizeFilter, priceFilter, searchTerm, brandFilter }}
                         categories={categories}
                         activeCategory={activeCategory}
                         brands={brands}
@@ -220,7 +220,7 @@ const Products: React.FC = () => {
                     {/* Padding ajustado para Mobile */}
                     <div className="px-6 pb-6 pt-6 overflow-y-auto flex-1 custom-scrollbar">
                         <FilterSidebar 
-                            activeFilters={{ sizeFilter, colorFilter, priceFilter, searchTerm, brandFilter }}
+                            activeFilters={{ weightFilter, ageSizeFilter, priceFilter, searchTerm, brandFilter }}
                             categories={categories}
                             activeCategory={activeCategory}
                             brands={brands}

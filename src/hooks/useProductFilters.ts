@@ -25,20 +25,26 @@ const lemmatize = (word: string) => {
   return w;
 };
 
+// HELPER EXTRA: Normaliza espacios para comparar pesos ("15 Kg" === "15Kg")
+const normalizeSize = (size: string) => size.replace(/\s+/g, '').toLowerCase();
+
+// HELPER EXTRA 2: Normaliza mayúsculas/minúsculas para Edad y Tamaño ("Mini adult" === "Mini Adult")
+const normalizeAgeSize = (text: string) => text.trim().toLowerCase();
+
 /*
  * HOOK UNIVERSAL DE FILTRADO
- * Centraliza la lógica de búsqueda, categorías, marcas, talles, colores y ordenamiento.
+ * Centraliza la lógica de búsqueda, categorías, marcas, pesos, edades y ordenamiento.
 */
 export const useProductFilters = ({ 
   products = [], // Default value para evitar errores de .map() o .filter()
   searchTerm 
 }: UseProductFiltersProps) => {
 
-  // ESTADOS DE FILTRADO
+  // ESTADOS DE FILTRADO (Variables renombradas al contexto Pet Shop)
   const [activeCategory, setActiveCategory] = useState('Todos');
-  const [activeBrand, setActiveBrand] = useState<string | null>(null); // NUEVO: Estado de Marca
-  const [activeSize, setActiveSize] = useState<string | null>(null);
-  const [activeColor, setActiveColor] = useState<string | null>(null);
+  const [activeBrand, setActiveBrand] = useState<string | null>(null); 
+  const [activeWeight, setActiveWeight] = useState<string | null>(null); // Ex activeSize
+  const [activeAgeSize, setActiveAgeSize] = useState<string | null>(null); // Ex activeColor
   const [activePrice, setActivePrice] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high'>('default');
 
@@ -47,7 +53,7 @@ export const useProductFilters = ({
     ['Todos', ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))]
   , [products]);
 
-  // EXTRAER MARCAS ÚNICAS (NUEVO)
+  // EXTRAER MARCAS ÚNICAS
   const brands = useMemo(() => {
     const allBrands = products.map(p => p.brand).filter(Boolean) as string[];
     return Array.from(new Set(allBrands)).sort();
@@ -61,9 +67,9 @@ export const useProductFilters = ({
       result = result.filter(p => p.category?.toLowerCase() === activeCategory.toLowerCase());
     }
 
-    // 2. Filtro por Marca (NUEVO - SOPORTA MULTI-SELECT)
+    // 2. Filtro por Marca (SOPORTA MULTI-SELECT)
     if (activeBrand) {
-      const brandArray = activeBrand.split(','); // Convertimos "SHOWY,SHATO" en ['SHOWY', 'SHATO']
+      const brandArray = activeBrand.split(','); 
       result = result.filter(p => brandArray.some(b => p.brand?.toLowerCase() === b.toLowerCase()));
     }
 
@@ -75,29 +81,28 @@ export const useProductFilters = ({
       const searchTokens = cleanSearchTerm.split(/\s+/).filter(Boolean).map(lemmatize);
 
       result = result.filter(p => {
-        // Armamos un "súper string" con toda la info útil del producto (incluyendo colores)
-        const productColors = p.variants?.map(v => v.color.name).join(' ') || '';
-        // Sumamos la marca al string de búsqueda
-        const searchableText = normalizeText(`${p.name} ${p.category} ${p.brand || ''} ${p.description || ''} ${productColors}`);
+        // Armamos un "súper string" con toda la info útil del producto (El 'color' interno es la variante Edad/Tamaño en la UI)
+        const productVariants = p.variants?.map(v => v.color.name).join(' ') || '';
+        const searchableText = normalizeText(`${p.name} ${p.category} ${p.brand || ''} ${p.description || ''} ${productVariants}`);
 
         // El producto pasa el filtro solo si TODAS las palabras buscadas están en su info
         return searchTokens.every(token => searchableText.includes(token));
       });
     }
 
-    // 4. Filtro por Talle (SOPORTA MULTI-SELECT)
-    if (activeSize) {
-      const sizeArray = activeSize.split(',');
+    // 4. Filtro por Peso (SOPORTA MULTI-SELECT)
+    if (activeWeight) {
+      const weightArray = activeWeight.split(',').map(normalizeSize);
       result = result.filter(p =>
-        p.variants?.some(v => v.sizes.some(s => sizeArray.some(activeS => activeS.toUpperCase() === s.size.toString().toUpperCase())))
+        p.variants?.some(v => v.sizes.some(s => weightArray.includes(normalizeSize(s.size.toString()))))
       );
     }
 
-    // 5. Filtro por Color (SOPORTA MULTI-SELECT)
-    if (activeColor) {
-      const colorArray = activeColor.split(',');
+    // 5. Filtro por Edad/Tamaño (SOPORTA MULTI-SELECT)
+    if (activeAgeSize) {
+      const ageSizeArray = activeAgeSize.split(',').map(normalizeAgeSize);
       result = result.filter(p =>
-        p.variants?.some(v => colorArray.some(activeC => v.color.name.toLowerCase().includes(activeC.toLowerCase())))
+        p.variants?.some(v => ageSizeArray.some(activeC => normalizeAgeSize(v.color.name).includes(activeC)))
       );
     }
 
@@ -119,17 +124,17 @@ export const useProductFilters = ({
     if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
 
     return result;
-  }, [products, activeCategory, activeBrand, activeSize, activeColor, activePrice, sortBy, searchTerm]);
+  }, [products, activeCategory, activeBrand, activeWeight, activeAgeSize, activePrice, sortBy, searchTerm]);
 
   return {
     filteredProducts,
     activeCategory, setActiveCategory,
-    activeBrand, setActiveBrand, // Exponemos la marca
-    activeSize, setActiveSize,
-    activeColor, setActiveColor,
+    activeBrand, setActiveBrand, 
+    activeWeight, setActiveWeight, // Ex activeSize
+    activeAgeSize, setActiveAgeSize, // Ex activeColor
     activePrice, setActivePrice,
     sortBy, setSortBy,
     categories,
-    brands // Exponemos la lista de marcas
+    brands 
   };
 };

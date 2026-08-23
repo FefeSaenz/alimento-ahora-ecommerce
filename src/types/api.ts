@@ -27,36 +27,39 @@ export interface Banner {
   image: string;
   image_mobile?: string;
 }
+
 // ==========================================
 // 2. TIPOS DE LA NUEVA API (El backend)
 // ==========================================
-export interface ApiVariant {
+
+export interface ApiProductVariant {
   variant_id: number;
+  variant_bound: number;
+  variant_presentation: string;
   variant_hex: string;
   variant_sku: string;
-  variant_size: string;
-  variant_bound: number;
-  variant_color: string;
+  variant_content: string;
   variant_stock: number | null;
-  variant_picture: string;
 }
 
-export interface ApiDress {
-  dress_bound: number;
-  dress_slug: string;
-  dress_name: string;
-  dress_description: string;
-  dress_material: string;
-  dress_sku: string;
-  dress_gender: number;
-  dress_brand: number;
-  dress_price: number;
-  dress_highlight: number | null; // 1 = Destacado
-  dress_pictures: string[];
-  brand_name: string;
+export interface ApiProduct {
+  product_id: number;
+  product_bound: number;
+  product_slug: string;
+  product_name: string;
+  product_description: string;
+  product_composition: string;
+  product_sku: string | number; // Atajamos si mandan número o string
+  product_species: string;
+  product_brand: number;
+  product_price: number;
+  product_highlight: number | null; // 1 = Destacado
+  product_picture: string;
+  brand_name: string | null;
   category_name: string;
   category_abbreviation: string;
-  dress_variants: ApiVariant[];
+  product_variants: ApiProductVariant[];
+  product_pictures: string[];
 }
 
 export interface ApiBanner {
@@ -75,6 +78,6 @@ export interface ApiResponse {
   msg: string;
   data: {
     banners: ApiBanner[]; 
-    products: ApiDress[]; 
+    products: ApiProduct[]; // Cambiado de ApiDress a ApiProduct
   };
 }
