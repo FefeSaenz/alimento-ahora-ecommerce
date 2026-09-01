@@ -28,13 +28,14 @@ const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
       <div className="max-w-360 mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
         
         {/* COLUMNA 1: BRANDING (Logo + Eslogan) */}
-        <div className="md:col-span-6 flex flex-col gap-2 justify-start items-start md:pt-2">
+        <div className="md:col-span-6 flex flex-col gap-1 justify-start items-start md:pt-2">
           <img 
             src={logoAlimentoAhora} 
-            alt="ALIMENTO AHORA" 
+            alt="ALIMENTO AHORA"
             className="w-48 md:w-56 object-contain"
           />
-          <p className="text-xl font-lilita text-brand-primary tracking-wide ml-1">
+          {/* Volvemos al naranja (brand-primary) y eliminamos el margin-left para que se alinee con INFORMACIÓN */}
+          <p className="text-[17px] font-lilita font-medium text-brand-primary tracking-wide">
             Amor, de a kilos.
           </p>
         </div>

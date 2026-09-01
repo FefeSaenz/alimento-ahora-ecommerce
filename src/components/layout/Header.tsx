@@ -33,7 +33,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
       <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 px-5 lg:px-5 h-20 flex items-center justify-between text-black">
         
         {/* --- 1. BLOQUE IZQUIERDO --- */}
-        <div className="flex items-center space-x-5">
+        {/* Ajuste: Reducimos space-x-5 a space-x-3 en móviles para alejar la lupa del centro */}
+        <div className="flex items-center space-x-3 md:space-x-5">
           
           {/* Mobile/Tablet: Hamburguesa */}
           <button 
@@ -73,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
             )}
           </Link>
           
-          {/* Desktop: Navegación (Mejora visual: text-[15px] font-fredoka font-semibold) */}
+          {/* Desktop: Navegación */}
           <nav className="hidden lg:flex items-center space-x-8 h-full">
             {menuItems && menuItems.length > 0 ? (
               menuItems.map((item) => (
@@ -100,7 +101,8 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
                 width={150}
                 height={48}
                 fetchPriority="high"
-                className="h-8 md:h-10 w-auto max-w-30 md:max-w-40 object-contain" />
+                /* Ajuste: h-[34px] (punto medio) y tope estricto de 150px de ancho */
+                className="h-[34px] md:h-11 w-auto max-w-[150px] md:max-w-[250px] object-contain" />
             ) : (
               <span className="text-2xl font-lilita tracking-wide text-brand-primary">{logoText}</span>
             )}

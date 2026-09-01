@@ -43,9 +43,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
               <img 
                 src={logoAlimentoAhora} 
                 alt="ALIMENTO AHORA" 
-                width={130}
-                height={40}
-                className="h-8 w-auto max-w-30 object-contain" 
+                width={150}
+                height={48}
+                /* Ajuste de UI: pasamos a h-10 y max-w-[200px] para equilibrar visualmente con los links gigantes */
+                className="h-10 w-auto max-w-[200px] object-contain" 
               />
             ) : (
               <span className="text-xl font-lilita text-brand-primary">{logoText}</span>
@@ -57,7 +58,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
           </button>
         </div>
         
-        {/* LINKS GRANDES Y AMIGABLES (Acá cambiamos Lilita por Fredoka Bold) */}
+        {/* LINKS GRANDES Y AMIGABLES */}
         <div className="flex-1 overflow-y-auto pt-8 pb-4"> 
           <nav className="flex flex-col space-y-4"> 
             {menuItems && menuItems.map((item) => (
