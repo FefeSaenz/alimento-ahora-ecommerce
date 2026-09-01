@@ -73,6 +73,7 @@ El proyecto sigue una estructura modular y reactiva para facilitar su mantenimie
 - [x] **Implementación de Galería Modal (Lightbox Pattern) en ProductDetail:** Reutilización del componente `<Modal>` arquitectónico para permitir la visualización en pantalla completa de las imágenes del producto, mejorando la UX sin agregar librerías de terceros pesadas.
 - [x] **Ajuste de interfaces y Mappers para el nuevo modelo de datos:** Migración exitosa de la estructura de ropa (`ApiDress`, talles, colores) al modelo de Pet Shop (`ApiProduct`, peso, edad/tamaño), implementando defensas contra nulos y normalización avanzada de strings para los filtros.
 - [x] **Optimización de Core Web Vitals y Pipeline de Carga:** Eliminación definitiva de FOUT (*Flash of Unstyled Text*) mediante precarga de fuentes en el `<head>`, remoción de bloqueos artificiales de renderizado para optimizar LCP, y diseño de un loader global reactivo al estado de la API.
+- [x] **Rediseño Estructural UI/UX y Navegación Dinámica:** Reestructuración del Header y Footer implementando taxonomía nativa de Pet Shop (Especie/Marca). Generación automática del submenú de marcas consumiendo entidades únicas de la API. Refinamiento tipográfico y de pesos visuales para consolidar una estética e-commerce premium.
 
 ## 🛠️ Próximos Pasos
 - [ ] **Desconexión de UI del sistema de Autenticación y transformación del Checkout hacia un flujo de pedidos por WhatsApp.**

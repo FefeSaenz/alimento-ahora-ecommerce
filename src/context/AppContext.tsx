@@ -16,36 +16,22 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Función para armar tu Menú de forma inteligente
-const buildSmartMenu = (categories: string[]): MenuItem[] => {
+const buildSmartMenu = (brands: string[]): MenuItem[] => {
   return [
-    {
-      id: 1,
-      label: 'COLECCIONES',
-      url: '/productos', // CORREGIDO: Lleva al catálogo general
-      active: true,
-      icon: null,
-      // Metemos todas las categorías reales de la API adentro de un submenú
-      submenu: categories.map(cat => ({
-        label: cat,
-        // Convertimos "Remera Oversize" a "remera-oversize" para la URL
-        url: `/category/${cat.toLowerCase().replace(/\s+/g, '-')}` 
-      }))
-    },
-    {
-      id: 2,
-      label: 'DESTACADOS',
-      url: '/productos?filter=destacados', // CORREGIDO: Filtra los destacados
-      active: false,
-      icon: null
-    },
+    { id: 1, label: 'PERROS', url: '/productos?especie=Perro', active: false, icon: null },
+    { id: 2, label: 'GATOS', url: '/productos?especie=Gato', active: false, icon: null },
     {
       id: 3,
-      label: 'STORE',
-      url: '/#locals-section', // CORREGIDO: Navega a la sección en la Home
+      label: 'MARCAS',
+      url: '/productos',
       active: false,
-      icon: null
-    }
+      icon: null,
+      submenu: brands.map((brand) => ({
+        label: brand.toUpperCase(),
+        url: `/productos?marca=${encodeURIComponent(brand)}`
+      }))
+    },
+    { id: 4, label: 'OFERTAS', url: '/offers', active: false, icon: 'fire' }
   ];
 };
 
@@ -65,20 +51,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
         if (response && response.products) {
           
-          // Guardamos la respuesta cruda entera para que la Home lea los banners de la API
+          // Guardamos la respuesta cruda entera para que la Home lea los banners
           setFrontConfig(response); 
 
           // 1. Pasamos los datos crudos por la máquina traductora
-          // LLAMAMOS AL NUEVO MAPPER:
           const mappedProducts = response.products.map(mapApiProductToProduct);
           setAllProducts(mappedProducts);
 
-          // 2. Extraemos las categorías reales para no inventarlas
+          // 2. Extraemos las categorías reales
           const uniqueCats = extractUniqueCategories(mappedProducts);
           setCategories(uniqueCats);
 
-          // 3. Armamos el menú protegiendo el layout
-          setMenuItems(buildSmartMenu(uniqueCats));
+          // EXTRAEMOS MARCAS DINÁMICAS leyendo directamente la respuesta de la API cruda
+          const uniqueBrands = Array.from(new Set(response.products.map(p => p.brand_name).filter(Boolean))) as string[];
+
+          // 3. Armamos el menú pasándole las marcas
+          setMenuItems(buildSmartMenu(uniqueBrands));
           
           setError(false);
         }

@@ -66,17 +66,23 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
                 width={150}
                 height={64}
                 fetchPriority="high"
-                className="h-14 lg:h-12 w-auto object-contain object-left transition-all" />
+                className="h-10 lg:h-9 w-auto object-contain object-left transition-all" 
+              />
             ) : (
               <span className="text-3xl font-lilita tracking-wide text-brand-primary">{logoText}</span>
             )}
           </Link>
           
-          {/* Desktop: Navegación */}
-          <nav className="hidden lg:flex items-center space-x-6 h-full">
+          {/* Desktop: Navegación (Mejora visual: text-[15px] font-fredoka font-semibold) */}
+          <nav className="hidden lg:flex items-center space-x-8 h-full">
             {menuItems && menuItems.length > 0 ? (
               menuItems.map((item) => (
-                <NavLink key={item.id} item={item} onClick={handleNavClick} className="h-full text-[14px] font-fredoka font-medium tracking-normal text-gray-800 hover:text-brand-primary" />
+                <NavLink 
+                  key={item.id} 
+                  item={item} 
+                  onClick={handleNavClick} 
+                  className="h-full text-[14px] font-sans font-medium tracking-wide text-gray-800 hover:text-brand-primary transition-colors" 
+                />
               ))
             ) : (
               <span className="text-sm font-fredoka text-gray-400 animate-pulse">Cargando menú...</span>
@@ -119,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
             className="hidden lg:block text-gray-800 hover:text-brand-primary transition-transform active:scale-95 cursor-pointer"
             aria-label="Perfil de usuario"
           >
-            <i className="fa-regular fa-user text-xl"></i>
+            <i className="fa-solid fa-user text-xl"></i>
           </button>
 
           {/* Mobile, Tablet & Desktop: Carrito */}

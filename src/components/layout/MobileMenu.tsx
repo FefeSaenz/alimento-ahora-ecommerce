@@ -57,7 +57,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
           </button>
         </div>
         
-        {/* LINKS GRANDES Y AMIGABLES */}
+        {/* LINKS GRANDES Y AMIGABLES (Acá cambiamos Lilita por Fredoka Bold) */}
         <div className="flex-1 overflow-y-auto pt-8 pb-4"> 
           <nav className="flex flex-col space-y-4"> 
             {menuItems && menuItems.map((item) => (
@@ -66,7 +66,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
                   item={item} 
                   onClick={handleLinkClick} 
                   showSubmenu={false} 
-                  className="text-3xl font-lilita text-gray-800 hover:text-brand-primary leading-tight transition-transform active:translate-x-2" 
+                  className="text-2xl font-fredoka font-bold text-gray-800 hover:text-brand-primary leading-tight transition-transform active:translate-x-2" 
                 />
               </div>
             ))}
@@ -84,7 +84,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
           </button>
           
           <div className="flex items-center space-x-6 px-2">
-            <a href="https://www.instagram.com/alimentoahora/" className="text-sm font-fredoka text-gray-500 hover:text-brand-primary transition-colors flex items-center gap-2">
+            <a href="https://www.instagram.com/alimentoahora/" target="_blank" rel="noopener noreferrer" className="text-sm font-fredoka text-gray-500 hover:text-brand-primary transition-colors flex items-center gap-2">
               <i className="fa-brands fa-instagram text-lg"></i>
               Instagram
             </a>
