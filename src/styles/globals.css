@@ -16,11 +16,6 @@
     0%, 15%, 100% { transform: translateY(0); }
     5%, 10% { transform: translateY(-20%); }
   }
-
-  @keyframes fill-progress-transform {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
-  }
 }
 
 @layer base {
@@ -43,9 +38,15 @@
 }
 
 .animate-marquee-base {
-  animation-name: scrollMarquee; /* Ahora sí coinciden */
+  animation-name: scrollMarquee;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+}
+
+/* --- ANIMACIÓN BARRA DE PROGRESO (HERO) --- */
+@keyframes fill-progress-transform {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 /* --- CUSTOM SCROLLBAR ALIMENTO AHORA --- */
