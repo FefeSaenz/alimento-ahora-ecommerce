@@ -84,7 +84,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           <div className="flex justify-center mt-8 lg:hidden">
             <Link 
               to={viewAllLink}
-              className="w-full bg-brand-primary text-white text-center py-4 rounded-full text-[14px] font-sans font-bold uppercase tracking-wide active:bg-orange-600 transition-colors shadow-sm"
+              className="block w-full bg-brand-primary text-white text-center py-4 rounded-full text-[14px] font-fredoka font-bold uppercase tracking-widest shadow-lg hover:bg-orange-600 hover:shadow-orange-500/30 transition-all transform active:scale-95"
             >
               {viewAllText}
             </Link>

@@ -5,10 +5,24 @@
   --font-fredoka: 'Fredoka', sans-serif;
   
   /* Colores de la marca */
-  --color-brand-primary: #ff5c00; /* Naranja */
-  --color-brand-secondary: #000000; /* Negro */
-  --color-brand-background: #ffffff; /* Blanco */
+  --color-brand-primary: #ff5c00;
+  --color-brand-secondary: #000000;
+  --color-brand-background: #ffffff;
+
+  /* Animaciones integradas al theme v4 */
+  --animate-bounce-pause: bounce-pause 5s ease-in-out infinite;
+  
+  @keyframes bounce-pause {
+    0%, 15%, 100% { transform: translateY(0); }
+    5%, 10% { transform: translateY(-20%); }
+  }
+
+  @keyframes fill-progress-transform {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
 }
+
 @layer base {
   body {
     font-family: 'Fredoka', sans-serif;
@@ -18,40 +32,20 @@
   /* Títulos principales con Lilita One */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Lilita One', cursive;
-    /* Al ser una fuente muy gruesa, es bueno darle un poco de aire */
     @apply tracking-wide; 
   }
 }
 
-/* --- ANIMACIÓN KEN BURNS --- */
-@keyframes ken-burns {
-  from { transform: scale(1); }
-  to { transform: scale(1.12); }
-}
-
-.animate-ken-burns {
-  animation: ken-burns 8s ease-out forwards;
-}
-
 /* --- ANIMACIÓN MARQUESINA (ANNOUNCEMENT BAR) --- */
-@keyframes marquee {
+@keyframes scrollMarquee { 
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-/* --- ANIMACIÓN BARRA DE PROGRESO (HERO) --- */
-@keyframes fill-progress-transform {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-
-/* --- ANIMACIÓN BURBUJA WHATSAPP --- */
-@keyframes bounce-pause {
-  0%, 15%, 100% { transform: translateY(0); }
-  5%, 10% { transform: translateY(-20%); }
-}
-.animate-bounce-pause {
-  animation: bounce-pause 5s ease-in-out infinite;
+.animate-marquee-base {
+  animation-name: scrollMarquee; /* Ahora sí coinciden */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 /* --- CUSTOM SCROLLBAR ALIMENTO AHORA --- */
@@ -96,6 +90,7 @@
   .ui-slide-right.is-open {
     @apply translate-x-0;
   }
+  
   /* 5. Animación de Fundido (Para Buscador Full-Screen) */
   .ui-fade-overlay {
     @apply transition-opacity duration-300 opacity-0 pointer-events-none;

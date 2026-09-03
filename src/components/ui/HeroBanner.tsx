@@ -12,7 +12,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
   
   const sliderRef = useRef<HTMLDivElement>(null);
 
-  // --- 1. LÓGICA DE NAVEGACIÓN (Matemática Pura - cross-fade seamless) ---
+  // --- 1. LÓGICA DE NAVEGACIÓN ---
   const goToSlide = useCallback((index: number) => {
     if (sliderRef.current) {
       sliderRef.current.scrollTo({ 
@@ -54,12 +54,10 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
   }, [nextSlide, prevSlide]);
 
   if (!banners || banners.length === 0) return null;
-  const currentBanner = banners[currentIndex];
 
   return (
     <section 
-      // Redujimos la altura en mobile (70vh) para que el catálogo asome, pero en Desktop (85vh) sigue imponente
-      className="relative h-[70vh] lg:h-[85vh] w-full overflow-hidden bg-black group"
+      className="relative h-[70vh] lg:h-[80vh] w-full overflow-hidden bg-black group"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -71,56 +69,52 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
         className="flex w-full h-full overflow-y-hidden overflow-x-auto md:overflow-x-hidden snap-x snap-mandatory no-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {banners.map((banner, index) => (
-          // Quitamos los pt-20 pb-32. El contenedor ahora es 100% libre.
-          <div key={banner.id} className="w-full h-full shrink-0 snap-center relative flex items-center justify-center bg-black">
-            
-            {/* OVERLAY DEGRADADO (LA MAGIA SENIOR):
-                Hace que la imagen se oscurezca solo hacia abajo, garantizando que el texto siempre sea legible.
-            */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent z-10 pointer-events-none"></div>
+        {banners.map((banner, index) => {
+          const isActive = index === currentIndex;
+          
+          return (
+            <div key={banner.id} className="w-full h-full shrink-0 snap-center relative flex items-center justify-center bg-black">
+              
+              {/* OVERLAY DEGRADADO */}
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent z-10 pointer-events-none"></div>
 
-            <img 
-              src={banner.image} 
-              alt={banner.title}
-              loading={index === 0 ? "eager" : "lazy"}
-              decoding="async"
-              // Usamos object-cover (Full Bleed) para llenar la pantalla.
-              // object-center asegura que el foco (perro/bolsa) no se corte.
-              // Hacemos el zoom mucho más lento y lujoso (duration-[10s])
-              className={`w-full h-full object-cover object-center transition-transform duration-10000 ease-out ${
-                index === currentIndex ? 'scale-110' : 'scale-100'
-              }`}
-            />
-          </div>
-        ))}
-      </div>
+              <img 
+                src={banner.image} 
+                alt={banner.title}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+                className={`w-full h-full object-cover object-center transition-transform duration-10000 ease-out ${
+                  isActive ? 'scale-110' : 'scale-100'
+                }`}
+              />
 
-      {/* CONTENEDOR DE TEXTO (Ahora flota sobre el overlay degradado) */}
-      <div key={`text-${currentIndex}`} className="absolute inset-0 flex flex-col items-center justify-end text-center px-6 z-20 pointer-events-none pb-24 md:pb-28">
-        {/*
-        {currentBanner.subtitle && (
-          <p className="text-sm md:text-base font-fredoka font-bold uppercase tracking-[0.3em] mb-3 animate-in fade-in slide-in-from-bottom duration-500 text-orange-400 drop-shadow-md">
-            {currentBanner.subtitle}
-          </p>
-        )}
-        */}
-        {/* Usamos text-white con drop-shadow fuerte para que sea súper legible y elegante */}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-lilita text-white drop-shadow-2xl leading-[0.95] mb-8 max-w-4xl animate-in fade-in slide-in-from-bottom-4 duration-700">
-          {currentBanner.title}
-        </h1>
-        
-        <button 
-          onClick={() => onCtaClick(currentBanner.cta?.url || '/productos')}
-          // Botón más estético: padding generoso, sombra cálida y scale
-          className="pointer-events-auto bg-brand-primary text-white px-12 py-4 text-sm font-fredoka font-bold uppercase tracking-widest rounded-full shadow-lg hover:bg-orange-600 hover:shadow-orange-500/30 transition-all transform active:scale-95 cursor-pointer"
-        >
-          {currentBanner.cta.text || 'Explorar Colección'}
-        </button>
+              {/* CONTENEDOR DE TEXTO (Ajuste de márgenes para bajarlo) */}
+              <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-6 z-20 pointer-events-none pb-10 md:pb-16">
+                <h1 className={`text-3xl md:text-5xl lg:text-6xl font-lilita text-white drop-shadow-2xl leading-tight mb-3 max-w-3xl transition-all duration-700 ease-out ${
+                  isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}>
+                  {banner.title}
+                </h1>
+                
+                <div className={`transition-all duration-700 delay-150 ease-out ${
+                  isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                }`}>
+                  <button 
+                    onClick={() => onCtaClick(banner.cta?.url || '/productos')}
+                    className="pointer-events-auto bg-brand-primary text-white px-8 py-3 md:px-10 md:py-3.5 text-[12px] md:text-sm font-fredoka font-bold uppercase tracking-widest rounded-full shadow-lg hover:bg-orange-600 hover:shadow-orange-500/30 transition-all transform active:scale-95 cursor-pointer"
+                  >
+                    {banner.cta.text || 'Explorar Colección'}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          );
+        })}
       </div>
       
-      {/* INDICADORES (DOTS) */}
-      <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex space-x-3 z-30">
+      {/* INDICADORES (DOTS) - Pegados más al límite inferior */}
+      <div className="absolute bottom-0 md:bottom-4 left-1/2 -translate-x-1/2 flex space-x-3 z-30">
         {banners.map((_, index) => {
           const isActive = index === currentIndex;
           return (
@@ -131,7 +125,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
               aria-label={`Ir al banner ${index + 1}`}
             >
               <div className={`h-1.5 rounded-full relative overflow-hidden transition-all duration-500 ${
-                isActive ? 'w-12 bg-white/30' : 'w-4 bg-white/30 group-hover:bg-white/50'
+                isActive ? 'w-10 md:w-12 bg-white/40' : 'w-3 md:w-4 bg-white/30 group-hover:bg-white/60'
               }`}>
                 {isActive && (
                   <div 
@@ -155,13 +149,13 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
       {/* FLECHAS LATERALES */}
       <button 
         onClick={prevSlide}
-        className="hidden lg:flex absolute left-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 items-center justify-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white hover:text-black transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-lg"
+        className="hidden lg:flex absolute left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white hover:text-black transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-lg"
       >
         <i className="fa-solid fa-chevron-left text-lg"></i>
       </button>
       <button 
         onClick={nextSlide}
-        className="hidden lg:flex absolute right-8 top-1/2 -translate-y-1/2 z-30 w-14 h-14 items-center justify-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white hover:text-black transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-lg"
+        className="hidden lg:flex absolute right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center bg-black/20 backdrop-blur-md border border-white/10 rounded-full text-white hover:bg-white hover:text-black transition-all opacity-0 group-hover:opacity-100 cursor-pointer shadow-lg"
       >
         <i className="fa-solid fa-chevron-right text-lg"></i>
       </button>

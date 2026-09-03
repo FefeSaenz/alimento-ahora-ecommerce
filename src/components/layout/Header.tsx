@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
                 width={150}
                 height={64}
                 fetchPriority="high"
-                className="h-10 lg:h-9 w-auto object-contain object-left transition-all" 
+                className="h-10 lg:h-8 w-auto object-contain object-left transition-all" 
               />
             ) : (
               <span className="text-3xl font-lilita tracking-wide text-brand-primary">{logoText}</span>
@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
                 height={48}
                 fetchPriority="high"
                 /* Ajuste: h-[34px] (punto medio) y tope estricto de 150px de ancho */
-                className="h-[34px] md:h-11 w-auto max-w-[150px] md:max-w-[250px] object-contain" />
+                className="h-10 md:h-11 w-auto max-w-[175px] md:max-w-[250px] object-contain" />
             ) : (
               <span className="text-2xl font-lilita tracking-wide text-brand-primary">{logoText}</span>
             )}
