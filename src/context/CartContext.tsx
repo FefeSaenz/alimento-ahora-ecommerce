@@ -11,9 +11,9 @@ interface CartContextType {
   isCheckoutOpen: boolean;
   setIsCheckoutOpen: (open: boolean) => void;
   addToCart: (item: CartItem) => void;
-  // Agregamos 'color: string' a estas dos:
-  updateQuantity: (id: string, size: string, color: string, delta: number) => void;
-  removeFromCart: (id: string, size: string, color: string) => void;
+  // Actualizamos las firmas para reflejar los nuevos tipos
+  updateQuantity: (id: string, content: string, presentation: string, delta: number) => void;
+  removeFromCart: (id: string, content: string, presentation: string) => void;
   handleCheckoutComplete: (newOrder: Order) => void;
   cartCount: number;
 }
@@ -31,7 +31,7 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
   // Lazy initializer: Se ejecuta solo en el primer render para leer el disco duro
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
-      const savedCart = localStorage.getItem('pulso_cart');
+      const savedCart = localStorage.getItem('alimento_cart');
       return savedCart ? JSON.parse(savedCart) : [];
     } catch (error) {
       console.error("Error leyendo el carrito de localStorage:", error);
@@ -42,7 +42,7 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
   // Efecto Sincronizador: Cada vez que 'cart' cambia, lo guardamos
   useEffect(() => {
     try {
-      localStorage.setItem('pulso_cart', JSON.stringify(cart));
+      localStorage.setItem('alimento_cart', JSON.stringify(cart));
     } catch (error) {
       console.error("Error guardando el carrito en localStorage:", error);
     }
@@ -55,10 +55,10 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const addToCart = useCallback((newItem: CartItem) => {
     setCart((prev) => {
       const existing = prev.find(
-        (item) => item.id === newItem.id && item.selectedSize === newItem.selectedSize && item.selectedColor === newItem.selectedColor);
+        (item) => item.id === newItem.id && item.selectedContent === newItem.selectedContent && item.selectedPresentation === newItem.selectedPresentation);
       if (existing) {
         return prev.map((item) =>
-          (item.id === newItem.id && item.selectedSize === newItem.selectedSize && item.selectedColor === newItem.selectedColor)
+          (item.id === newItem.id && item.selectedContent === newItem.selectedContent && item.selectedPresentation === newItem.selectedPresentation)
             ? { ...item, quantity: item.quantity + 1 } 
             : item
         );
@@ -69,11 +69,11 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setIsCartOpen(true);
   }, []);
 
-  const updateQuantity = useCallback((id: string, size: string, color: string, delta: number) => {
+  const updateQuantity = useCallback((id: string, content: string, presentation: string, delta: number) => {
     setCart((prev) =>
       prev
         .map((item) => {
-          if (item.id === id && item.selectedSize === size && item.selectedColor === color) {
+          if (item.id === id && item.selectedContent === content && item.selectedPresentation === presentation) {
             const newQty = Math.max(0, item.quantity + delta);
             return { ...item, quantity: newQty };
           }
@@ -83,8 +83,8 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
     );
   }, []);
 
-  const removeFromCart = useCallback((id: string, size: string, color: string) => {
-    setCart((prev) => prev.filter((item) => !(item.id === id && item.selectedSize === size && item.selectedColor === color)));
+  const removeFromCart = useCallback((id: string, content: string, presentation: string) => {
+    setCart((prev) => prev.filter((item) => !(item.id === id && item.selectedContent === content && item.selectedPresentation === presentation)));
   }, []);
 
   

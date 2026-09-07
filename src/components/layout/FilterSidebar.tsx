@@ -78,7 +78,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   // Pesos 
   const weights = useMemo(() => {
     const allSizes = allProducts.flatMap(p => 
-      p.variants?.flatMap(v => v.sizes.map(s => s.size.toString())) || []
+      p.variants?.flatMap(v => v.options.map(o => o.content.toString())) || []
     );
     
     // Eliminamos el talle 'U' (Único) de la lista de filtros de peso
@@ -98,7 +98,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
 
   // Edades/Tamaños
   const ageSizes = useMemo(() => {
-    const rawColors = allProducts.flatMap(p => p.variants?.map(v => v.color.name) || []);
+    const rawColors = allProducts.flatMap(p => p.variants?.map(v => v.presentation.name) || []);
     
     // Normalizamos: Primera letra de cada palabra en mayúscula para evitar duplicados ("Mini adult" vs "Mini Adult")
     // y manejamos "ÚNICO" para que quede prolijo como "Único".

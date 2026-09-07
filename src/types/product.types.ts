@@ -1,23 +1,23 @@
 /**
  * ESTRUCTURA DE VARIANTES
- * Un producto puede tener múltiples variantes de color, 
- * y cada color su propia curva de talles y stock.
+ * Un producto puede tener múltiples presentaciones (ej: Adulto, Mini), 
+ * y cada presentación diferentes opciones de peso/contenido (ej: 3kg, 15kg).
  */
-export interface ProductSize {
-  size: string | number;
+export interface ProductContentOption {
+  content: string;
   sku: string;
   variant_id?: number;
+  price?: number; // ¡NUEVO! Esperando al backend para precio dinámico
   stock: number;
   available: boolean;
 }
 
 export interface ProductVariant {
-  color: {
-    name: string;
-    hex: string;
-    image?: string; // URL de imagen específica de este color
+  presentation: { 
+    name: string; // Ex 'color.name' (Ej: "Mini Adulto")
+    hex?: string; // Lo dejamos opcional si en el futuro quieren diferenciar por un color de etiqueta
   };
-  sizes: ProductSize[];
+  options: ProductContentOption[]; // Ex 'sizes'
 }
 
 export interface Product {
@@ -31,7 +31,7 @@ export interface Product {
   images: string[];
   category: string;
   subcategory?: string;
-  gender?: string;
+  species?: string;
   base_sku?: string;
   brand?: string;
   material?: string;
@@ -49,10 +49,11 @@ export interface Product {
  */
 export interface CartItem extends Omit<Product, 'variants'> {
   quantity: number;
-  selectedSize: string;
-  selectedColor: string;
+  selectedContent: string; // Ex 'selectedSize' (Ej: "15KG")
+  selectedPresentation: string; // Ex 'selectedColor' (Ej: "Mini Adulto")
   selectedImage: string;
   variant_id?: number;
+  // selectedPrice: number; -> Se podría agregar para guardar a qué precio lo metió al carrito
 }
 
 /**

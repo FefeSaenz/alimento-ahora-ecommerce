@@ -46,7 +46,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
                 width={150}
                 height={48}
                 /* Ajuste de UI: pasamos a h-10 y max-w-[200px] para equilibrar visualmente con los links gigantes */
-                className="h-10 w-auto max-w-[200px] object-contain" 
+                className="h-10 w-auto max-w-50 object-contain" 
               />
             ) : (
               <span className="text-xl font-lilita text-brand-primary">{logoText}</span>

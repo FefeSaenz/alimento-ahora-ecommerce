@@ -20,13 +20,13 @@ const api = axios.create({
 
 // Interceptor: Gestión de Sesión
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('pulso_token'); 
-    let guestId = localStorage.getItem('pulso_guest_id');
+    const token = localStorage.getItem('alimento_token'); 
+    let guestId = localStorage.getItem('alimento_guest_id');
     
     if (!guestId) {
         // Usamos la función segura en vez del crypto directo
         guestId = generateSafeUUID();
-        localStorage.setItem('pulso_guest_id', guestId);
+        localStorage.setItem('alimento_guest_id', guestId);
     }
 
     if (!config.headers) config.headers = {} as any;
@@ -46,8 +46,8 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
         console.warn("Sesión expirada. Limpiando credenciales...");
-        localStorage.removeItem('pulso_token');
-        localStorage.removeItem('pulso_email');
+        localStorage.removeItem('alimento_token');
+        localStorage.removeItem('alimento_email');
         
         window.location.href = '/';
         }

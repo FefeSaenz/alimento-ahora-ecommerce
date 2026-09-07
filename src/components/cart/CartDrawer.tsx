@@ -11,8 +11,8 @@ interface CartDrawerProps {
   onClose: () => void;
   onOpenCheckout: () => void;
   cart: CartItemType[];
-  onUpdateQuantity: (id: string, size: string, color: string, delta: number) => void;
-  onRemove: (id: string, size: string, color: string) => void;
+  onUpdateQuantity: (id: string, content: string, presentation: string, delta: number) => void;
+  onRemove: (id: string, content: string, presentation: string) => void;
   onAddFromRec: (product: Product) => void;
 }
 
@@ -51,7 +51,7 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
               {cart.length > 0 ? (
                 cart.map((item) => (
                   <CartItem 
-                    key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} // KEY ÚNICA
+                    key={`${item.id}-${item.selectedContent}-${item.selectedPresentation}`} // KEY ÚNICA
                     item={item} 
                     onUpdateQuantity={onUpdateQuantity} 
                     onRemove={onRemove} 

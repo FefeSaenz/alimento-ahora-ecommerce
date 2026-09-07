@@ -30,7 +30,7 @@ Use the existing build command to validate changes before finishing work. There 
 ## Data and API rules
 - Centralize HTTP behavior in `src/api/axios.ts`.
 - Environment variables are expected via Vite (`import.meta.env.*`). Relevant examples: `VITE_API_BASE_URL` and `VITE_WHATSAPP_NUMBER`.
-- Be careful with localStorage keys and persistence flows. Existing keys include `pulso_cart`, `pulso_guest_id`, and `pulso_token`.
+- Be careful with localStorage keys and persistence flows. Existing keys include `alimento_cart`, `alimento_guest_id`, and `alimento_token`.
 - Keep API response handling consistent with the `src/types/` interfaces and the current mapper/validator approach in `src/utils/`.
 
 ## Working style for AI agents

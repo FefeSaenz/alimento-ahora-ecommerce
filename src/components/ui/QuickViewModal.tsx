@@ -18,7 +18,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
   
   // ESTADOS PARA LA NUEVA ESTRUCTURA DE VARIANTES
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [selectedContent, setSelectedContent] = useState<string>('');
   const [imageError, setImageError] = useState(false);
 
   // Efecto para inicializar los estados cuando se abre un producto nuevo
@@ -26,8 +26,8 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
     if (product && product.variants && product.variants.length > 0) {
       const initialVariant = product.variants[0];
       setSelectedVariant(initialVariant);
-      // Seleccionamos el primer talle por defecto asegurándonos de que sea string
-      setSelectedSize(initialVariant.sizes[0]?.size.toString() || '');
+      // Seleccionamos el primer peso por defecto asegurándonos de que sea string
+      setSelectedContent(initialVariant.options[0]?.content.toString() || '');
       setActiveImageIndex(0);
       setImageError(false);
     }
@@ -36,9 +36,8 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
   const currentVariant = selectedVariant || product.variants?.[0];
   if (!currentVariant) return null;
 
-  const mainImageSrc = (currentVariant.color?.image && !imageError) 
-    ? currentVariant.color.image 
-    : product.images[activeImageIndex];
+  // En la nueva estructura eliminamos las imágenes por color, usamos la galería principal
+  const mainImageSrc = product.images[activeImageIndex] || '';
 
   return (
     <Modal isOpen={!!product} onClose={onClose} maxWidth="max-w-5xl">
@@ -100,129 +99,127 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
           </div>
         </div>
 
-        {/* SECCIÓN DE INFORMACIÓN: Paddings y gaps ultra comprimidos para 1366x768 */}
-        <div className="w-full md:w-[45%] p-6 lg:p-8 2xl:p-10 flex flex-col justify-between overflow-y-auto custom-scrollbar bg-white">
-          <div className="space-y-4 lg:space-y-5 2xl:space-y-6">
-            <div>
-              <p className="text-xs font-fredoka font-bold uppercase tracking-wider text-brand-primary mb-2">{product.category}</p>
-              {/* Lilita One para el título del producto */}
-              <h2 className="text-2xl lg:text-3xl 2xl:text-4xl font-lilita text-gray-800 tracking-wide leading-tight">{product.name}</h2>
-            </div>
+        {/* SECCIÓN DE INFORMACIÓN: Wrapper externo fijo para despegar el scrollbar del borde */}
+        <div className="w-full md:w-[45%] bg-white py-4 pr-1 lg:pr-2 2xl:pr-3 rounded-r-2xl flex flex-col">
+          
+          {/* Contenedor interno que maneja el scroll (La barrita ahora queda flotando hacia adentro) */}
+          <div className="h-full w-full flex flex-col justify-between overflow-y-auto custom-scrollbar pl-6 pr-4 lg:pl-8 lg:pr-6 2xl:pl-10 2xl:pr-6 pb-2">
             
-            {/* Precio y Descuento */}
-            <div className="flex items-center gap-3">
-              <Price amount={product.price} className="text-2xl lg:text-3xl 2xl:text-4xl font-fredoka font-black text-black" />
-              {product.original_price && (
-                <span className="text-sm lg:text-base 2xl:text-lg font-fredoka text-gray-400 line-through">${product.original_price.toLocaleString('es-AR')}</span>
-              )}
-            </div>
-            
-            {/* Selección de Color / Sabor */}
-            {currentVariant.color.name !== 'ÚNICO' && (
-              <div className="border-t border-gray-100 pt-4 2xl:pt-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-fredoka font-bold text-gray-500 uppercase tracking-wider">Variante</span>
-                  <span className="text-xs font-fredoka font-bold text-brand-primary bg-orange-50 px-3 py-1 rounded-full">
-                    {currentVariant.color.name}
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {product.variants.map((variant, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setSelectedVariant(variant);
-                        // Al cambiar de color, autoseleccionamos el primer talle disponible de ese color
-                        setSelectedSize(variant.sizes[0]?.size.toString() || '');
-                        setImageError(false);
-                      }}
-                      // Píldoras redondeadas para las variantes
-                      className={`px-4 py-2 2xl:px-5 2xl:py-2.5 border rounded-full text-xs font-fredoka font-semibold uppercase transition-all whitespace-nowrap cursor-pointer ${
-                        currentVariant.color.name === variant.color.name 
-                          ? 'border-brand-primary bg-brand-primary text-white shadow-md' 
-                          : 'border-gray-200 bg-white hover:border-brand-primary hover:text-brand-primary text-gray-600'
-                      }`}
-                    >
-                      {variant.color.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Selección de Talle / Peso (Basado en la variante activa) */}
-            <div className="border-t border-gray-100 pt-4 2xl:pt-5">
-              <p className="text-xs font-fredoka font-bold text-gray-500 uppercase tracking-wider mb-3">Seleccionar Opción</p>
-              <div className="flex flex-wrap gap-2 2xl:gap-3">
-                {currentVariant.sizes.map((sizeObj) => {
-                  const sizeStr = sizeObj.size.toString();
-                  const isAvailable = sizeObj.available && sizeObj.stock > 0;
-                  
-                  return (
-                    <button
-                      key={sizeStr}
-                      onClick={() => isAvailable && setSelectedSize(sizeStr)}
-                      disabled={!isAvailable}
-                      // Botones redondeados suaves para los tamaños
-                      className={`px-4 py-2 min-w-12 lg:min-w-14 h-10 lg:h-11 2xl:h-12 border rounded-xl flex items-center justify-center text-xs lg:text-sm font-fredoka font-bold transition-all ${
-                        !isAvailable 
-                          ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through' 
-                          : selectedSize === sizeStr 
-                            ? 'bg-black text-white border-black shadow-md' 
-                            : 'bg-white border-gray-200 hover:border-black text-gray-800 cursor-pointer'
-                      }`}
-                    >
-                      {sizeStr}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Descripción y Detalles */}
-            <div className="border-t border-gray-100 pt-4 2xl:pt-5">
-              {/* Marca */}
-              {product.brand && (
-                <div className="flex items-center gap-2 mb-3 2xl:mb-4">
-                  <span className="text-xs font-fredoka font-bold text-gray-400 uppercase tracking-wider">Marca:</span>
-                  <span className="text-xs font-fredoka font-bold text-gray-800 bg-gray-50 px-3 py-1 rounded-md">{product.brand}</span>
-                </div>
-              )}
-              
-              {/* Descripción con Fallback y saltos de línea */}
+            <div className="space-y-4 lg:space-y-5 2xl:space-y-6">
               <div>
-                <h4 className="text-xs font-fredoka font-bold text-gray-800 uppercase tracking-wider mb-2">Descripción</h4>
-                <p className="text-sm font-fredoka text-gray-500 leading-relaxed whitespace-pre-line line-clamp-3 2xl:line-clamp-none">
-                  {product.description || 'Alimento balanceado premium formulado para brindar la mejor nutrición y energía a tu mascota en cada etapa de su vida.'}
-                </p>
+                <p className="text-xs font-fredoka font-bold uppercase tracking-wider text-brand-primary mb-2">{product.category}</p>
+                <h2 className="text-2xl lg:text-3xl 2xl:text-4xl font-lilita text-gray-800 tracking-wide leading-tight">{product.name}</h2>
+              </div>
+              
+              {/* Precio y Descuento */}
+              <div className="flex items-center gap-3">
+                <Price amount={product.price} className="text-2xl lg:text-3xl 2xl:text-4xl font-fredoka font-black text-black" />
+                {product.original_price && (
+                  <span className="text-sm lg:text-base 2xl:text-lg font-fredoka text-gray-400 line-through">${product.original_price.toLocaleString('es-AR')}</span>
+                )}
+              </div>
+              
+              {/* Selección de Variedad / Presentación */}
+              {currentVariant.presentation.name !== 'ÚNICO' && (
+                <div className="border-t border-gray-100 pt-4 2xl:pt-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-fredoka font-bold text-gray-500 uppercase tracking-wider">Variante</span>
+                    <span className="text-xs font-fredoka font-bold text-brand-primary bg-orange-50 px-3 py-1 rounded-full">
+                      {currentVariant.presentation.name}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.map((variant, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setSelectedVariant(variant);
+                          setSelectedContent(variant.options[0]?.content.toString() || '');
+                          setImageError(false);
+                        }}
+                        className={`px-4 py-2 2xl:px-5 2xl:py-2.5 border rounded-full text-xs font-fredoka font-semibold uppercase transition-all whitespace-nowrap cursor-pointer ${
+                          currentVariant.presentation.name === variant.presentation.name 
+                            ? 'border-brand-primary bg-brand-primary text-white shadow-md' 
+                            : 'border-gray-200 bg-white hover:border-brand-primary hover:text-brand-primary text-gray-600'
+                        }`}
+                      >
+                        {variant.presentation.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Selección de Talle / Peso */}
+              <div className="border-t border-gray-100 pt-4 2xl:pt-5">
+                <p className="text-xs font-fredoka font-bold text-gray-500 uppercase tracking-wider mb-3">Seleccionar Opción</p>
+                <div className="flex flex-wrap gap-2 2xl:gap-3">
+                  {currentVariant.options.map((optObj) => {
+                    const contentStr = optObj.content.toString();
+                    const isAvailable = optObj.available && optObj.stock > 0;
+                    
+                    return (
+                      <button
+                        key={contentStr}
+                        onClick={() => isAvailable && setSelectedContent(contentStr)}
+                        disabled={!isAvailable}
+                        className={`px-4 py-2 min-w-12 lg:min-w-14 h-10 lg:h-11 2xl:h-12 border rounded-xl flex items-center justify-center text-xs lg:text-sm font-fredoka font-bold transition-all ${
+                          !isAvailable 
+                            ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through' 
+                            : selectedContent === contentStr 
+                              ? 'bg-black text-white border-black shadow-md' 
+                              : 'bg-white border-gray-200 hover:border-black text-gray-800 cursor-pointer'
+                        }`}
+                      >
+                        {contentStr}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Descripción y Detalles */}
+              <div className="border-t border-gray-100 pt-4 2xl:pt-5">
+                {product.brand && (
+                  <div className="flex items-center gap-2 mb-3 2xl:mb-4">
+                    <span className="text-xs font-fredoka font-bold text-gray-400 uppercase tracking-wider">Marca:</span>
+                    <span className="text-xs font-fredoka font-bold text-gray-800 bg-gray-50 px-3 py-1 rounded-md">{product.brand}</span>
+                  </div>
+                )}
+                <div>
+                  <h4 className="text-xs font-fredoka font-bold text-gray-800 uppercase tracking-wider mb-2">Descripción</h4>
+                  <p className="text-sm font-fredoka text-gray-500 leading-relaxed whitespace-pre-line line-clamp-3 2xl:line-clamp-none">
+                    {product.description || 'Alimento balanceado premium formulado para brindar la mejor nutrición y energía a tu mascota en cada etapa de su vida.'}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Botón de acción con pt ajustado */}
-          <div className="pt-6 2xl:pt-8 mt-auto">
-            <button
-              onClick={() => {
-                if (selectedSize) {
-                  const newItem: CartItem = {
-                    ...product,
-                    quantity: 1,
-                    selectedSize: selectedSize,
-                    selectedColor: currentVariant.color.name,
-                    selectedImage: mainImageSrc
-                  };
-                  onAddToCart(newItem);
-                }
-              }}
-              disabled={!selectedSize}
-              // Píldora gigante redondeada con los colores de la marca
-              className={`w-full py-4 lg:py-5 text-sm lg:text-base font-fredoka font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-md ${
-                selectedSize ? 'bg-brand-primary text-white hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
-              }`}
-            >
-              <i className="fa-solid fa-cart-shopping"></i>
-              <span>{selectedSize ? 'Añadir al carrito' : 'Seleccioná una opción'}</span>
-            </button>
+            {/* Botón de acción */}
+            <div className="pt-6 2xl:pt-8 mt-auto">
+              <button
+                onClick={() => {
+                  if (selectedContent) {
+                    const newItem: CartItem = {
+                      ...product,
+                      quantity: 1,
+                      selectedContent: selectedContent,
+                      selectedPresentation: currentVariant.presentation.name,
+                      selectedImage: mainImageSrc
+                    };
+                    onAddToCart(newItem);
+                  }
+                }}
+                disabled={!selectedContent}
+                className={`w-full py-4 lg:py-5 text-sm lg:text-base font-fredoka font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-md ${
+                  selectedContent ? 'bg-brand-primary text-white hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
+                }`}
+              >
+                <i className="fa-solid fa-cart-shopping"></i>
+                <span>{selectedContent ? 'Añadir al carrito' : 'Seleccioná una opción'}</span>
+              </button>
+            </div>
+            
           </div>
         </div>
       </div>

@@ -4,8 +4,8 @@ import Price from '@/src/components/ui/Price';
 
 interface CartItemProps {
   item: CartItemType;
-  onUpdateQuantity: (id: string, size: string, color: string, delta: number) => void;
-  onRemove: (id: string, size: string, color: string) => void;
+  onUpdateQuantity: (id: string, content: string, presentation: string, delta: number) => void;
+  onRemove: (id: string, content: string, presentation: string) => void;
 }
 
 const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemove }) => {
@@ -21,9 +21,9 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemove })
           <div>
             <h4 className="text-sm font-fredoka font-bold text-gray-800 leading-tight">{item.name}</h4>
             <p className="text-xs font-fredoka text-gray-500 mt-1">
-              Talle: <span className="text-black font-semibold mr-3">{item.selectedSize}</span>
-              {/* MOSTRAMOS EL COLOR ACÁ */}
-              Color: <span className="text-black font-semibold">{item.selectedColor}</span>
+              Peso: <span className="text-black font-semibold mr-3">{item.selectedContent}</span>
+              {/* MOSTRAMOS LA VARIEDAD ACÁ */}
+              Variedad: <span className="text-black font-semibold">{item.selectedPresentation}</span>
             </p>
           </div>
           <Price amount={item.price} className="text-sm font-fredoka font-black text-brand-primary" />
@@ -32,21 +32,21 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemove })
           {/* Controles de cantidad en formato pastilla */}
           <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
             <button 
-              onClick={() => onUpdateQuantity(item.id, item.selectedSize, item.selectedColor, -1)} 
+              onClick={() => onUpdateQuantity(item.id, item.selectedContent, item.selectedPresentation, -1)} 
               className="w-8 h-8 flex items-center justify-center hover:bg-orange-50 hover:text-brand-primary transition-colors cursor-pointer"
             >
               <i className="fa-solid fa-minus text-[10px]"></i>
             </button>
             <span className="w-8 h-8 flex items-center justify-center text-xs font-fredoka font-bold">{item.quantity}</span>
             <button 
-              onClick={() => onUpdateQuantity(item.id, item.selectedSize, item.selectedColor, 1)} 
+              onClick={() => onUpdateQuantity(item.id, item.selectedContent, item.selectedPresentation, 1)} 
               className="w-8 h-8 flex items-center justify-center hover:bg-orange-50 hover:text-brand-primary transition-colors cursor-pointer"
             >
               <i className="fa-solid fa-plus text-[10px]"></i>
             </button>
           </div>
           <button 
-            onClick={() => onRemove(item.id, item.selectedSize, item.selectedColor)} 
+            onClick={() => onRemove(item.id, item.selectedContent, item.selectedPresentation)} 
             className="text-xs font-fredoka font-medium text-red-400 hover:text-red-600 underline transition-colors cursor-pointer"
           >
             Eliminar

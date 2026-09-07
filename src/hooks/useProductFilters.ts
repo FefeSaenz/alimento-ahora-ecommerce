@@ -44,7 +44,7 @@ export const useProductFilters = ({
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [activeBrand, setActiveBrand] = useState<string | null>(null); 
   const [activeWeight, setActiveWeight] = useState<string | null>(null); // Ex activeSize
-  const [activeAgeSize, setActiveAgeSize] = useState<string | null>(null); // Ex activeColor
+  const [activeAgeSize, setActiveAgeSize] = useState<string | null>(null); // Ex activepresentation
   const [activePrice, setActivePrice] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high'>('default');
 
@@ -81,8 +81,8 @@ export const useProductFilters = ({
       const searchTokens = cleanSearchTerm.split(/\s+/).filter(Boolean).map(lemmatize);
 
       result = result.filter(p => {
-        // Armamos un "súper string" con toda la info útil del producto (El 'color' interno es la variante Edad/Tamaño en la UI)
-        const productVariants = p.variants?.map(v => v.color.name).join(' ') || '';
+        // Armamos un "súper string" con toda la info útil del producto (El 'presentation' interno es la variante Edad/Tamaño en la UI)
+        const productVariants = p.variants?.map(v => v.presentation.name).join(' ') || '';
         const searchableText = normalizeText(`${p.name} ${p.category} ${p.brand || ''} ${p.description || ''} ${productVariants}`);
 
         // El producto pasa el filtro solo si TODAS las palabras buscadas están en su info
@@ -94,7 +94,7 @@ export const useProductFilters = ({
     if (activeWeight) {
       const weightArray = activeWeight.split(',').map(normalizeSize);
       result = result.filter(p =>
-        p.variants?.some(v => v.sizes.some(s => weightArray.includes(normalizeSize(s.size.toString()))))
+        p.variants?.some(v => v.options.some(o => weightArray.includes(normalizeSize(o.content.toString()))))
       );
     }
 
@@ -102,7 +102,7 @@ export const useProductFilters = ({
     if (activeAgeSize) {
       const ageSizeArray = activeAgeSize.split(',').map(normalizeAgeSize);
       result = result.filter(p =>
-        p.variants?.some(v => ageSizeArray.some(activeC => normalizeAgeSize(v.color.name).includes(activeC)))
+        p.variants?.some(v => ageSizeArray.some(activeC => normalizeAgeSize(v.presentation.name).includes(activeC)))
       );
     }
 
@@ -131,7 +131,7 @@ export const useProductFilters = ({
     activeCategory, setActiveCategory,
     activeBrand, setActiveBrand, 
     activeWeight, setActiveWeight, // Ex activeSize
-    activeAgeSize, setActiveAgeSize, // Ex activeColor
+    activeAgeSize, setActiveAgeSize, // Ex activepresentation
     activePrice, setActivePrice,
     sortBy, setSortBy,
     categories,

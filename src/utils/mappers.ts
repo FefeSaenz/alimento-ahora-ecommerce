@@ -18,11 +18,11 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
 
       if (!groupedVariants[variantKey]) {
         groupedVariants[variantKey] = {
-          color: { 
+          presentation: { 
             name: presentationName, 
             hex: safeHex || '#cccccc',
           },
-          sizes: [],
+          options: [],
         };
       }
 
@@ -31,11 +31,13 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
       const fallbackSku = apiProduct.product_sku !== undefined && apiProduct.product_sku !== null 
         ? apiProduct.product_sku.toString() 
         : '';
-
-      groupedVariants[variantKey].sizes.push({
-        size: v.variant_content || 'U', 
+      
+      // 2. CONTENIDO Y STOCK (Ej -> "3kg", "15kg")
+      groupedVariants[variantKey].options.push({
+        content: v.variant_content || 'U', 
         sku: v.variant_sku || fallbackSku,
         variant_id: v.variant_id, 
+        // price: v.variant_price, // <-- ¡Descomentar cuando el back lo envíe!
         stock: v.variant_stock !== null ? v.variant_stock : 99,
         available: v.variant_stock === null || v.variant_stock > 0, 
       });
@@ -47,8 +49,8 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
       : '';
 
     groupedVariants['ÚNICO'] = {
-      color: { name: 'ÚNICO', hex: '#cccccc' },
-      sizes: [{ size: 'U', sku: fallbackSku, stock: 10, available: true }]
+      presentation: { name: 'ÚNICO', hex: '#cccccc' },
+      options: [{ content: 'U', sku: fallbackSku, stock: 10, available: true }]
     };
   }
 
@@ -74,7 +76,7 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
       : '',
     brand: apiProduct.brand_name || undefined,
     material: apiProduct.product_composition || undefined, 
-    gender: apiProduct.product_species || undefined,
+    species: apiProduct.product_species || undefined,
     active: true,
     tags: apiProduct.product_highlight === 1 ? 'Destacado' : undefined, 
     variants: Object.values(groupedVariants),

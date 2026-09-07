@@ -1,1 +1,1 @@
-export const CHECKOUT_DRAFT_KEY = 'pulso_checkout_draft';
+export const CHECKOUT_DRAFT_KEY = 'alimento_checkout_draft';

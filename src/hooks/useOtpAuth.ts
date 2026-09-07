@@ -11,9 +11,9 @@ export const useOtpAuth = () => {
   const [isCodeSent, setIsCodeSent] = useState(false);
 
   const clearOtpData = useCallback(() => {
-    localStorage.removeItem('pulso_otp_end');
-    localStorage.removeItem('pulso_otp_email');
-    localStorage.removeItem('pulso_otp_cooldown');
+    localStorage.removeItem('alimento_otp_end');
+    localStorage.removeItem('alimento_otp_email');
+    localStorage.removeItem('alimento_otp_cooldown');
     setTimeLeft(0);
     setCooldown(0);
     setIsCodeSent(false);
@@ -22,9 +22,9 @@ export const useOtpAuth = () => {
 
   // Función clave: Obliga al hook a leer la verdad del localStorage
   const syncState = useCallback(() => {
-    const savedEndTime = localStorage.getItem('pulso_otp_end');
-    const savedEmail = localStorage.getItem('pulso_otp_email');
-    const savedCooldown = localStorage.getItem('pulso_otp_cooldown');
+    const savedEndTime = localStorage.getItem('alimento_otp_end');
+    const savedEmail = localStorage.getItem('alimento_otp_email');
+    const savedCooldown = localStorage.getItem('alimento_otp_cooldown');
 
     if (savedEndTime && savedEmail) {
       const remaining = Math.floor((parseInt(savedEndTime) - Date.now()) / 1000);
@@ -70,9 +70,9 @@ export const useOtpAuth = () => {
       const expirationTime = Date.now() + 600 * 1000; // 10 minutos
       const cooldownTime = Date.now() + 60 * 1000; // 60 segundos
 
-      localStorage.setItem('pulso_otp_end', expirationTime.toString());
-      localStorage.setItem('pulso_otp_email', targetEmail);
-      localStorage.setItem('pulso_otp_cooldown', cooldownTime.toString()); // Guardamos el bloqueo
+      localStorage.setItem('alimento_otp_end', expirationTime.toString());
+      localStorage.setItem('alimento_otp_email', targetEmail);
+      localStorage.setItem('alimento_otp_cooldown', cooldownTime.toString()); // Guardamos el bloqueo
       
       setEmail(targetEmail);
       setTimeLeft(600);

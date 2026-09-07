@@ -22,8 +22,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Al cargar la app, buscamos si hay una sesión guardada
     useEffect(() => {
-        const storedToken = localStorage.getItem('pulso_token');
-        const storedEmail = localStorage.getItem('pulso_email');
+        const storedToken = localStorage.getItem('alimento_token');
+        const storedEmail = localStorage.getItem('alimento_email');
 
         if (storedToken && storedEmail) {
             setUser({ email: storedEmail, token: storedToken });
@@ -34,15 +34,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Función para loguear (la vamos a usar en el Checkout y en el Drawer)
     const login = (userData: User) => {
         setUser(userData);
-        localStorage.setItem('pulso_token', userData.token);
-        localStorage.setItem('pulso_email', userData.email);
+        localStorage.setItem('alimento_token', userData.token);
+        localStorage.setItem('alimento_email', userData.email);
     };
 
     // Función para cerrar sesión
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('pulso_token');
-        localStorage.removeItem('pulso_email');
+        localStorage.removeItem('alimento_token');
+        localStorage.removeItem('alimento_email');
     };
 
     // Evita parpadeos mientras lee el localStorage al recargar la página
