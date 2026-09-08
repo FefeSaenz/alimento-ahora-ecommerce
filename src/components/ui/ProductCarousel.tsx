@@ -2,12 +2,14 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import SectionTitle from './SectionTitle';
-import { Product } from '@/src/types/product.types';
+// 1. Importamos CartItem
+import { Product, CartItem } from '@/src/types/product.types';
 
 interface ProductCarouselProps {
   title: string;
   products: Product[];
-  onAdd: (product: Product) => void;
+  // 2. Actualizamos la firma de la función
+  onAdd: (item: CartItem) => void;
   viewAllLink?: string; // Ruta dinámica
   viewAllText?: string; // Texto dinámico
   variant?: 'default' | 'slim';

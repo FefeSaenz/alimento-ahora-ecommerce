@@ -17,7 +17,7 @@ const OrderSuccess = lazy(() => import('@/src/pages/OrderSuccess'));
 
 // PANTALLA DE CARGA GLOBAL (Reactivo puro a la API)
 const GlobalLoader = () => (
-  <div className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center">
+  <div className="fixed inset-0 z-9999 bg-white flex flex-col items-center justify-center">
     <div className="relative flex items-center justify-center mb-8">
       {/* Círculo animado de fondo */}
       <div className="absolute inset-0 bg-brand-primary rounded-full animate-ping opacity-20 [animation-duration:2.5s]"></div>

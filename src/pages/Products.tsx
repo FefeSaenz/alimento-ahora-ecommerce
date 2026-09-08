@@ -1,12 +1,12 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { useSearchParams, useOutletContext, useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate, useLocation } from 'react-router-dom'; // Eliminamos useOutletContext
 import { Helmet } from 'react-helmet-async';
 
 // Context & Hooks
 import { useApp } from '@/src/context/AppContext';
+import { useCart } from '@/src/context/CartContext'; // 1. Traemos el carrito
 import { useProductFilters } from '@/src/hooks/useProductFilters';
 import { Product } from '@/src/types/product.types';
-import { useQuickView } from '@/src/hooks/useQuickView';
 import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts'; 
 
 // UI Components
@@ -15,17 +15,13 @@ import FilterSidebar from '@/src/components/layout/FilterSidebar';
 import FilterBar from '@/src/components/ui/FilterBar';
 import Breadcrumbs from '@/src/components/ui/Breadcrumbs';
 
-interface ProductsContext {
-    setSelectedQuickView: (product: Product | null) => void;
-}
-
 const Products: React.FC = () => {
     const { loading } = useApp();
     const [searchParams, setSearchParams] = useSearchParams();
-    const { setSelectedQuickView } = useOutletContext<ProductsContext>();
-
-    const { handleQuickView } = useQuickView(setSelectedQuickView);
     
+    // 2. Extraemos la función real de agregar al carrito
+    const { addToCart } = useCart(); 
+
     const { unifiedProducts } = useUnifiedProducts(); 
 
     const { category: paramCategory } = useParams<{ category: string }>();
@@ -195,7 +191,8 @@ const Products: React.FC = () => {
                 <main className="flex-1">
                     <ProductGrid 
                         products={filteredProducts} 
-                        onQuickView={handleQuickView}
+                        // 3. Inyectamos addToCart directamente a la grilla
+                        onAddToCart={addToCart}
                         layoutMode="catalog"
                     />
                 </main>

@@ -1,10 +1,9 @@
 import React, { useMemo, useEffect } from 'react';
-import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // Contexts & Hooks
 import { useApp } from '@/src/context/AppContext'; // Consumo de la API
-import { Product } from '@/src/types/product.types';
-import { useQuickView } from '@/src/hooks/useQuickView';
+import { useCart } from '@/src/context/CartContext'; // Consumo del Carrito
 import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts';
 
 // UI Components
@@ -18,19 +17,12 @@ import banner1 from '@/src/assets/AAbanner1.png';
 import banner2 from '@/src/assets/AAbanner2.png';
 import banner3 from '@/src/assets/AAbanner3.png';
 
-// Definimos la interfaz del contexto que viene del Layout vía Outlet
-interface HomeContext {
-  setSelectedQuickView: (product: Product | null) => void;
-}
-
 const Home: React.FC = () => {
     const navigate = useNavigate();
     const { hash } = useLocation(); // Para detectar anclas en la URL
     const { allProducts, loading, frontConfig } = useApp(); // Data de la API disponible
     
-    const { setSelectedQuickView } = useOutletContext<HomeContext>();
-
-    const { handleQuickView } = useQuickView(setSelectedQuickView);
+    const { addToCart } = useCart(); // Traemos la función real del carrito
     
     const { featuredProducts } = useUnifiedProducts(); // Obtenemos los productos unificados desde el nuevo hook
     
@@ -130,7 +122,7 @@ const Home: React.FC = () => {
             <ProductGrid 
                 title='Destacados'
                 products={featuredProducts.slice(0, 8)} // Solo mostramos los primeros 8 productos destacados
-                onQuickView={handleQuickView}
+                onAddToCart={addToCart} // Inyectamos la función real hacia abajo
                 quantityLabel={false}
                 viewAllLink="/productos"
                 viewAllText="Ver Todo El Catálogo"
@@ -139,10 +131,12 @@ const Home: React.FC = () => {
             
             {/* SECCIÓN OFERTAS: Carrusel (Solo se muestra si hay ofertas activas) */}
             {offersMapped.length > 0 && (
-                <ProductCarousel 
+                
+
+            <ProductCarousel 
                     title="¡Ofertas!" 
                     products={offersMapped} 
-                    onAdd={handleQuickView}
+                    onAdd={addToCart} // El carrusel también necesita recibir el addToCart en lugar de QuickView
                     viewAllLink="/offers"
                     viewAllText="Ver Todas Las Ofertas"
                 />

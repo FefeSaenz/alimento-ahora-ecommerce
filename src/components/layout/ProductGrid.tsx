@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '@/src/components/ui/ProductCard';
 import SectionTitle from '@/src/components/ui/SectionTitle';
-import { Product } from '@/src/types/product.types';
+import { Product, CartItem } from '@/src/types/product.types';
 
 interface ProductGridProps {
   products: Product[];
-  onQuickView: (product: Product) => void;
+  onAddToCart: (item: CartItem) => void; // Cambiamos la semántica: ya no es "QuickView", es "AddToCart"
   quantityLabel?: boolean;
   title?: string;      
   viewAllLink?: string;
@@ -16,7 +16,7 @@ interface ProductGridProps {
 
 const ProductGrid: React.FC<ProductGridProps> = ({ 
   products,
-  onQuickView,
+  onAddToCart,
   quantityLabel = true,
   title, 
   viewAllLink,
@@ -64,7 +64,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               <ProductCard 
                 key={product.id} 
                 product={product} 
-                onAdd={() => onQuickView(product)} 
+                onAdd={onAddToCart} // Inyectamos la función correctamente
               />
             ))}
           </div>

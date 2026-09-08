@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useParams, Link, useOutletContext } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; // Eliminamos useOutletContext
 import { Helmet } from 'react-helmet-async';
 
 // Contexts y Utils de ALIMENTO AHORA
 import { useApp } from '@/src/context/AppContext';
 import { useCart } from '@/src/context/CartContext';
-import { Product } from '@/src/types/product.types';
+import { Product, CartItem } from '@/src/types/product.types'; // Añadimos CartItem
 
 // UI Components
 import Price from '@/src/components/ui/Price';
@@ -13,14 +13,10 @@ import ProductCarousel from '@/src/components/ui/ProductCarousel';
 import Breadcrumbs from '@/src/components/ui/Breadcrumbs';
 import Modal from '@/src/components/ui/Modal';
 
-interface ProductDetailContext {
-  setSelectedQuickView: (product: Product) => void;
-}
-
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
 
-  const { setSelectedQuickView } = useOutletContext<ProductDetailContext>();
+  // Eliminamos setSelectedQuickView, ya no usamos modales intermedios
   
   const { allProducts, loading } = useApp();
   const { addToCart, setIsCartOpen } = useCart();
@@ -32,8 +28,8 @@ const ProductDetail: React.FC = () => {
   }, [allProducts, slug]);
 
   // 2. ESTADOS LOCALES (Adaptados a Pet Shop)
-  const [selectedColor, setSelectedColor] = useState<string | null>(null); // Funcionará como "Edad/Tamaño" o Variante Principal
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);   // Funcionará como "Peso" (Ej: 3kg)
+  const [selectedPresentation, setSelectedPresentation] = useState<string | null>(null); // Ex selectedColor (Ej: "Mini Adulto")
+  const [selectedContent, setSelectedContent] = useState<string | null>(null);   // Ex selectedSize (Ej: "3kg")
   const [mainImage, setMainImage] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false);
@@ -53,10 +49,10 @@ const ProductDetail: React.FC = () => {
       
       // Seleccionamos la primera variante disponible (Ej: Mini Adulto)
       if (product.variants && product.variants.length > 0) {
-        setSelectedColor(product.variants[0].color.name);
+        setSelectedPresentation(product.variants[0].presentation.name);
       }
       
-      setSelectedSize(null);
+      setSelectedContent(null);
       setError('');
       setCurrentSlide(0); 
     }
@@ -76,50 +72,37 @@ const ProductDetail: React.FC = () => {
   };
 
   // 4. LÓGICA DE VARIANTES (Adaptadas a Pet Shop)
-  const availableColors = useMemo(() => {
+  const availablePresentations = useMemo(() => {
     if (!product?.variants) return [];
-    return Array.from(new Set(product.variants.map(v => v.color.name)));
+    return Array.from(new Set(product.variants.map(v => v.presentation.name)));
   }, [product]);
 
-  const availableSizes = useMemo(() => {
-    if (!product?.variants || !selectedColor) return [];
-    const variant = product.variants.find(v => v.color.name === selectedColor);
+  const availableContents = useMemo(() => {
+    if (!product?.variants || !selectedPresentation) return [];
+    const variant = product.variants.find(v => v.presentation.name === selectedPresentation);
     // Devolvemos los objetos enteros para saber si hay stock
-    return variant ? variant.sizes : []; 
-  }, [product, selectedColor]);
+    return variant ? variant.options : []; 
+  }, [product, selectedPresentation]);
 
   // 5. MANEJADOR DEL CARRITO
   const handleAddToCart = () => {
-    if (!selectedSize || !selectedColor) {
+    if (!selectedContent || !selectedPresentation) {
       setError('Por favor, selecciona el peso y la variante antes de agregar al carrito.');
       return;
     }
     
     if (product) {
-      const chosenVariantGroup = product.variants.find(v => v.color.name === selectedColor);
-      const chosenSizeObj = chosenVariantGroup?.sizes.find(s => s.size.toString() === selectedSize);
+      const chosenVariantGroup = product.variants.find(v => v.presentation.name === selectedPresentation);
+      const chosenOptionObj = chosenVariantGroup?.options.find(o => o.content.toString() === selectedContent);
       
-      const variantIdentifier = chosenSizeObj?.variant_id;
+      const variantIdentifier = chosenOptionObj?.variant_id;
 
-      const cartItem = {
-        id: product.id,
-        slug: product.slug,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        original_price: product.original_price,
-        discount_percentage: product.discount_percentage,
-        images: product.images,
-        category: product.category,
-        subcategory: product.subcategory,
-        gender: product.gender,
-        tags: product.tags,
-        active: product.active,
-        rating: product.rating,
-        reviews_count: product.reviews_count,
+      // Usamos el tipo CartItem
+      const cartItem: CartItem = {
+        ...product, // Mapeamos las props base del producto
         quantity: 1,
-        selectedSize: selectedSize,
-        selectedColor: selectedColor,
+        selectedContent: selectedContent,
+        selectedPresentation: selectedPresentation,
         selectedImage: mainImage || (product.images.length > 0 ? product.images[0] : ''),
         variant_id: variantIdentifier
       };
@@ -347,33 +330,28 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {/* Selector de Opción Principal (Ej: Edad, Tamaño de Mordida) */}
-            {availableColors.length > 0 && availableColors[0] !== 'ÚNICO' && (
+            {availablePresentations.length > 0 && availablePresentations[0] !== 'ÚNICO' && (
               <div className="mb-6 border-b border-gray-100 pb-6">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-500">Variante</span>
-                  <span className="text-[10px] font-fredoka font-bold uppercase tracking-wider text-brand-primary bg-orange-50 px-3 py-1 rounded-full">{selectedColor}</span>
+                  <span className="text-[10px] font-fredoka font-bold uppercase tracking-wider text-brand-primary bg-orange-50 px-3 py-1 rounded-full">{selectedPresentation}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {availableColors.map(color => (
+                  {availablePresentations.map(presentation => (
                     <button
-                      key={color}
+                      key={presentation}
                       onClick={() => {
-                        setSelectedColor(color);
-                        setSelectedSize(null);
+                        setSelectedPresentation(presentation);
+                        setSelectedContent(null);
                         setError('');
-                        
-                        const variant = product.variants?.find(v => v.color.name === color);
-                        if (variant?.color.image) {
-                          setMainImage(variant.color.image);
-                        }
                       }}
                       className={`px-4 py-2 border rounded-full text-xs font-fredoka font-bold transition-all whitespace-nowrap cursor-pointer shadow-sm ${
-                        selectedColor === color 
+                        selectedPresentation === presentation 
                           ? 'border-brand-primary bg-brand-primary text-white shadow-md' 
                           : 'border-gray-200 bg-white hover:border-brand-primary hover:text-brand-primary text-gray-600'
                       }`}
                     >
-                      {color}
+                      {presentation}
                     </button>
                   ))}
                 </div>
@@ -381,29 +359,29 @@ const ProductDetail: React.FC = () => {
             )}
 
             {/* Selector de Pesos (Bolsas) */}
-            {availableSizes.length > 0 && (
+            {availableContents.length > 0 && (
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-500">Seleccionar Peso</span>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {availableSizes.map(sizeObj => (
+                  {availableContents.map(optionObj => (
                     <button
-                      key={sizeObj.size}
-                      disabled={!sizeObj.available}
+                      key={optionObj.content}
+                      disabled={!optionObj.available}
                       onClick={() => {
-                        setSelectedSize(sizeObj.size.toString());
+                        setSelectedContent(optionObj.content.toString());
                         setError('');
                       }}
                       className={`px-4 min-w-14 h-12 border rounded-xl flex items-center justify-center text-sm font-fredoka font-bold transition-all shadow-sm ${
-                        !sizeObj.available 
+                        !optionObj.available 
                           ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through shadow-none' 
-                          : selectedSize === sizeObj.size.toString() 
+                          : selectedContent === optionObj.content.toString() 
                             ? 'bg-black text-white border-black shadow-md' 
                             : 'bg-white border-gray-200 hover:border-brand-primary hover:text-brand-primary text-gray-700 cursor-pointer'
                       }`}
                     >
-                      {sizeObj.size}
+                      {optionObj.content}
                     </button>
                   ))}
                 </div>
@@ -444,7 +422,7 @@ const ProductDetail: React.FC = () => {
                   </p>
                 </div>
                 
-                {(product.brand || product.material || product.category || product.subcategory || product.gender) && (
+                {(product.brand || product.material || product.category || product.subcategory || product.species) && (
                   <div className="pt-6 border-t border-gray-50">
                     <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider text-gray-800 mb-4 flex items-center gap-2">
                       <i className="fa-solid fa-list text-brand-primary"></i> Especificaciones
@@ -463,10 +441,10 @@ const ProductDetail: React.FC = () => {
                           <span className="text-sm font-fredoka font-medium text-gray-800">{product.category}</span>
                         </li>
                       )}
-                      {product.gender && (
+                      {product.species && (
                         <li className="flex items-center gap-4">
                           <span className="text-xs font-fredoka font-bold uppercase tracking-wider text-gray-400 w-20">Especie:</span> 
-                          <span className="text-sm font-fredoka font-medium text-gray-800">{product.gender}</span>
+                          <span className="text-sm font-fredoka font-medium text-gray-800">{product.species}</span>
                         </li>
                       )}
                     </ul>
@@ -482,11 +460,13 @@ const ProductDetail: React.FC = () => {
 
       {/* Carrusel de Productos Relacionados */}
       <div className="mt-8 border-t border-gray-100 pt-8">
-        <ProductCarousel 
+        
+
+<ProductCarousel 
           title="Te puede interesar"
           variant='slim'
           products={allProducts.filter(p => p.id !== product.id).slice(0, 8)} 
-          onAdd={setSelectedQuickView}
+          onAdd={addToCart} // Inyectamos la función directamente
         />
       </div>
 
