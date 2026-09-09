@@ -62,13 +62,15 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
   }, [isOpen, syncState, isCodeSent, isAuthenticated, formData.name, step]);
 
   useEffect(() => {
+    // Solo autocompletamos si el modal acaba de abrirse
     if (isOpen && !formData.email) {
       setFormData((prev) => ({ 
         ...prev, 
-        email: user ? user.email : (isCodeSent ? otpEmail : '') 
+        email: user?.email || (isCodeSent ? otpEmail : '') 
       }));
     }
-  }, [isOpen, user, isCodeSent, otpEmail, formData.email]);
+    // Removemos formData.email de las dependencias para evitar que tecleos lo disparen
+  }, [isOpen, user, isCodeSent, otpEmail]);
 
   if (!isOpen) return null;
 
@@ -149,12 +151,19 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
     setLoading(true);
     setCheckoutError(null); // Limpiamos errores previos
     
-    const cleanedItems = cart.map((item) => ({
-        article_id: parseInt(item.id), 
+    const cleanedItems = cart.map((item) => {
+      // Si el id no se puede parsear a Int (ej. es un UUID), mandar 0 o manejar el error
+      const parsedId = parseInt(item.id);
+      
+      return {
+        article_id: isNaN(parsedId) ? 0 : parsedId, 
         variant_id: item.variant_id, 
         quantity: item.quantity,
-        price: item.price
-    }));
+        price: item.price,
+        selectedPresentation: item.selectedPresentation,
+        selectedContent: item.selectedContent
+      };
+    });
 
     const newOrder: Order = {
       date: new Date().toISOString(),
@@ -295,7 +304,16 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
                 
                 <div className="space-y-3 mb-6">
                   {(['Efectivo', 'Transferencia', 'Tarjeta'] as const).map((method) => (
-                    <label key={method} onClick={() => setPaymentMethod(method)} className={`block border rounded-xl p-4 cursor-pointer transition-all shadow-sm ${paymentMethod === method ? 'border-brand-primary bg-orange-50' : 'border-gray-200 bg-white hover:border-brand-primary hover:bg-gray-50'}`}>
+                    <label key={method} className={`block border rounded-xl p-4 cursor-pointer transition-all shadow-sm ${paymentMethod === method ? 'border-brand-primary bg-orange-50' : 'border-gray-200 bg-white hover:border-brand-primary hover:bg-gray-50'}`}>
+                      {/* Input real oculto para accesibilidad */}
+                      <input 
+                        type="radio" 
+                        name="paymentMethod" 
+                        value={method} 
+                        checked={paymentMethod === method}
+                        onChange={() => setPaymentMethod(method)}
+                        className="sr-only" // Clase de Tailwind para ocultar visualmente pero mantener en DOM
+                      />
                       <div className="flex items-center space-x-3 md:space-x-4">
                         {/* Radio button circular suave */}
                         <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${paymentMethod === method ? 'border-brand-primary' : 'border-gray-300'}`}>
