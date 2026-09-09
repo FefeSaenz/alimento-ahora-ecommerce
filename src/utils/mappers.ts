@@ -129,8 +129,8 @@ export const mapOrderFromApi = (apiData: any): Order => {
       name: item.product_name || 'Producto', // Chau dress_name
       price: item.item_cost || 0,
       quantity: item.item_count || 1,
-      selectedColor: item.variant_presentation || 'N/A', // Chau variant_color
-      selectedSize: item.variant_content || 'N/A', // Chau variant_size
+      selectedPresentation: item.variant_presentation || 'N/A', // Chau variant_color
+      selectedContent: item.variant_content || 'N/A', // Chau variant_size
       selectedImage: item.product_picture || undefined // Chau dress_picture
     }))
   };

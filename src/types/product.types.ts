@@ -119,7 +119,7 @@ export interface Order {
     name?: string;
     selectedImage?: string;
     images?: string[];
-    selectedColor?: string;
-    selectedSize?: string;
+    selectedPresentation?: string;
+    selectedContent?: string;
   }>;
 }

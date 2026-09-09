@@ -144,7 +144,7 @@ const OrderSuccess: React.FC = () => {
                   <div>
                     <p className="text-sm font-fredoka font-bold text-gray-800">{item.name}</p>
                     <p className="text-[11px] font-fredoka font-medium text-gray-500 uppercase tracking-wide mt-1">
-                      {item.selectedColor || 'N/A'} | Peso: {item.selectedSize || 'N/A'} | Cant: {item.quantity}
+                      {item.selectedPresentation || 'N/A'} | Peso: {item.selectedContent || 'N/A'} | Cant: {item.quantity}
                     </p>
                   </div>
                 </div>
