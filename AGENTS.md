@@ -47,5 +47,8 @@ Use the existing build command to validate changes before finishing work. There 
 - Axios config: [src/api/axios.ts](src/api/axios.ts)
 - Cart flow: [src/context/CartContext.tsx](src/context/CartContext.tsx)
 
-## Gemini-focused note
-For Gemini-driven work in this repo, prioritize product correctness, route compatibility, and the existing ecommerce conventions over “clean slate” rewrites. Preserve the current architecture while moving the task forward with the smallest valid change.
+## Working style for Claude (Dev Container)
+- **Act Mode & Autonomy:** You are running in a secure Docker sandbox. You are encouraged to proactively propose solutions, install necessary standard libraries (e.g., crypto-js), and write code.
+- **Context is King:** Before modifying complex flows (checkout, cart, auth), ALWAYS read the relevant hooks and contexts to ensure you don't break existing state management.
+- **Roadmap Execution:** Refer to `AUDIT.md` to see the pending technical debt. When a task from `AUDIT.md` is completed and verified, mark it with an `[x]`.
+- **Domain Strictness:** When refactoring, actively remove any legacy nomenclature related to the old "Indumentaria/Clothes" domain (e.g., sizes, colors, dress_name) and strictly enforce the Pet Food domain types (Presentation, Content, Weight, Variant Price).
