@@ -38,7 +38,8 @@ const buildSmartMenu = (brands: string[]): MenuItem[] => {
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  // El menú base (sin marcas) se renderiza de inmediato; se enriquece cuando la API responde
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(() => buildSmartMenu([]));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [frontConfig, setFrontConfig] = useState<ApiResponse['data'] | null>(null);

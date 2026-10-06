@@ -76,18 +76,14 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
           
           {/* Desktop: Navegación */}
           <nav className="hidden lg:flex items-center space-x-8 h-full">
-            {menuItems && menuItems.length > 0 ? (
-              menuItems.map((item) => (
-                <NavLink 
-                  key={item.id} 
-                  item={item} 
-                  onClick={handleNavClick} 
-                  className="h-full text-[14px] font-sans font-medium tracking-wide text-gray-800 hover:text-brand-primary transition-colors" 
-                />
-              ))
-            ) : (
-              <span className="text-sm font-fredoka text-gray-400 animate-pulse">Cargando menú...</span>
-            )}
+            {menuItems.map((item) => (
+              <NavLink
+                key={item.id}
+                item={item}
+                onClick={handleNavClick}
+                className="h-full text-[14px] font-sans font-medium tracking-wide text-gray-800 hover:text-brand-primary transition-colors"
+              />
+            ))}
           </nav>
         </div>
 

@@ -61,7 +61,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
         {/* LINKS GRANDES Y AMIGABLES */}
         <div className="flex-1 overflow-y-auto pt-8 pb-4"> 
           <nav className="flex flex-col space-y-4"> 
-            {menuItems && menuItems.map((item) => (
+            {menuItems.map((item) => (
               <div key={item.id} className="block border-b border-gray-50 pb-2">
                 <NavLink 
                   item={item} 

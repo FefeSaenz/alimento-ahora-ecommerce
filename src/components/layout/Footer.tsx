@@ -44,20 +44,16 @@ const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
         <div className="md:col-span-3">
           <h4 className="text-xl font-lilita tracking-wide mb-6 text-brand-primary uppercase">INFORMACIÓN</h4>
           <ul className="flex flex-col space-y-3">
-            {menuItems && menuItems.length > 0 ? (
-              menuItems.map((item) => (
-                <li key={item.id}>
-                  <NavLink 
-                    item={item}
-                    onClick={handleNavClick}
-                    showSubmenu={false}
-                    className="text-sm font-sans font-medium tracking-wide text-gray-400 hover:text-brand-primary py-1 transition-colors uppercase"
-                  />
-                </li>
-              ))
-            ) : (
-              <span className="text-sm font-sans text-gray-400 animate-pulse">CARGANDO MENÚ...</span>
-            )}
+            {menuItems.map((item) => (
+              <li key={item.id}>
+                <NavLink
+                  item={item}
+                  onClick={handleNavClick}
+                  showSubmenu={false}
+                  className="text-sm font-sans font-medium tracking-wide text-gray-400 hover:text-brand-primary py-1 transition-colors uppercase"
+                />
+              </li>
+            ))}
             
             {/* BOTÓN: TÉRMINOS Y CONDICIONES (Clonado exacto de NavLink) */}
             <li>
