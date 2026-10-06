@@ -35,10 +35,12 @@ export interface Banner {
 export interface ApiProductVariant {
   variant_id: number;
   variant_bound: number;
-  variant_presentation: string;
-  variant_hex: string;
-  variant_sku: string;
-  variant_content: string;
+  // El backend no garantiza tipos: llegan números, strings vacíos o null.
+  // Normalizar siempre en src/utils/mappers.ts antes de usar.
+  variant_presentation: string | null;
+  variant_hex: string | number | null; // Hoy llega un entero correlativo, no un color
+  variant_sku: string | number | null;
+  variant_content: string | number | null; // Ej: "3kg", "1,5kg" o 20 (sin unidad)
   variant_stock: number | null;
 }
 

@@ -1,55 +1,77 @@
 import { Product, ProductVariant, Order } from '@/src/types/product.types';
 import { ApiProduct } from '@/src/types/api';
 
+const DEFAULT_PRESENTATION = 'ÚNICO';
+const DEFAULT_HEX = '#cccccc';
+const HEX_COLOR_REGEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/**
+ * Normaliza cualquier valor crudo de la API a string recortado.
+ * El backend mezcla number / string / null en los mismos campos.
+ */
+const toSafeString = (value: unknown): string => {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  return '';
+};
+
+/**
+ * Solo acepta colores hex reales ("#ff8800"). Cualquier otra cosa
+ * (ej: el entero 111 que manda hoy el backend) cae al color por defecto.
+ */
+const toSafeHex = (value: unknown): string => {
+  const hex = toSafeString(value).toLowerCase();
+  return HEX_COLOR_REGEX.test(hex) ? hex : DEFAULT_HEX;
+};
+
 /**
  * Adapter Pattern: Transforma un producto de la API (Alimento) al formato estandarizado de la UI.
  */
 export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
   const groupedVariants: Record<string, ProductVariant> = {};
+  const fallbackSku = toSafeString(apiProduct.product_sku);
 
-  if (apiProduct.product_variants && apiProduct.product_variants.length > 0) {
-    apiProduct.product_variants.forEach((v) => {
-      
-      // 1. PRESENTACIÓN (Ex Color): Ej -> "Mini Adulto", "Cachorro", "Salmón"
-      const presentationName = v.variant_presentation ? v.variant_presentation.trim() : 'ÚNICO';
-      const safeHex = (v.variant_hex || '').toLowerCase().trim(); 
+  (apiProduct.product_variants ?? []).forEach((v) => {
+    const content = toSafeString(v.variant_content);
 
-      const variantKey = presentationName;
+    // Variantes "fantasma" (sin contenido) no son vendibles: se descartan
+    if (!content) return;
 
-      if (!groupedVariants[variantKey]) {
-        groupedVariants[variantKey] = {
-          presentation: { 
-            name: presentationName, 
-            hex: safeHex || '#cccccc',
-          },
-          options: [],
-        };
-      }
+    // 1. PRESENTACIÓN: Ej -> "Bolsa", "Mini Adulto". Se agrupa sin distinguir mayúsculas
+    const presentationName = toSafeString(v.variant_presentation) || DEFAULT_PRESENTATION;
+    const variantKey = presentationName.toLowerCase();
 
-      // 2. CONTENIDO Y STOCK (Ex Talles): Ej -> "3kg", "15kg"
-      // Defensa estricta contra undefined para evitar crashes con toString()
-      const fallbackSku = apiProduct.product_sku !== undefined && apiProduct.product_sku !== null 
-        ? apiProduct.product_sku.toString() 
-        : '';
-      
-      // 2. CONTENIDO Y STOCK (Ej -> "3kg", "15kg")
-      groupedVariants[variantKey].options.push({
-        content: v.variant_content || 'U', 
-        sku: v.variant_sku || fallbackSku,
-        variant_id: v.variant_id, 
-        // price: v.variant_price, // <-- ¡Descomentar cuando el back lo envíe!
-        stock: v.variant_stock !== null ? v.variant_stock : 99,
-        available: v.variant_stock === null || v.variant_stock > 0, 
-      });
+    if (!groupedVariants[variantKey]) {
+      groupedVariants[variantKey] = {
+        presentation: {
+          name: presentationName,
+          hex: toSafeHex(v.variant_hex),
+        },
+        options: [],
+      };
+    }
+
+    const group = groupedVariants[variantKey];
+
+    // El backend a veces duplica variantes idénticas
+    if (group.options.some((o) => o.content.toLowerCase() === content.toLowerCase())) return;
+
+    // 2. CONTENIDO Y STOCK: Ej -> "3kg", "15kg"
+    group.options.push({
+      content,
+      sku: toSafeString(v.variant_sku) || fallbackSku,
+      variant_id: v.variant_id,
+      // price: v.variant_price, // <-- ¡Descomentar cuando el back lo envíe!
+      stock: v.variant_stock !== null ? v.variant_stock : 99,
+      available: v.variant_stock === null || v.variant_stock > 0,
     });
-  } else {
-    // Escudo extremo
-    const fallbackSku = apiProduct.product_sku !== undefined && apiProduct.product_sku !== null 
-      ? apiProduct.product_sku.toString() 
-      : '';
+  });
 
-    groupedVariants['ÚNICO'] = {
-      presentation: { name: 'ÚNICO', hex: '#cccccc' },
+  // Escudo extremo: producto sin variantes válidas
+  if (Object.keys(groupedVariants).length === 0) {
+    groupedVariants[DEFAULT_PRESENTATION] = {
+      presentation: { name: DEFAULT_PRESENTATION, hex: DEFAULT_HEX },
       options: [{ content: 'U', sku: fallbackSku, stock: 10, available: true }]
     };
   }
@@ -62,8 +84,8 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
   return {
     id: productIdStr,
     slug: apiProduct.product_slug,
-    name: apiProduct.product_name,
-    description: apiProduct.product_description,
+    name: toSafeString(apiProduct.product_name),
+    description: toSafeString(apiProduct.product_description),
     price: apiProduct.product_price,
     original_price: null,
     discount_percentage: null,
@@ -71,9 +93,7 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
       ? apiProduct.product_pictures 
       : (apiProduct.product_picture ? [apiProduct.product_picture] : []),
     category: apiProduct.category_name,
-    base_sku: apiProduct.product_sku !== undefined && apiProduct.product_sku !== null 
-      ? apiProduct.product_sku.toString() 
-      : '',
+    base_sku: fallbackSku,
     brand: apiProduct.brand_name || undefined,
     material: apiProduct.product_composition || undefined, 
     species: apiProduct.product_species || undefined,

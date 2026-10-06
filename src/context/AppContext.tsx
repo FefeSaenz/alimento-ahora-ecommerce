@@ -55,15 +55,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           setFrontConfig(response); 
 
           // 1. Pasamos los datos crudos por la máquina traductora
-          const mappedProducts = response.products.map(mapApiProductToProduct);
+          // Aislamos cada producto: uno malformado se descarta sin tumbar el catálogo
+          const mappedProducts = response.products.flatMap((apiProduct) => {
+            try {
+              return [mapApiProductToProduct(apiProduct)];
+            } catch (mapError) {
+              console.error(`Producto descartado por datos inválidos (product_id: ${apiProduct?.product_id}):`, mapError, apiProduct);
+              return [];
+            }
+          });
           setAllProducts(mappedProducts);
 
           // 2. Extraemos las categorías reales
           const uniqueCats = extractUniqueCategories(mappedProducts);
           setCategories(uniqueCats);
 
-          // EXTRAEMOS MARCAS DINÁMICAS leyendo directamente la respuesta de la API cruda
-          const uniqueBrands = Array.from(new Set(response.products.map(p => p.brand_name).filter(Boolean))) as string[];
+          // EXTRAEMOS MARCAS DINÁMICAS de los productos ya validados (sin marcas de productos descartados)
+          const uniqueBrands = Array.from(new Set(mappedProducts.map(p => p.brand).filter(Boolean))) as string[];
 
           // 3. Armamos el menú pasándole las marcas
           setMenuItems(buildSmartMenu(uniqueBrands));
