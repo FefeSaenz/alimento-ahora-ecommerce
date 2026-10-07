@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { CartItem, Order } from '@/src/types/product.types';
+import { normalizeContentWeight } from '@/src/utils/mappers';
 
 interface CartContextType {
   cart: CartItem[];
@@ -32,7 +33,19 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
       const savedCart = localStorage.getItem('alimento_cart');
-      return savedCart ? JSON.parse(savedCart) : [];
+      if (!savedCart) return [];
+
+      // Carritos guardados antes de la normalización de pesos ("1,5kg" -> "1.5 kg"):
+      // se re-normalizan y se fusionan las líneas que pasan a ser idénticas.
+      const merged: CartItem[] = [];
+      (JSON.parse(savedCart) as CartItem[]).forEach((item) => {
+        const selectedContent = normalizeContentWeight(item.selectedContent);
+        const twin = merged.find((m) =>
+          m.id === item.id && m.selectedContent === selectedContent && m.selectedPresentation === item.selectedPresentation);
+        if (twin) twin.quantity += item.quantity;
+        else merged.push({ ...item, selectedContent });
+      });
+      return merged;
     } catch (error) {
       console.error("Error leyendo el carrito de localStorage:", error);
       return [];

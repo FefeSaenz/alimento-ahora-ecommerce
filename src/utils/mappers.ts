@@ -25,6 +25,35 @@ const toSafeHex = (value: unknown): string => {
   return HEX_COLOR_REGEX.test(hex) ? hex : DEFAULT_HEX;
 };
 
+const WEIGHT_NUMBER_REGEX = /\d+(?:\.\d+)?/;
+const GRAMS_UNIT_REGEX = /\d\s*(?:g|gr|grs|gramos?)\b/i;
+
+/**
+ * Normaliza el peso crudo del backend ("1,5kg", "1KG", "1.5", "15 Kg", "20")
+ * al formato "[Número] kg" ("1.5 kg", "20 kg").
+ * - Si viene explícitamente en gramos ("500g"), se convierte a kg ("0.5 kg")
+ *   para no mostrar "500 kg".
+ * - Si no hay un número válido (ej: "Unidad"), devuelve el texto original
+ *   recortado en vez de inventar un peso.
+ */
+export const normalizeContentWeight = (raw: unknown): string => {
+  const text = toSafeString(raw);
+  const match = text.replace(',', '.').match(WEIGHT_NUMBER_REGEX);
+  if (!match) return text;
+
+  let weight = parseFloat(match[0]);
+  if (!Number.isFinite(weight) || weight <= 0) return text;
+  if (GRAMS_UNIT_REGEX.test(text)) weight /= 1000;
+
+  return `${Number(weight.toFixed(3))} kg`;
+};
+
+/** Peso numérico de un contenido ya normalizado ("1.5 kg"); sin número ("Unidad") va al final. */
+const contentWeightValue = (content: string): number => {
+  const match = content.match(WEIGHT_NUMBER_REGEX);
+  return match ? parseFloat(match[0]) : Number.POSITIVE_INFINITY;
+};
+
 /**
  * Adapter Pattern: Transforma un producto de la API (Alimento) al formato estandarizado de la UI.
  */
@@ -33,7 +62,7 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
   const fallbackSku = toSafeString(apiProduct.product_sku);
 
   (apiProduct.product_variants ?? []).forEach((v) => {
-    const content = toSafeString(v.variant_content);
+    const content = normalizeContentWeight(v.variant_content);
 
     // Variantes "fantasma" (sin contenido) no son vendibles: se descartan
     if (!content) return;
@@ -57,7 +86,7 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
     // El backend a veces duplica variantes idénticas
     if (group.options.some((o) => o.content.toLowerCase() === content.toLowerCase())) return;
 
-    // 2. CONTENIDO Y STOCK: Ej -> "3kg", "15kg"
+    // 2. CONTENIDO Y STOCK: Ej -> "3 kg", "15 kg"
     group.options.push({
       content,
       sku: toSafeString(v.variant_sku) || fallbackSku,
@@ -67,6 +96,10 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
       available: v.variant_stock === null || v.variant_stock > 0,
     });
   });
+
+  // El backend no garantiza orden: opciones de menor a mayor peso
+  Object.values(groupedVariants).forEach((g) =>
+    g.options.sort((a, b) => contentWeightValue(a.content) - contentWeightValue(b.content)));
 
   // Escudo extremo: producto sin variantes válidas
   if (Object.keys(groupedVariants).length === 0) {
@@ -150,7 +183,7 @@ export const mapOrderFromApi = (apiData: any): Order => {
       price: item.item_cost || 0,
       quantity: item.item_count || 1,
       selectedPresentation: item.variant_presentation || 'N/A', // Chau variant_color
-      selectedContent: item.variant_content || 'N/A', // Chau variant_size
+      selectedContent: normalizeContentWeight(item.variant_content) || 'N/A', // Chau variant_size
       selectedImage: item.product_picture || undefined // Chau dress_picture
     }))
   };
