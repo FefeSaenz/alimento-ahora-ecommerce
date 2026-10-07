@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 
 // Contexts y Utils de ALIMENTO AHORA
 import { useApp } from '@/src/context/AppContext';
-import { useCart } from '@/src/context/CartContext';
+import { useCartActions } from '@/src/context/CartContext';
 import { Product, CartItem } from '@/src/types/product.types'; // Añadimos CartItem
 
 // UI Components
@@ -19,7 +19,7 @@ const ProductDetail: React.FC = () => {
   // Eliminamos setSelectedQuickView, ya no usamos modales intermedios
   
   const { allProducts, loading } = useApp();
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addToCart, setIsCartOpen } = useCartActions();
 
   // 1. BÚSQUEDA DIRECTA
   const product = useMemo(() => {

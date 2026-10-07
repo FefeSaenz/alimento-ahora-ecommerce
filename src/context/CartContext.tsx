@@ -1,25 +1,37 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { CartItem, Order } from '@/src/types/product.types';
 import { normalizeContentWeight } from '@/src/utils/mappers';
 
-interface CartContextType {
+// Estado de negocio: cambia cuando se modifica el carrito o las órdenes
+interface CartStateContextType {
   cart: CartItem[];
   orders: Order[];
+  cartCount: number;
+}
+
+// Estado de UI: solo los booleanos de modales/drawers. Cambia al abrir o cerrar uno
+interface CartUIContextType {
   isCartOpen: boolean;
-  setIsCartOpen: (open: boolean) => void;
   isProfileOpen: boolean;
-  setIsProfileOpen: (open: boolean) => void;
   isCheckoutOpen: boolean;
+}
+
+// Acciones: todas con referencia estable (setters de useState + useCallback sin dependencias),
+// por lo que este contexto se crea una única vez y sus consumidores nunca se re-renderizan por él
+interface CartActionsContextType {
+  setIsCartOpen: (open: boolean) => void;
+  setIsProfileOpen: (open: boolean) => void;
   setIsCheckoutOpen: (open: boolean) => void;
   addToCart: (item: CartItem) => void;
   // Actualizamos las firmas para reflejar los nuevos tipos
   updateQuantity: (id: string, content: string, presentation: string, delta: number) => void;
   removeFromCart: (id: string, content: string, presentation: string) => void;
   handleCheckoutComplete: (newOrder: Order) => void;
-  cartCount: number;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+const CartStateContext = createContext<CartStateContextType | undefined>(undefined);
+const CartUIContext = createContext<CartUIContextType | undefined>(undefined);
+const CartActionsContext = createContext<CartActionsContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   // --- ESTADOS DE INTERFAZ ---
@@ -103,7 +115,7 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
   
   //  FINALIZACIÓN DE COMPRA
   
-  const handleCheckoutComplete = (newOrder: Order) => {
+  const handleCheckoutComplete = useCallback((newOrder: Order) => {
     // 1. Guardamos la orden en el estado local de pedidos
     setOrders((prev) => [newOrder, ...prev]);
     
@@ -115,23 +127,54 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
     // 4. Cerramos también el carrito por si estaba abierto por algún motivo
     setIsCartOpen(false);
-  };
+  }, []);
 
-  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  const cartCount = useMemo(() => cart.reduce((acc, item) => acc + item.quantity, 0), [cart]);
+
+  // Valores memoizados: las referencias solo cambian cuando cambian sus datos reales
+  const stateValue = useMemo(
+    () => ({ cart, orders, cartCount }),
+    [cart, orders, cartCount]
+  );
+
+  const uiValue = useMemo(
+    () => ({ isCartOpen, isProfileOpen, isCheckoutOpen }),
+    [isCartOpen, isProfileOpen, isCheckoutOpen]
+  );
+
+  const actionsValue = useMemo(
+    () => ({
+      setIsCartOpen, setIsProfileOpen, setIsCheckoutOpen,
+      addToCart, updateQuantity, removeFromCart, handleCheckoutComplete
+    }),
+    [addToCart, updateQuantity, removeFromCart, handleCheckoutComplete]
+  );
 
   return (
-    <CartContext.Provider value={{ 
-      cart, orders, isCartOpen, setIsCartOpen, isProfileOpen, setIsProfileOpen,
-      isCheckoutOpen, setIsCheckoutOpen, addToCart, updateQuantity, 
-      removeFromCart, handleCheckoutComplete, cartCount 
-    }}>
-      {children}
-    </CartContext.Provider>
+    <CartStateContext.Provider value={stateValue}>
+      <CartUIContext.Provider value={uiValue}>
+        <CartActionsContext.Provider value={actionsValue}>
+          {children}
+        </CartActionsContext.Provider>
+      </CartUIContext.Provider>
+    </CartStateContext.Provider>
   );
 };
 
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) throw new Error("useCart debe usarse dentro de CartProvider");
+export const useCartState = () => {
+  const context = useContext(CartStateContext);
+  if (!context) throw new Error("useCartState debe usarse dentro de CartProvider");
+  return context;
+};
+
+export const useCartUI = () => {
+  const context = useContext(CartUIContext);
+  if (!context) throw new Error("useCartUI debe usarse dentro de CartProvider");
+  return context;
+};
+
+export const useCartActions = () => {
+  const context = useContext(CartActionsContext);
+  if (!context) throw new Error("useCartActions debe usarse dentro de CartProvider");
   return context;
 };

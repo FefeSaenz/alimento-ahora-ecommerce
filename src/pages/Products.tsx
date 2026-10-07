@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet-async';
 
 // Context & Hooks
 import { useApp } from '@/src/context/AppContext';
-import { useCart } from '@/src/context/CartContext'; // 1. Traemos el carrito
+import { useCartActions } from '@/src/context/CartContext'; // 1. Traemos el carrito
 import { useProductFilters } from '@/src/hooks/useProductFilters';
 import { Product } from '@/src/types/product.types';
 import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts'; 
@@ -20,7 +20,7 @@ const Products: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     
     // 2. Extraemos la función real de agregar al carrito
-    const { addToCart } = useCart(); 
+    const { addToCart } = useCartActions(); 
 
     const { unifiedProducts } = useUnifiedProducts(); 
 

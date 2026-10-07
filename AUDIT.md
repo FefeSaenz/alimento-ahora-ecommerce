@@ -159,7 +159,7 @@ Se propone el siguiente plan estratégico de refactorización incremental, orden
 *   [x] **Acción 2 (Sanitización del SPA Hard Reload):** Reemplazar `window.location.href = '/'` en el interceptor de Axios por una llamada controlada de redirección mediante el router de la aplicación, o en su defecto, limpiar los estados de autenticación y permitir que el renderizado de rutas asíncronas maneje la caída automática hacia la pantalla de autenticación de forma nativa en React.
 
 ### ⚙️ Fase 2: Optimización de Arquitectura de Estado & Rendimiento
-*   **Acción 3 (Separar Estado Lógico vs. UI en CartContext):** Dividir el `CartContext` para evitar renderizados redundantes:
+*   [x] **Acción 3 (Separar Estado Lógico vs. UI en CartContext):** Dividir el `CartContext` para evitar renderizados redundantes:
     1.  **CartStateContext:** Almacena únicamente el arreglo `cart`, `orders` y `cartCount`.
     2.  **CartUIContext / Actions:** Almacena los booleanos de interfaz (`isCartOpen`, `isCheckoutOpen`, etc.) y las funciones despachadoras (`addToCart`, `updateQuantity`).
     Esto previene que un cambio de cantidad en el carrito dispare re-renders en componentes estáticos del Layout que solo consumen métodos estáticos de acción.

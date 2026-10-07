@@ -4,7 +4,7 @@ import { Toaster } from 'sonner';
 
 // Contexts
 import { useApp } from '@/src/context/AppContext';
-import { useCart } from '@/src/context/CartContext';
+import { useCartState, useCartUI, useCartActions } from '@/src/context/CartContext';
 
 // Components
 import Header from './Header';
@@ -24,13 +24,13 @@ import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts';
 const Layout: React.FC = () => {
     const navigate = useNavigate();
     const { loading } = useApp();
+    const { cart, orders, cartCount } = useCartState();
+    const { isCartOpen, isProfileOpen, isCheckoutOpen } = useCartUI();
     const { 
-        cart, orders, isCartOpen, setIsCartOpen, 
-        isProfileOpen, setIsProfileOpen, 
-        isCheckoutOpen, setIsCheckoutOpen, 
+        setIsCartOpen, setIsProfileOpen, setIsCheckoutOpen, 
         addToCart, updateQuantity, removeFromCart, 
         handleCheckoutComplete 
-    } = useCart();
+    } = useCartActions();
 
     // Importo productos
     const { unifiedProducts } = useUnifiedProducts();
@@ -57,7 +57,7 @@ const Layout: React.FC = () => {
                 onOpenCart={() => setIsCartOpen(true)}
                 onOpenProfile={() => setIsProfileOpen(true)}
                 onOpenSearch={() => setIsSearchOpen(true)}
-                cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)}
+                cartCount={cartCount}
             />
           
             <AnnouncementBar 

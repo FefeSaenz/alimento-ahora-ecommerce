@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 // Contexts & Hooks
 import { useApp } from '@/src/context/AppContext'; // Consumo de la API
-import { useCart } from '@/src/context/CartContext'; // Consumo del Carrito
+import { useCartActions } from '@/src/context/CartContext'; // Consumo del Carrito
 import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts';
 
 // UI Components
@@ -22,7 +22,7 @@ const Home: React.FC = () => {
     const { hash } = useLocation(); // Para detectar anclas en la URL
     const { allProducts, loading, frontConfig } = useApp(); // Data de la API disponible
     
-    const { addToCart } = useCart(); // Traemos la función real del carrito
+    const { addToCart } = useCartActions(); // Traemos la función real del carrito
     
     const { featuredProducts } = useUnifiedProducts(); // Obtenemos los productos unificados desde el nuevo hook
     
