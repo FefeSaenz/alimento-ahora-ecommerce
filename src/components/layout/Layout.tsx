@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
@@ -75,7 +75,9 @@ const Layout: React.FC = () => {
             
             <main className="grow bg-white">
                 {/* Pasamos setSelectedQuickView para que las páginas hijas (Home, Category) puedan abrirlo */}
-                <Outlet context={{ setSelectedQuickView, searchTerm, setSearchTerm }} />
+                <Suspense fallback={null}>
+                    <Outlet context={{ setSelectedQuickView, searchTerm, setSearchTerm }} />
+                </Suspense>
             </main>
 
             <Footer onOpenTerms={() => setIsTermsOpen(true)} />

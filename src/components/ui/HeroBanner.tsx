@@ -82,6 +82,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
                 src={banner.image} 
                 alt={banner.title}
                 loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
                 decoding="async"
                 className={`w-full h-full object-cover object-center transition-transform duration-10000 ease-out ${
                   isActive ? 'scale-110' : 'scale-100'

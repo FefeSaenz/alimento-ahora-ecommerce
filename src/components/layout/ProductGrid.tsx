@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '@/src/components/ui/ProductCard';
+import ProductCardSkeleton from '@/src/components/ui/ProductCardSkeleton';
 import SectionTitle from '@/src/components/ui/SectionTitle';
 import { Product, CartItem } from '@/src/types/product.types';
 
@@ -12,6 +13,8 @@ interface ProductGridProps {
   viewAllLink?: string;
   viewAllText?: string;
   layoutMode?: 'home' | 'catalog'; // <-- NUEVO SWITCH DE DISEÑO
+  isLoading?: boolean; // Muestra skeletons en lugar de productos mientras responde la API
+  skeletonCount?: number;
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ 
@@ -21,7 +24,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   title, 
   viewAllLink,
   viewAllText,
-  layoutMode = 'home' // Por defecto actúa como lookbook
+  layoutMode = 'home', // Por defecto actúa como lookbook
+  isLoading = false,
+  skeletonCount = 4
 }) => {
   
   // DICCIONARIO DE GRILLAS RESPONSIVAS
@@ -57,7 +62,16 @@ const ProductGrid: React.FC<ProductGridProps> = ({
           </div>
         )}
 
-        {products.length > 0 ? (
+        {/* SKELETON: misma grilla que la real, para que no haya Layout Shift al llegar los datos */}
+        {isLoading && (
+          <div className={gridLayouts[layoutMode]} role="status" aria-busy="true" aria-label="Cargando productos">
+            {Array.from({ length: skeletonCount }, (_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        )}
+
+        {!isLoading && (products.length > 0 ? (
           // Usamos el diccionario para inyectar la grilla correcta
           <div className={gridLayouts[layoutMode]}>
             {products.map((product) => (
@@ -78,7 +92,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
               Ver todo el catálogo
             </Link>
           </div>
-        )}
+        ))}
         {/* BOTÓN CTA: Solo visible en Mobile al final del scroll */}
         {viewAllLink && viewAllText && products.length > 0 && (
           <div className="flex justify-center mt-8 lg:hidden">

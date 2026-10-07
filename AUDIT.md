@@ -163,7 +163,7 @@ Se propone el siguiente plan estratégico de refactorización incremental, orden
     1.  **CartStateContext:** Almacena únicamente el arreglo `cart`, `orders` y `cartCount`.
     2.  **CartUIContext / Actions:** Almacena los booleanos de interfaz (`isCartOpen`, `isCheckoutOpen`, etc.) y las funciones despachadoras (`addToCart`, `updateQuantity`).
     Esto previene que un cambio de cantidad en el carrito dispare re-renders en componentes estáticos del Layout que solo consumen métodos estáticos de acción.
-*   **Acción 4 (Optimizar Precarga de Banners):** Configurar etiquetas `<link rel="preload" as="image" href="..." />` dinámicas en el archivo `index.html` o a través de `react-helmet-async` para la primera imagen del banner que se renderizará de forma prioritaria, reduciendo sustancialmente el LCP y la inestabilidad de la pantalla (CLS).
+*   [x] **Acción 4 (Optimizar Precarga de Banners):** Configurar etiquetas `<link rel="preload" as="image" href="..." />` dinámicas en el archivo `index.html` o a través de `react-helmet-async` para la primera imagen del banner que se renderizará de forma prioritaria, reduciendo sustancialmente el LCP y la inestabilidad de la pantalla (CLS).
 
 ### 🧹 Fase 3: Higiene de Código y Sincronización de Precios
 *   [x] **Acción 5 (Remoción de Residuos de Nomenclatura):** Limpiar por completo todos los comentarios heredados de indumentaria en `mappers.ts`, `product.types.ts`, e interfaces internas para consolidar la arquitectura de dominio del Pet Shop.
