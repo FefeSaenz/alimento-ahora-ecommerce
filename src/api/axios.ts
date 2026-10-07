@@ -13,6 +13,9 @@ const generateSafeUUID = () => {
   });
 };
 
+// Evento global: axios vive fuera de React y no puede navegar; avisa y la app reacciona (ver AppContent)
+export const SESSION_EXPIRED_EVENT = 'session-expired';
+
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 8000,
@@ -44,12 +47,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response, 
     (error) => {
-        if (error.response?.status === 401) {
-        console.warn("Sesión expirada. Limpiando credenciales...");
-        localStorage.removeItem('alimento_token');
-        localStorage.removeItem('alimento_email');
-        
-        window.location.href = '/';
+        // Solo hay "sesión expirada" si existía una sesión (evita reaccionar a 401 de invitados, ej. código OTP inválido)
+        if (error.response?.status === 401 && localStorage.getItem('alimento_token')) {
+            console.warn("Sesión expirada. Notificando a la app...");
+            window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
         }
         return Promise.reject(error);
     }

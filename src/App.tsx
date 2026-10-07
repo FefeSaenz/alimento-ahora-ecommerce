@@ -1,10 +1,13 @@
 import React, { useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
 // Contexts
-import { AuthProvider } from '@/src/context/AuthContext';
+import { AuthProvider, useAuth } from '@/src/context/AuthContext';
 import { AppProvider, useApp } from '@/src/context/AppContext';
 import { CartProvider } from '@/src/context/CartContext';
+
+// API
+import { SESSION_EXPIRED_EVENT } from '@/src/api/axios';
 
 // Layout Principal
 import Layout from '@/src/components/layout/Layout';
@@ -40,6 +43,18 @@ const GlobalLoader = () => (
 const AppContent: React.FC = () => {
   const { pathname } = useLocation();
   const { loading } = useApp(); 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Sesión expirada (401 en axios): limpia credenciales y vuelve al inicio sin recargar la SPA
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      logout();
+      navigate('/', { replace: true });
+    };
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+  }, [logout, navigate]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -156,7 +156,7 @@ Se propone el siguiente plan estratégico de refactorización incremental, orden
 
 ### 🚀 Fase 1: Corrección Inmediata (Seguridad y Resiliencia)
 *   [x] **Acción 1 (Encriptación de Persistencia Ligera):** Modificar `useCheckoutPersistence.ts` para encriptar los valores sensibles del borrador del formulario mediante codificación simple Base64 o una clave de cifrado simétrica ligera (ej: `AES-256` vía librería ligera o un transformador simple de caracteres). Al menos, ofuscar para mitigar la lectura directa por scrapers maliciosos de navegador.
-*   **Acción 2 (Sanitización del SPA Hard Reload):** Reemplazar `window.location.href = '/'` en el interceptor de Axios por una llamada controlada de redirección mediante el router de la aplicación, o en su defecto, limpiar los estados de autenticación y permitir que el renderizado de rutas asíncronas maneje la caída automática hacia la pantalla de autenticación de forma nativa en React.
+*   [x] **Acción 2 (Sanitización del SPA Hard Reload):** Reemplazar `window.location.href = '/'` en el interceptor de Axios por una llamada controlada de redirección mediante el router de la aplicación, o en su defecto, limpiar los estados de autenticación y permitir que el renderizado de rutas asíncronas maneje la caída automática hacia la pantalla de autenticación de forma nativa en React.
 
 ### ⚙️ Fase 2: Optimización de Arquitectura de Estado & Rendimiento
 *   **Acción 3 (Separar Estado Lógico vs. UI en CartContext):** Dividir el `CartContext` para evitar renderizados redundantes:
