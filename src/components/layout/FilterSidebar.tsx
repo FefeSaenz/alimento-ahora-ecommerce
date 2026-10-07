@@ -93,7 +93,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       p.variants?.flatMap(v => v.options.map(o => o.content.toString())) || []
     );
     
-    // Eliminamos el talle 'U' (Único) de la lista de filtros de peso
+    // Eliminamos la opción 'U' (Único) de la lista de filtros de peso
     const filteredSizes = allSizes.filter(s => s.toUpperCase() !== 'U');
 
     const unique = Array.from(new Set(filteredSizes));

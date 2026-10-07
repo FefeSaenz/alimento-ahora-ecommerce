@@ -34,7 +34,6 @@ const Footer: React.FC<FooterProps> = ({ onOpenTerms }) => {
             alt="ALIMENTO AHORA"
             className="w-48 md:w-56 object-contain"
           />
-          {/* Volvemos al naranja (brand-primary) y eliminamos el margin-left para que se alinee con INFORMACIÓN */}
           <p className="text-[17px] font-lilita font-medium text-brand-primary tracking-wide">
             Amor, de a kilos.
           </p>

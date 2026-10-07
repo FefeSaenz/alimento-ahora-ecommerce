@@ -113,7 +113,7 @@ const Layout: React.FC = () => {
                 orders={orders}
             />
 
-            {/* NUEVO MODAL DE TÉRMINOS */}
+            {/* MODAL DE TÉRMINOS */}
             <TermsModal 
                 isOpen={isTermsOpen} 
                 onClose={() => setIsTermsOpen(false)} 

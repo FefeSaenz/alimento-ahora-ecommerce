@@ -10,7 +10,6 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
   // 1. Estado local para manejar qué peso (pastilla) está seleccionado.
-  // Ahora VS Code va a pintar "ProductContentOption" de color normal porque lo usamos acá en el useState
   const defaultPresentation = product.variants[0]?.presentation.name || 'ÚNICO';
   const defaultOption = product.variants[0]?.options[0];
   
@@ -54,10 +53,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
         </div>
       )}
 
-      {/* Paddings más ajustados: p-4 -> p-3 */}
       <Link to={productUrl} className="flex flex-col cursor-pointer p-3 pb-0 z-10" title={`Ver ${product.name}`}>
         
-        {/* CAMBIO CLAVE: aspect-3/4 -> aspect-square. Esto achica drásticamente la altura. */}
         <div className="relative aspect-square w-full mb-2 bg-white flex items-center justify-center p-2 rounded-xl overflow-hidden">
           <img
             src={product.images[0]}
@@ -74,7 +71,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
               {product.brand}
             </span>
           )}
-          {/* Texto ligeramente más compacto */}
           <h3 className="text-[13px] font-fredoka font-semibold text-gray-800 leading-snug line-clamp-2 min-h-9">
             {product.name}
           </h3>

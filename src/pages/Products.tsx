@@ -110,7 +110,7 @@ const Products: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Título Visual (adaptado a Pet Shop)
+    // Título Visual
     const pageTitle = searchTerm
         ? 'BÚSQUEDA'
         : isOffersRoute 

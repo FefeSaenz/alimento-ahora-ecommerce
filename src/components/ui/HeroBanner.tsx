@@ -88,7 +88,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
                 }`}
               />
 
-              {/* CONTENEDOR DE TEXTO (Ajuste de márgenes para bajarlo) */}
+              {/* CONTENEDOR DE TEXTO */}
               <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-6 z-20 pointer-events-none pb-10 md:pb-16">
                 <h1 className={`text-3xl md:text-5xl lg:text-6xl font-lilita text-white drop-shadow-2xl leading-tight mb-3 max-w-3xl transition-all duration-700 ease-out ${
                   isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -113,7 +113,7 @@ const HeroBanner: React.FC<HeroBannerProps> = ({ banners, onCtaClick }) => {
         })}
       </div>
       
-      {/* INDICADORES (DOTS) - Pegados más al límite inferior */}
+      {/* INDICADORES (DOTS) */}
       <div className="absolute bottom-0 md:bottom-4 left-1/2 -translate-x-1/2 flex space-x-3 z-30">
         {banners.map((_, index) => {
           const isActive = index === currentIndex;

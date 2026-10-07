@@ -269,7 +269,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
             )}
 
             {step === 1 && (
-              // ... (código de los inputs igual que antes)
               <div className="animate-in slide-in-from-right duration-300">
                 <h3 className="text-2xl md:text-3xl font-lilita text-brand-primary tracking-wide mb-4">Entrega</h3>
                 
@@ -298,7 +297,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
             )}
             
             {step === 2 && (
-              // ... (código pago)
               <div className="animate-in slide-in-from-right duration-300">
                 <h3 className="text-2xl md:text-3xl font-lilita text-brand-primary tracking-wide mb-4">Método de Pago</h3>
                 
@@ -340,7 +338,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
             )}
 
             {step === 3 && (
-              // ... (código verificación)
                <div className="animate-in slide-in-from-right duration-300 flex flex-col items-center py-6">
                 <div className="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mb-4 text-brand-primary">
                   <i className="fa-solid fa-shield-check text-3xl"></i>

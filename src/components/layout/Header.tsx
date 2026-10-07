@@ -33,7 +33,6 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
       <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 px-5 lg:px-5 h-20 flex items-center justify-between text-black">
         
         {/* --- 1. BLOQUE IZQUIERDO --- */}
-        {/* Ajuste: Reducimos space-x-5 a space-x-3 en móviles para alejar la lupa del centro */}
         <div className="flex items-center space-x-3 md:space-x-5">
           
           {/* Mobile/Tablet: Hamburguesa */}

@@ -19,7 +19,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
       
       <div className="w-full flex flex-col lg:flex-row lg:items-center justify-between lg:max-w-360 lg:mx-auto lg:px-6">
       
-        {/* 1. TÍTULO (Alineado a la izquierda siempre) - Paddings y textos reducidos */}
+        {/* 1. TÍTULO (Alineado a la izquierda siempre) */}
         <div className="flex items-center justify-start w-full lg:w-auto py-2.5 lg:py-3 px-6 lg:px-0 border-b border-gray-100 lg:border-none">
           <h1 className="text-xl lg:text-3xl font-lilita text-brand-primary tracking-wide leading-none">
               {title}
@@ -28,7 +28,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
         {/* CONTENEDOR DE BOTONES */}
         <div className="flex flex-row w-full lg:w-auto bg-gray-50 lg:bg-transparent">
-            {/* 2. BOTÓN FILTRAR (Solo Mobile/Tablet) - Padding reducido */}
+            {/* 2. BOTÓN FILTRAR (Solo Mobile/Tablet) */}
             <button 
               onClick={onOpenMobileFilters}
               className="flex lg:hidden flex-1 py-3 border-r border-gray-200 items-center justify-center space-x-2 text-xs font-fredoka font-bold text-gray-600 uppercase tracking-wider active:bg-orange-50 active:text-brand-primary transition-colors cursor-pointer"

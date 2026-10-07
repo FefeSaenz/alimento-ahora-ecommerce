@@ -36,7 +36,6 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
   const currentVariant = selectedVariant || product.variants?.[0];
   if (!currentVariant) return null;
 
-  // En la nueva estructura eliminamos las imágenes por color, usamos la galería principal
   const mainImageSrc = product.images[activeImageIndex] || '';
 
   return (
@@ -150,7 +149,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
                 </div>
               )}
 
-              {/* Selección de Talle / Peso */}
+              {/* Selección de Peso */}
               <div className="border-t border-gray-100 pt-4 2xl:pt-5">
                 <p className="text-xs font-fredoka font-bold text-gray-500 uppercase tracking-wider mb-3">Seleccionar Opción</p>
                 <div className="flex flex-wrap gap-2 2xl:gap-3">

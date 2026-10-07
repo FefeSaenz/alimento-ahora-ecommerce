@@ -185,12 +185,12 @@ export const mapOrderFromApi = (apiData: any): Order => {
     items: (backOrder.order_items || []).map((item: any) => ({
       id: item.article_id?.toString() || '0',
       variant_id: item.variant_id,
-      name: item.product_name || 'Producto', // Chau dress_name
+      name: item.product_name || 'Producto',
       price: item.item_cost || 0,
       quantity: item.item_count || 1,
-      selectedPresentation: item.variant_presentation || 'N/A', // Chau variant_color
-      selectedContent: normalizeContentWeight(item.variant_content) || 'N/A', // Chau variant_size
-      selectedImage: item.product_picture || undefined // Chau dress_picture
+      selectedPresentation: item.variant_presentation || 'N/A',
+      selectedContent: normalizeContentWeight(item.variant_content) || 'N/A',
+      selectedImage: item.product_picture || undefined
     }))
   };
 };

@@ -166,7 +166,7 @@ Se propone el siguiente plan estratégico de refactorización incremental, orden
 *   **Acción 4 (Optimizar Precarga de Banners):** Configurar etiquetas `<link rel="preload" as="image" href="..." />` dinámicas en el archivo `index.html` o a través de `react-helmet-async` para la primera imagen del banner que se renderizará de forma prioritaria, reduciendo sustancialmente el LCP y la inestabilidad de la pantalla (CLS).
 
 ### 🧹 Fase 3: Higiene de Código y Sincronización de Precios
-*   **Acción 5 (Remoción de Residuos de Nomenclatura):** Limpiar por completo todos los comentarios heredados de indumentaria en `mappers.ts`, `product.types.ts`, e interfaces internas para consolidar la arquitectura de dominio del Pet Shop.
+*   [x] **Acción 5 (Remoción de Residuos de Nomenclatura):** Limpiar por completo todos los comentarios heredados de indumentaria en `mappers.ts`, `product.types.ts`, e interfaces internas para consolidar la arquitectura de dominio del Pet Shop.
 *   **Acción 6 (Integración de Variant Prices):** Trabajar en conjunto con el equipo de backend para habilitar el campo `variant_price` en el endpoint `/shop/page/`. Una vez habilitado, descomentar la línea 40 de `mappers.ts` para reflejar con exactitud la escala de precios según el peso de bolsa de alimento seleccionado en la vista de detalle.
 
 ---

@@ -8,7 +8,7 @@ interface UseProductFiltersProps {
 }
 
 // --- HELPER FUNCTIONS PARA BÚSQUEDA INTELIGENTE ---
-// 1. Normalización: Saca tildes y pasa a minúsculas ("Pantalón" -> "pantalon")
+// 1. Normalización: Saca tildes y pasa a minúsculas ("Pequeño" -> "pequeno")
 const normalizeText = (text?: string) => {
   if (!text) return '';
   return text
@@ -18,7 +18,7 @@ const normalizeText = (text?: string) => {
     .trim();
 };
 
-// 2. Lematización Básica: Saca plurales ("remeras" -> "remera", "pantalones" -> "pantalon")
+// 2. Lematización Básica: Saca plurales ("cachorros" -> "cachorro", "croquetas" -> "croqueta")
 const lemmatize = (word: string) => {
   let w = word;
   if (w.length > 3 && w.endsWith('es')) w = w.slice(0, -2);
@@ -26,7 +26,7 @@ const lemmatize = (word: string) => {
   return w;
 };
 
-// HELPER EXTRA 2: Normaliza mayúsculas/minúsculas para Edad y Tamaño ("Mini adult" === "Mini Adult")
+// Normaliza mayúsculas/minúsculas para Edad y Tamaño ("Mini adult" === "Mini Adult")
 const normalizeAgeSize = (text: string) => text.trim().toLowerCase();
 
 /*
@@ -38,11 +38,11 @@ export const useProductFilters = ({
   searchTerm 
 }: UseProductFiltersProps) => {
 
-  // ESTADOS DE FILTRADO (Variables renombradas al contexto Pet Shop)
+  // ESTADOS DE FILTRADO
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [activeBrand, setActiveBrand] = useState<string | null>(null); 
-  const [activeWeight, setActiveWeight] = useState<string | null>(null); // Ex activeSize
-  const [activeAgeSize, setActiveAgeSize] = useState<string | null>(null); // Ex activepresentation
+  const [activeWeight, setActiveWeight] = useState<string | null>(null);
+  const [activeAgeSize, setActiveAgeSize] = useState<string | null>(null);
   const [activePrice, setActivePrice] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'default' | 'price-low' | 'price-high'>('default');
 
@@ -128,8 +128,8 @@ export const useProductFilters = ({
     filteredProducts,
     activeCategory, setActiveCategory,
     activeBrand, setActiveBrand, 
-    activeWeight, setActiveWeight, // Ex activeSize
-    activeAgeSize, setActiveAgeSize, // Ex activepresentation
+    activeWeight, setActiveWeight,
+    activeAgeSize, setActiveAgeSize,
     activePrice, setActivePrice,
     sortBy, setSortBy,
     categories,

@@ -13,7 +13,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemove })
     <div className="flex space-x-4">
       {/* Imagen redondeada y amigable */}
       <div className="w-24 aspect-3/4 shrink-0 bg-gray-50 rounded-xl border border-gray-100 overflow-hidden">
-        {/* Usamos selectedImage por si cambió la foto al elegir el color, sino el fallback */}
+        {/* Usamos selectedImage si existe (foto de la variante elegida), sino el fallback */}
         <img src={item.selectedImage || item.images[0]} className="w-full h-full object-contain p-2" alt={item.name} />
       </div>
       <div className="flex-1 py-1">

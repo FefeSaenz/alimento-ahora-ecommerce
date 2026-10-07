@@ -27,9 +27,9 @@ const ProductDetail: React.FC = () => {
     return allProducts.find(p => p.slug === slug || p.id === slug);
   }, [allProducts, slug]);
 
-  // 2. ESTADOS LOCALES (Adaptados a Pet Shop)
-  const [selectedPresentation, setSelectedPresentation] = useState<string | null>(null); // Ex selectedColor (Ej: "Mini Adulto")
-  const [selectedContent, setSelectedContent] = useState<string | null>(null);   // Ex selectedSize (Ej: "3kg")
+  // 2. ESTADOS LOCALES
+  const [selectedPresentation, setSelectedPresentation] = useState<string | null>(null); // Ej: "Mini Adulto"
+  const [selectedContent, setSelectedContent] = useState<string | null>(null); // Ej: "3 kg"
   const [mainImage, setMainImage] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isGalleryOpen, setIsGalleryOpen] = useState<boolean>(false);
@@ -71,7 +71,7 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  // 4. LÓGICA DE VARIANTES (Adaptadas a Pet Shop)
+  // 4. LÓGICA DE VARIANTES
   const availablePresentations = useMemo(() => {
     if (!product?.variants) return [];
     return Array.from(new Set(product.variants.map(v => v.presentation.name)));
@@ -246,7 +246,7 @@ const ProductDetail: React.FC = () => {
           </div>
 
           {/* 2. VISTA DESKTOP (Miniaturas + Foto Gigante) */}
-          {/* CORRECCIÓN: Agregamos items-start para que la foto no se centre verticalmente si la columna derecha crece */}
+          {/* items-start: evita que la foto se centre verticalmente si la columna derecha crece */}
           <div className="hidden lg:flex w-full lg:w-1/2 lg:max-w-120 xl:max-w-none flex-row gap-6 items-start">
             
             {/* Miniaturas (Verticales) */}
@@ -403,7 +403,6 @@ const ProductDetail: React.FC = () => {
             {/* Add to Cart Button */}
             <button 
               onClick={handleAddToCart}
-              // CORRECCIÓN DE LAYOUT SHIFT: Le sacamos el mb-8 al botón (lo empujaba el gap de arriba en realidad)
               className="w-full bg-brand-primary text-white py-4 md:py-5 rounded-full text-sm md:text-base font-fredoka font-bold uppercase tracking-wider hover:bg-orange-600 hover:shadow-lg transition-all active:scale-[0.98] mb-8 cursor-pointer shadow-md flex items-center justify-center gap-3"
             >
               <i className="fa-solid fa-cart-plus"></i> Agregar al Carrito

@@ -10,7 +10,6 @@ import { useUnifiedProducts } from '@/src/hooks/useUnifiedProducts';
 import HeroBanner from '@/src/components/ui/HeroBanner';
 import ProductGrid from '@/src/components/layout/ProductGrid';
 import ProductCarousel from '@/src/components/ui/ProductCarousel';
-//import LocationsSection from '@/src/components/layout/LocationsSection';
 
 //Assets
 import banner1 from '@/src/assets/AAbanner1.png';

@@ -80,6 +80,6 @@ export interface ApiResponse {
   msg: string;
   data: {
     banners: ApiBanner[]; 
-    products: ApiProduct[]; // Cambiado de ApiDress a ApiProduct
+    products: ApiProduct[];
   };
 }
