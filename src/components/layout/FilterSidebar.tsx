@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useApp } from '@/src/context/AppContext';
+import { weightKey } from '@/src/utils/mappers';
 
 interface FilterSidebarProps {
   activeFilters: { 
@@ -24,6 +25,17 @@ const formatPriceInput = (value: string) => {
   const raw = value.replace(/\D/g, ''); 
   if (!raw) return '';
   return raw.replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
+};
+
+// Igual que toggleFilter pero comparando pesos por clave ("15KG" en la URL == "15 kg" en la faceta)
+const toggleWeightFilter = (currentValue: string | null | undefined, newValue: string) => {
+  const list = currentValue ? currentValue.split(',') : [];
+  const key = weightKey(newValue);
+  if (list.some(v => weightKey(v) === key)) {
+    const filtered = list.filter(v => weightKey(v) !== key);
+    return filtered.length > 0 ? filtered.join(',') : null;
+  }
+  return [...list, newValue].join(',');
 };
 
 // HELPER NUEVO: Agrega o quita valores acumulables separados por coma
@@ -198,10 +210,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
               {activeWeightsArray.map(weight => (
                 <button 
                   key={`chip-weight-${weight}`}
-                  onClick={() => onFilterChange('peso', toggleFilter(activeFilters.weightFilter, weight))}
+                  onClick={() => onFilterChange('peso', toggleWeightFilter(activeFilters.weightFilter, weight))}
                   className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
                 >
-                  Peso: {weight}
+                  Peso: {weights.find(w => weightKey(w) === weightKey(weight)) ?? weight}
                   <span className="text-gray-400 group-hover:text-red-500">✕</span>
                 </button>
               ))}
@@ -286,11 +298,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Peso</h3>
             <div className="flex flex-wrap gap-2.5">
               {weights.map((weight) => {
-                const isActive = activeWeightsArray.includes(weight);
+                const isActive = activeWeightsArray.some(w => weightKey(w) === weightKey(weight));
                 return (
                   <button 
                     key={weight} 
-                    onClick={() => onFilterChange('peso', toggleFilter(activeFilters.weightFilter, weight))} 
+                    onClick={() => onFilterChange('peso', toggleWeightFilter(activeFilters.weightFilter, weight))} 
                     className={`min-w-12 px-3 h-10 rounded-xl border-2 flex items-center justify-center text-sm font-fredoka font-bold transition-all cursor-pointer ${isActive ? 'bg-brand-primary text-white border-brand-primary shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-brand-primary hover:text-brand-primary'}`}
                   >
                     {weight}

@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Product } from '@/src/types/product.types';
+import { weightKey } from '@/src/utils/mappers';
 
 interface UseProductFiltersProps {
   products: Product[];
@@ -24,9 +25,6 @@ const lemmatize = (word: string) => {
   else if (w.length > 2 && w.endsWith('s')) w = w.slice(0, -1);
   return w;
 };
-
-// HELPER EXTRA: Normaliza espacios para comparar pesos ("15 Kg" === "15Kg")
-const normalizeSize = (size: string) => size.replace(/\s+/g, '').toLowerCase();
 
 // HELPER EXTRA 2: Normaliza mayúsculas/minúsculas para Edad y Tamaño ("Mini adult" === "Mini Adult")
 const normalizeAgeSize = (text: string) => text.trim().toLowerCase();
@@ -92,9 +90,9 @@ export const useProductFilters = ({
 
     // 4. Filtro por Peso (SOPORTA MULTI-SELECT)
     if (activeWeight) {
-      const weightArray = activeWeight.split(',').map(normalizeSize);
+      const weightArray = activeWeight.split(',').map(weightKey);
       result = result.filter(p =>
-        p.variants?.some(v => v.options.some(o => weightArray.includes(normalizeSize(o.content.toString()))))
+        p.variants?.some(v => v.options.some(o => weightArray.includes(weightKey(o.content))))
       );
     }
 

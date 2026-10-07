@@ -48,6 +48,12 @@ export const normalizeContentWeight = (raw: unknown): string => {
   return `${Number(weight.toFixed(3))} kg`;
 };
 
+/**
+ * Clave de comparación de pesos: sin espacios y en minúsculas ("15 kg" === "15KG" === "15kg").
+ * Se usa solo para comparar (URL vs. contenido de variantes); lo que se muestra sigue siendo "15 kg".
+ */
+export const weightKey = (value: unknown): string => toSafeString(value).replace(/\s+/g, '').toLowerCase();
+
 /** Peso numérico de un contenido ya normalizado ("1.5 kg"); sin número ("Unidad") va al final. */
 const contentWeightValue = (content: string): number => {
   const match = content.match(WEIGHT_NUMBER_REGEX);
