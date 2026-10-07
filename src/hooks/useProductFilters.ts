@@ -111,15 +111,16 @@ export const useProductFilters = ({
       const max = maxStr ? parseInt(maxStr, 10) : Infinity;
 
       result = result.filter(p => {
-        // Si el producto está en oferta, filtramos por el precio real que paga el usuario
+        // p.price es el precio "desde" (menor variante vendible). Los productos sin precio no entran en ningún rango
         const finalPrice = p.price; 
-        return finalPrice >= min && finalPrice <= max;
+        return finalPrice > 0 && finalPrice >= min && finalPrice <= max;
       });
     }
 
     // 7. Ordenamiento (Sort)
-    if (sortBy === 'price-low') result.sort((a, b) => a.price - b.price);
-    if (sortBy === 'price-high') result.sort((a, b) => b.price - a.price);
+    // Los productos sin precio (0) siempre quedan al final, en ambos sentidos
+    if (sortBy === 'price-low') result.sort((a, b) => (a.price > 0 ? a.price : Infinity) - (b.price > 0 ? b.price : Infinity));
+    if (sortBy === 'price-high') result.sort((a, b) => (b.price > 0 ? b.price : -Infinity) - (a.price > 0 ? a.price : -Infinity));
 
     return result;
   }, [products, activeCategory, activeBrand, activeWeight, activeAgeSize, activePrice, sortBy, searchTerm]);

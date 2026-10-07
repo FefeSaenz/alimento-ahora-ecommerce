@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
-import { CartItem, Order } from '@/src/types/product.types';
-import { normalizeContentWeight } from '@/src/utils/mappers';
+import { toast } from 'sonner';
+import { CartItem, Order, Product, ProductContentOption } from '@/src/types/product.types';
+import { normalizeContentWeight, weightKey } from '@/src/utils/mappers';
+import { useApp } from '@/src/context/AppContext';
 
 // Estado de negocio: cambia cuando se modifica el carrito o las órdenes
 interface CartStateContextType {
@@ -33,7 +35,25 @@ const CartStateContext = createContext<CartStateContextType | undefined>(undefin
 const CartUIContext = createContext<CartUIContextType | undefined>(undefined);
 const CartActionsContext = createContext<CartActionsContextType | undefined>(undefined);
 
+// Busca en el catálogo vigente la variante que corresponde a un ítem del carrito.
+// Devuelve undefined si el producto no existe en el catálogo; null si el producto existe pero la variante ya no.
+const findCartItemOption = (products: Product[], item: CartItem): ProductContentOption | null | undefined => {
+  const product = products.find((p) => p.id === item.id);
+  if (!product) return undefined;
+
+  const options = product.variants.flatMap((v) => v.options.map((option) => ({ option, presentation: v.presentation.name })));
+  const match = item.variant_id !== undefined
+    ? options.find(({ option }) => option.variant_id === item.variant_id)
+    : options.find(({ option, presentation }) =>
+        weightKey(option.content) === weightKey(item.selectedContent) &&
+        presentation.toLowerCase() === item.selectedPresentation.toLowerCase());
+
+  return match ? match.option : null;
+};
+
 export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  const { allProducts, loading: catalogLoading } = useApp();
+
   // --- ESTADOS DE INTERFAZ ---
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -73,6 +93,38 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   }, [cart]);
 
+
+  // REPRICING: el carrito persiste en localStorage y puede traer precios viejos o inexistentes.
+  // Una vez cargado el catálogo, cada ítem se alinea con el precio vigente de su variante, y se quitan
+  // los que ya no son vendibles (variante discontinuada o sin precio) para no cobrarlos a un precio erróneo.
+  useEffect(() => {
+    if (catalogLoading || allProducts.length === 0) return;
+
+    const removedNames: string[] = [];
+    let changed = false;
+    const next = cart.flatMap((item) => {
+      const option = findCartItemOption(allProducts, item);
+      if (option === undefined) return [item]; // El catálogo no conoce el producto: no se puede juzgar
+      if (option === null || !option.available) {
+        removedNames.push(item.name);
+        changed = true;
+        return [];
+      }
+      if (option.price !== item.price) {
+        changed = true;
+        return [{ ...item, price: option.price }];
+      }
+      return [item];
+    });
+
+    if (!changed) return;
+    setCart(next);
+    if (removedNames.length > 0) {
+      toast.info(`Quitamos del carrito productos que ya no están disponibles: ${removedNames.join(', ')}.`);
+    } else {
+      toast.info('Actualizamos los precios de tu carrito.');
+    }
+  }, [allProducts, catalogLoading, cart]);
 
   /*
     MANEJADORES DEL CARRITO

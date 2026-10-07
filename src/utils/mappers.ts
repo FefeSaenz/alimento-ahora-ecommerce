@@ -25,6 +25,15 @@ const toSafeHex = (value: unknown): string => {
   return HEX_COLOR_REGEX.test(hex) ? hex : DEFAULT_HEX;
 };
 
+/**
+ * Convierte el precio crudo de la API a número. El backend puede mandar number, string o null.
+ * Devuelve 0 si no hay un precio válido (> 0): una opción sin precio no debe poder venderse.
+ */
+const toSafePrice = (value: unknown): number => {
+  const parsed = typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
+  return typeof parsed === 'number' && Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed * 100) / 100 : 0;
+};
+
 const WEIGHT_NUMBER_REGEX = /\d+(?:\.\d+)?/;
 const GRAMS_UNIT_REGEX = /\d\s*(?:g|gr|grs|gramos?)\b/i;
 
@@ -66,12 +75,14 @@ const contentWeightValue = (content: string): number => {
 export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
   const groupedVariants: Record<string, ProductVariant> = {};
   const fallbackSku = toSafeString(apiProduct.product_sku);
+  const fallbackPrice = toSafePrice(apiProduct.product_price);
 
   (apiProduct.product_variants ?? []).forEach((v) => {
     const content = normalizeContentWeight(v.variant_content);
 
-    // Variantes "fantasma" (sin contenido) no son vendibles: se descartan
-    if (!content) return;
+    // Variantes "fantasma" (sin contenido o con condición -1) no son vendibles: se descartan
+    const condition = v.variant_condition ?? 1;
+    if (!content || condition < 0) return;
 
     // 1. PRESENTACIÓN: Ej -> "Bolsa", "Mini Adulto". Se agrupa sin distinguir mayúsculas
     const presentationName = toSafeString(v.variant_presentation) || DEFAULT_PRESENTATION;
@@ -92,14 +103,17 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
     // El backend a veces duplica variantes idénticas
     if (group.options.some((o) => o.content.toLowerCase() === content.toLowerCase())) return;
 
-    // 2. CONTENIDO Y STOCK: Ej -> "3 kg", "15 kg"
+    // 2. CONTENIDO, PRECIO Y STOCK: Ej -> "3 kg", $47.047
+    // Solo es vendible si está activa (condición 1), tiene precio > 0 y no declara stock agotado
+    const price = toSafePrice(v.variant_price);
+    const hasStock = typeof v.variant_stock !== 'number' || v.variant_stock > 0;
     group.options.push({
       content,
       sku: toSafeString(v.variant_sku) || fallbackSku,
       variant_id: v.variant_id,
-      // price: v.variant_price, // <-- ¡Descomentar cuando el back lo envíe!
-      stock: v.variant_stock !== null ? v.variant_stock : 99,
-      available: v.variant_stock === null || v.variant_stock > 0,
+      price,
+      stock: typeof v.variant_stock === 'number' ? v.variant_stock : 99,
+      available: condition === 1 && price > 0 && hasStock,
     });
   });
 
@@ -111,9 +125,17 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
   if (Object.keys(groupedVariants).length === 0) {
     groupedVariants[DEFAULT_PRESENTATION] = {
       presentation: { name: DEFAULT_PRESENTATION, hex: DEFAULT_HEX },
-      options: [{ content: 'U', sku: fallbackSku, stock: 10, available: true }]
+      options: [{ content: 'U', sku: fallbackSku, price: fallbackPrice, stock: 10, available: fallbackPrice > 0 }]
     };
   }
+
+  // Precio "desde" del producto: el menor entre las opciones vendibles (si no hay, entre las que tienen precio)
+  const allOptions = Object.values(groupedVariants).flatMap((g) => g.options);
+  const sellablePrices = allOptions.filter((o) => o.available).map((o) => o.price);
+  const pricedPrices = allOptions.filter((o) => o.price > 0).map((o) => o.price);
+  const startingPrice = sellablePrices.length > 0
+    ? Math.min(...sellablePrices)
+    : pricedPrices.length > 0 ? Math.min(...pricedPrices) : fallbackPrice;
 
   // Defensa primaria del id
   const productIdStr = apiProduct.product_bound !== undefined && apiProduct.product_bound !== null
@@ -125,7 +147,7 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
     slug: apiProduct.product_slug,
     name: toSafeString(apiProduct.product_name),
     description: toSafeString(apiProduct.product_description),
-    price: apiProduct.product_price,
+    price: startingPrice,
     original_price: null,
     discount_percentage: null,
     images: apiProduct.product_pictures?.length > 0 

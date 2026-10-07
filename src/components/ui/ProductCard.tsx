@@ -11,15 +11,17 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
   // 1. Estado local para manejar qué peso (pastilla) está seleccionado.
   const defaultPresentation = product.variants[0]?.presentation.name || 'ÚNICO';
-  const defaultOption = product.variants[0]?.options[0];
+  // Preferimos la primera opción vendible; si ninguna lo es, mostramos la primera (deshabilitada)
+  const allOptions = product.variants.flatMap(v => v.options);
+  const defaultOption = allOptions.find(o => o.available) ?? allOptions[0];
   
   const [selectedOption, setSelectedOption] = useState<ProductContentOption | undefined>(defaultOption);
   
-  // 2. Extracción de todas las opciones de peso disponibles para renderizar los botoncitos
-  const allAvailableOptions = product.variants.flatMap(v => v.options);
+  // 2. Todas las opciones de peso, para renderizar los botoncitos
+  const allAvailableOptions = allOptions;
 
   const displayTag = Array.isArray(product.tags) ? product.tags[0] : product.tags;
-  const currentPrice = selectedOption?.price || product.price;
+  const currentPrice = selectedOption?.price ?? product.price;
   const productUrl = `/product/${product.slug}`;
 
   // 3. Función para armar el item y mandarlo al padre
@@ -27,13 +29,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
     e.preventDefault(); 
     e.stopPropagation();
     
-    if (!selectedOption) return;
+    if (!selectedOption || !selectedOption.available || selectedOption.stock <= 0) return;
 
     const cartItem: CartItem = {
       ...product,
+      price: selectedOption.price, // Precio de la variante elegida, no el "desde" del producto
       quantity: 1,
       selectedContent: selectedOption.content.toString(),
-      selectedPresentation: defaultPresentation,
+      // Presentación a la que pertenece la opción elegida (no siempre es la primera)
+      selectedPresentation: product.variants.find(v => v.options.includes(selectedOption))?.presentation.name || defaultPresentation,
       selectedImage: product.images[0],
       variant_id: selectedOption.variant_id
     };
@@ -112,11 +116,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
         )}
 
         <div className="flex flex-col items-center mt-auto w-full pt-2 border-t border-gray-100">
-          <Price amount={currentPrice} className="text-base lg:text-lg font-fredoka font-black text-brand-primary mb-2 text-center block" />
+          <Price amount={currentPrice} emptyLabel="Consultar precio" className="text-base lg:text-lg font-fredoka font-black text-brand-primary mb-2 text-center block" />
           
           <button 
             onClick={handleAddToCart}
-            disabled={!selectedOption || (!selectedOption.available && selectedOption.stock <= 0)}
+            disabled={!selectedOption || !selectedOption.available || selectedOption.stock <= 0}
             // Botón más comprimido
             className="w-full bg-brand-primary text-white py-2 rounded-full text-[11px] lg:text-xs font-fredoka font-bold uppercase tracking-wider shadow-md hover:bg-orange-600 transition-colors cursor-pointer active:scale-[0.98] disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none"
           >

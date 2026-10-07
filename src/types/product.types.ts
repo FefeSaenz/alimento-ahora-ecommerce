@@ -7,7 +7,7 @@ export interface ProductContentOption {
   content: string;
   sku: string;
   variant_id?: number;
-  price?: number; // ¡NUEVO! Esperando al backend para precio dinámico
+  price: number; // Precio de esta variante (> 0). Si es 0 la opción no es vendible (sin precio cargado)
   stock: number;
   available: boolean;
 }
@@ -25,7 +25,7 @@ export interface Product {
   slug: string;
   name: string;
   description: string;
-  price: number;
+  price: number; // Precio "desde": el menor entre las variantes vendibles
   original_price: number | null;
   discount_percentage: number | null;
   images: string[];
@@ -53,7 +53,7 @@ export interface CartItem extends Omit<Product, 'variants'> {
   selectedPresentation: string; // Ej: "Mini Adulto"
   selectedImage: string;
   variant_id?: number;
-  // selectedPrice: number; -> Se podría agregar para guardar a qué precio lo metió al carrito
+  // `price` (heredado de Product) es el precio unitario de la variante elegida, no el precio "desde" del producto
 }
 
 /**

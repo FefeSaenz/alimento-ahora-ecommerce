@@ -8,6 +8,7 @@ import api from '@/src/api/axios';
 import { useAuth } from '@/src/context/AuthContext';
 import { useOtpAuth } from '@/src/hooks/useOtpAuth';
 import { useCheckoutPersistence } from '@/src/hooks/useCheckoutPersistence';
+import { calcSubtotal, roundMoney } from '@/src/utils/pricing';
 import { isValidEmail, isValidName, isValidDNI, isValidPhone, isValidZipCode, isValidAddress, isValidCity } from '@/src/utils/validators';
 
 interface CheckoutModalProps {
@@ -40,9 +41,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
   // Conectamos la persistencia al estado del formulario
   const { clearPersistence } = useCheckoutPersistence(formData, setFormData);
 
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const discount = (paymentMethod === 'Efectivo' || paymentMethod === 'Transferencia') ? subtotal * 0.10 : 0;
-  const total = subtotal - discount;
+  const subtotal = calcSubtotal(cart);
+  const discount = (paymentMethod === 'Efectivo' || paymentMethod === 'Transferencia') ? roundMoney(subtotal * 0.10) : 0;
+  const total = roundMoney(subtotal - discount);
 
   useEffect(() => {
     if (step === 3 && cart.length > 0) {
@@ -148,6 +149,12 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cart, on
   };
 
   const processCheckout = async () => {
+    // Defensa: nunca enviar un pedido con ítems sin precio válido (no deberían llegar al carrito)
+    if (cart.some((item) => !(item.price > 0))) {
+      setCheckoutError("Hay productos sin precio en tu carrito. Quitalos para continuar.");
+      return;
+    }
+
     setLoading(true);
     setCheckoutError(null); // Limpiamos errores previos
     

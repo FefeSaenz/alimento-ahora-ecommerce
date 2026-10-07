@@ -41,7 +41,10 @@ export interface ApiProductVariant {
   variant_hex: string | number | null; // Hoy llega un entero correlativo, no un color
   variant_sku: string | number | null;
   variant_content: string | number | null; // Ej: "3kg", "1,5kg" o 20 (sin unidad)
-  variant_stock: number | null;
+  variant_price: number | string | null; // Precio de la variante. 0 / null = sin precio cargado
+  // 1 = activa, 0 = deshabilitada, -1 = variante fantasma/eliminada (llega con precio null)
+  variant_condition?: number | null;
+  variant_stock?: number | null; // El backend actual ya no lo envía
 }
 
 export interface ApiProduct {
@@ -54,7 +57,7 @@ export interface ApiProduct {
   product_sku: string | number; // Atajamos si mandan número o string
   product_species: string;
   product_brand: number;
-  product_price: number;
+  product_price?: number | null; // El backend actual ya no lo envía: el precio vive en cada variante
   product_highlight: number | null; // 1 = Destacado
   product_picture: string;
   brand_name: string | null;

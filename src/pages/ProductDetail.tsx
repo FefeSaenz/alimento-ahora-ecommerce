@@ -97,6 +97,16 @@ const ProductDetail: React.FC = () => {
     return variant ? variant.options : [];
   }, [product, selectedPresentation]);
 
+  // Precio a mostrar: el de la variante elegida; sin selección, el "desde" del producto
+  const selectedOption = useMemo(
+    () => availableContents.find((o) => o.content.toString() === selectedContent),
+    [availableContents, selectedContent],
+  );
+  const hasPriceRange = useMemo(() => {
+    const prices = availableContents.filter((o) => o.available).map((o) => o.price);
+    return new Set(prices).size > 1;
+  }, [availableContents]);
+
   // 5. MANEJADOR DEL CARRITO
   const handleAddToCart = () => {
     if (!selectedContent || !selectedPresentation) {
@@ -114,11 +124,17 @@ const ProductDetail: React.FC = () => {
         (o) => o.content.toString() === selectedContent,
       );
 
-      const variantIdentifier = chosenOptionObj?.variant_id;
+      if (!chosenOptionObj || !chosenOptionObj.available) {
+        setError("Esta presentación no está disponible por el momento.");
+        return;
+      }
+
+      const variantIdentifier = chosenOptionObj.variant_id;
 
       // Usamos el tipo CartItem
       const cartItem: CartItem = {
         ...product, // Mapeamos las props base del producto
+        price: chosenOptionObj.price, // Precio de la variante elegida, no el "desde" del producto
         quantity: 1,
         selectedContent: selectedContent,
         selectedPresentation: selectedPresentation,
@@ -379,8 +395,14 @@ const ProductDetail: React.FC = () => {
 
             {/* Precio */}
             <div className="mb-8 flex items-center gap-4">
+              {!selectedOption && hasPriceRange && (
+                <span className="text-sm font-fredoka font-bold uppercase tracking-wider text-gray-400">
+                  Desde
+                </span>
+              )}
               <Price
-                amount={product.price}
+                amount={selectedOption ? selectedOption.price : product.price}
+                emptyLabel="Consultar precio"
                 className="text-3xl lg:text-4xl font-fredoka font-black text-black"
               />
               {product.original_price && (

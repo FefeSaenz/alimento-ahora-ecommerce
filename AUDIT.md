@@ -107,7 +107,7 @@ A continuación se detallan los hallazgos con referencia exacta a los archivos y
 *   **Diagnóstico:** El valor inyectado en el Provider no está memoizado, y además mezcla estado de la UI (`isCartOpen`, `isCheckoutOpen`) con estado persistente del carrito (`cart`) y acciones de negocio (`addToCart`, `updateQuantity`). Cada vez que un usuario interactúa con la cantidad de un producto, se genera una nueva referencia de objeto de contexto. Todos los suscriptores a `useCart()` se re-renderizan forzosamente.
 *   **Impacto:** Degradación de la fluidez táctil (input lag) en dispositivos móviles antiguos durante la navegación y modificación rápida de cantidades en el carrito.
 
-#### Hallazgo 2.2: Price Mapping Desactivado para Variantes de Producto
+#### [x] Hallazgo 2.2: Price Mapping Desactivado para Variantes de Producto
 *   **Archivo:** `src/utils/mappers.ts`
 *   **Línea:** 40
 *   **Código crítico:**
@@ -167,7 +167,7 @@ Se propone el siguiente plan estratégico de refactorización incremental, orden
 
 ### 🧹 Fase 3: Higiene de Código y Sincronización de Precios
 *   [x] **Acción 5 (Remoción de Residuos de Nomenclatura):** Limpiar por completo todos los comentarios heredados de indumentaria en `mappers.ts`, `product.types.ts`, e interfaces internas para consolidar la arquitectura de dominio del Pet Shop.
-*   **Acción 6 (Integración de Variant Prices):** Trabajar en conjunto con el equipo de backend para habilitar el campo `variant_price` en el endpoint `/shop/page/`. Una vez habilitado, descomentar la línea 40 de `mappers.ts` para reflejar con exactitud la escala de precios según el peso de bolsa de alimento seleccionado en la vista de detalle.
+*   [x] **Acción 6 (Integración de Variant Prices):** Trabajar en conjunto con el equipo de backend para habilitar el campo `variant_price` en el endpoint `/shop/page/`. Una vez habilitado, descomentar la línea 40 de `mappers.ts` para reflejar con exactitud la escala de precios según el peso de bolsa de alimento seleccionado en la vista de detalle.
 
 ---
 

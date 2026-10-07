@@ -27,7 +27,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
       const initialVariant = product.variants[0];
       setSelectedVariant(initialVariant);
       // Seleccionamos el primer peso por defecto asegurándonos de que sea string
-      setSelectedContent(initialVariant.options[0]?.content.toString() || '');
+      setSelectedContent((initialVariant.options.find(o => o.available) ?? initialVariant.options[0])?.content.toString() || '');
       setActiveImageIndex(0);
       setImageError(false);
     }
@@ -37,6 +37,8 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
   if (!currentVariant) return null;
 
   const mainImageSrc = product.images[activeImageIndex] || '';
+  // Opción (peso) elegida: define el precio, el variant_id y si se puede comprar
+  const selectedOption = currentVariant.options.find(o => o.content.toString() === selectedContent);
 
   return (
     <Modal isOpen={!!product} onClose={onClose} maxWidth="max-w-5xl">
@@ -112,7 +114,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
               
               {/* Precio y Descuento */}
               <div className="flex items-center gap-3">
-                <Price amount={product.price} className="text-2xl lg:text-3xl 2xl:text-4xl font-fredoka font-black text-black" />
+                <Price amount={selectedOption ? selectedOption.price : product.price} emptyLabel="Consultar precio" className="text-2xl lg:text-3xl 2xl:text-4xl font-fredoka font-black text-black" />
                 {product.original_price && (
                   <span className="text-sm lg:text-base 2xl:text-lg font-fredoka text-gray-400 line-through">${product.original_price.toLocaleString('es-AR')}</span>
                 )}
@@ -133,7 +135,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
                         key={idx}
                         onClick={() => {
                           setSelectedVariant(variant);
-                          setSelectedContent(variant.options[0]?.content.toString() || '');
+                          setSelectedContent((variant.options.find(o => o.available) ?? variant.options[0])?.content.toString() || '');
                           setImageError(false);
                         }}
                         className={`px-4 py-2 2xl:px-5 2xl:py-2.5 border rounded-full text-xs font-fredoka font-semibold uppercase transition-all whitespace-nowrap cursor-pointer ${
@@ -198,24 +200,26 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
             <div className="pt-6 2xl:pt-8 mt-auto">
               <button
                 onClick={() => {
-                  if (selectedContent) {
+                  if (selectedOption?.available) {
                     const newItem: CartItem = {
                       ...product,
+                      price: selectedOption.price, // Precio de la variante elegida, no el "desde" del producto
                       quantity: 1,
                       selectedContent: selectedContent,
                       selectedPresentation: currentVariant.presentation.name,
-                      selectedImage: mainImageSrc
+                      selectedImage: mainImageSrc,
+                      variant_id: selectedOption.variant_id
                     };
                     onAddToCart(newItem);
                   }
                 }}
-                disabled={!selectedContent}
+                disabled={!selectedOption?.available}
                 className={`w-full py-4 lg:py-5 text-sm lg:text-base font-fredoka font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-md ${
-                  selectedContent ? 'bg-brand-primary text-white hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
+                  selectedOption?.available ? 'bg-brand-primary text-white hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
                 }`}
               >
                 <i className="fa-solid fa-cart-shopping"></i>
-                <span>{selectedContent ? 'Añadir al carrito' : 'Seleccioná una opción'}</span>
+                <span>{selectedOption?.available ? 'Añadir al carrito' : selectedOption ? 'No disponible' : 'Seleccioná una opción'}</span>
               </button>
             </div>
             

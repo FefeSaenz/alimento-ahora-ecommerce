@@ -4,6 +4,7 @@ import CartShippingTracker from './CartShippingTracker';
 import CartRecommendations from './CartRecommendations';
 import CartSummary from './CartSummary';
 import EmptyState from '@/src/components/ui/EmptyState';
+import { calcSubtotal } from '@/src/utils/pricing';
 import { CartItem as CartItemType, Product } from '@/src/types/product.types';
 
 interface CartDrawerProps {
@@ -18,7 +19,7 @@ interface CartDrawerProps {
 
 const CartDrawer: React.FC<CartDrawerProps> = (props) => {
   const { isOpen, onClose, onOpenCheckout, cart, onUpdateQuantity, onRemove, onAddFromRec } = props;
-  const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = calcSubtotal(cart);
 
   return (
     <>
