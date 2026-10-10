@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Product } from '@/src/types/product.types';
-import { weightKey } from '@/src/utils/mappers';
+import { weightKey, speciesKey } from '@/src/utils/mappers';
 
 interface UseProductFiltersProps {
   products: Product[];
@@ -41,6 +41,7 @@ export const useProductFilters = ({
   // ESTADOS DE FILTRADO
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [activeBrand, setActiveBrand] = useState<string | null>(null); 
+  const [activeSpecies, setActiveSpecies] = useState<string | null>(null);
   const [activeWeight, setActiveWeight] = useState<string | null>(null);
   const [activeAgeSize, setActiveAgeSize] = useState<string | null>(null);
   const [activePrice, setActivePrice] = useState<string | null>(null);
@@ -57,6 +58,17 @@ export const useProductFilters = ({
     return Array.from(new Set(allBrands)).sort();
   }, [products]);
 
+  // EXTRAER ESPECIES ÚNICAS (con etiqueta canónica: "Perro", "Gato"); los productos sin especie no generan opción
+  const species = useMemo(() => {
+    const byKey = new Map<string, string>();
+    products.forEach(p => {
+      if (!p.species) return;
+      const key = speciesKey(p.species);
+      if (key && !byKey.has(key)) byKey.set(key, p.species.charAt(0).toUpperCase() + p.species.slice(1).toLowerCase());
+    });
+    return Array.from(byKey.values()).sort();
+  }, [products]);
+
   const filteredProducts = useMemo(() => {
     let result = [...products];  
 
@@ -69,6 +81,12 @@ export const useProductFilters = ({
     if (activeBrand) {
       const brandArray = activeBrand.split(','); 
       result = result.filter(p => brandArray.some(b => p.brand?.toLowerCase() === b.toLowerCase()));
+    }
+
+    // 2.1 Filtro por Especie (SOPORTA MULTI-SELECT). Los productos sin especie no coinciden con ninguna
+    if (activeSpecies) {
+      const speciesArray = activeSpecies.split(',').map(speciesKey);
+      result = result.filter(p => !!p.species && speciesArray.includes(speciesKey(p.species)));
     }
 
     // 3. Filtro por Búsqueda Inteligente (Search)
@@ -123,17 +141,19 @@ export const useProductFilters = ({
     if (sortBy === 'price-high') result.sort((a, b) => (b.price > 0 ? b.price : -Infinity) - (a.price > 0 ? a.price : -Infinity));
 
     return result;
-  }, [products, activeCategory, activeBrand, activeWeight, activeAgeSize, activePrice, sortBy, searchTerm]);
+  }, [products, activeCategory, activeBrand, activeSpecies, activeWeight, activeAgeSize, activePrice, sortBy, searchTerm]);
 
   return {
     filteredProducts,
     activeCategory, setActiveCategory,
     activeBrand, setActiveBrand, 
+    activeSpecies, setActiveSpecies,
     activeWeight, setActiveWeight,
     activeAgeSize, setActiveAgeSize,
     activePrice, setActivePrice,
     sortBy, setSortBy,
     categories,
-    brands 
+    brands,
+    species
   };
 };

@@ -60,6 +60,8 @@ const Products: React.FC = () => {
     : searchParams.get("categoria") || "Todos";
 
   const brandFilter = searchParams.get("marca");
+  // Acepta ?especie=Perro (el que usa el menú) y ?species=Perro como alias
+  const speciesFilter = searchParams.get("especie") ?? searchParams.get("species");
   const weightFilter = searchParams.get("peso"); // Ahora lee "peso"
   const ageSizeFilter = searchParams.get("edad_tamano"); // Ahora lee "edad_tamano"
   const priceFilter = searchParams.get("precio");
@@ -72,10 +74,12 @@ const Products: React.FC = () => {
     setSortBy,
     categories,
     brands,
+    species,
     setActiveCategory,
     activeCategory,
     setActiveBrand,
     activeBrand,
+    setActiveSpecies,
     setActiveWeight,
     setActiveAgeSize,
     setActivePrice,
@@ -88,17 +92,20 @@ const Products: React.FC = () => {
   useEffect(() => {
     setActiveCategory(isOffersRoute ? "Todos" : initialCategory);
     setActiveBrand(brandFilter);
+    setActiveSpecies(speciesFilter);
     setActiveWeight(weightFilter);
     setActiveAgeSize(ageSizeFilter);
     setActivePrice(priceFilter);
   }, [
     initialCategory,
     brandFilter,
+    speciesFilter,
     weightFilter,
     ageSizeFilter,
     priceFilter,
     setActiveCategory,
     setActiveBrand,
+    setActiveSpecies,
     setActiveWeight,
     setActiveAgeSize,
     setActivePrice,
@@ -110,6 +117,8 @@ const Products: React.FC = () => {
     const newParams = new URLSearchParams(searchParams);
     if (value) newParams.set(key, value);
     else newParams.delete(key);
+    // "species" es un alias de "especie": se elimina para que no reaparezca al desmarcar el filtro
+    if (key === "especie") newParams.delete("species");
 
     window.scrollTo({ top: 0, behavior: "smooth" });
     setSearchParams(newParams);
@@ -209,8 +218,10 @@ const Products: React.FC = () => {
               priceFilter,
               searchTerm,
               brandFilter,
+              speciesFilter,
             }}
             categories={categories}
+            species={species}
             activeCategory={activeCategory}
             brands={brands}
             activeBrand={activeBrand}
@@ -263,8 +274,10 @@ const Products: React.FC = () => {
                 priceFilter,
                 searchTerm,
                 brandFilter,
+                speciesFilter,
               }}
               categories={categories}
+              species={species}
               activeCategory={activeCategory}
               brands={brands}
               activeBrand={activeBrand}

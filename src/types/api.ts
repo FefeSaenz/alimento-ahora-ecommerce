@@ -55,7 +55,7 @@ export interface ApiProduct {
   product_description: string;
   product_composition: string;
   product_sku: string | number; // Atajamos si mandan número o string
-  product_species: string;
+  product_species: string | null; // 'Perro', 'Gato' o vacío
   product_brand: number;
   product_price?: number | null; // El backend actual ya no lo envía: el precio vive en cada variante
   product_highlight: number | null; // 1 = Destacado

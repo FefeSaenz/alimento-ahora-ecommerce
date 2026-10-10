@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useApp } from '@/src/context/AppContext';
-import { weightKey } from '@/src/utils/mappers';
+import { weightKey, speciesKey } from '@/src/utils/mappers';
 
 interface FilterSidebarProps {
   activeFilters: { 
@@ -9,10 +9,12 @@ interface FilterSidebarProps {
     priceFilter: string | null;
     searchTerm?: string | null;
     brandFilter?: string | null;
+    speciesFilter?: string | null;
   };
   categories?: string[];               
   activeCategory?: string;             
   brands?: string[];             
+  species?: string[];
   activeBrand?: string | null;   
   onCategoryChange?: (c: string) => void; 
   onFilterChange: (key: string, value: string | null) => void;
@@ -27,16 +29,26 @@ const formatPriceInput = (value: string) => {
   return raw.replace(/\B(?=(\d{3})+(?!\d))/g, "."); 
 };
 
-// Igual que toggleFilter pero comparando pesos por clave ("15KG" en la URL == "15 kg" en la faceta)
-const toggleWeightFilter = (currentValue: string | null | undefined, newValue: string) => {
+// Agrega o quita valores acumulables comparándolos por clave normalizada (ej: "15KG" en la URL == "15 kg" en la faceta)
+const toggleKeyedFilter = (
+  currentValue: string | null | undefined,
+  newValue: string,
+  keyOf: (value: string) => string
+) => {
   const list = currentValue ? currentValue.split(',') : [];
-  const key = weightKey(newValue);
-  if (list.some(v => weightKey(v) === key)) {
-    const filtered = list.filter(v => weightKey(v) !== key);
+  const key = keyOf(newValue);
+  if (list.some(v => keyOf(v) === key)) {
+    const filtered = list.filter(v => keyOf(v) !== key);
     return filtered.length > 0 ? filtered.join(',') : null;
   }
   return [...list, newValue].join(',');
 };
+
+const toggleWeightFilter = (currentValue: string | null | undefined, newValue: string) =>
+  toggleKeyedFilter(currentValue, newValue, weightKey);
+
+const toggleSpeciesFilter = (currentValue: string | null | undefined, newValue: string) =>
+  toggleKeyedFilter(currentValue, newValue, speciesKey);
 
 // HELPER NUEVO: Agrega o quita valores acumulables separados por coma
 const toggleFilter = (currentValue: string | null | undefined, newValue: string) => {
@@ -53,6 +65,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   categories,
   activeCategory,
   brands,
+  species,
   activeBrand,
   onCategoryChange,
   onFilterChange, 
@@ -144,6 +157,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     activeFilters.priceFilter || 
     activeFilters.searchTerm ||
     activeFilters.brandFilter ||
+    activeFilters.speciesFilter ||
     (activeCategory && activeCategory !== 'Todos'));
 
   const handleClearAll = () => {
@@ -154,6 +168,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   };
 
   const activeBrandsArray = activeFilters.brandFilter ? activeFilters.brandFilter.split(',') : [];
+  const activeSpeciesArray = activeFilters.speciesFilter ? activeFilters.speciesFilter.split(',') : [];
   const activeWeightsArray = activeFilters.weightFilter ? activeFilters.weightFilter.split(',') : [];
   const activeAgeSizesArray = activeFilters.ageSizeFilter ? activeFilters.ageSizeFilter.split(',') : [];
 
@@ -207,6 +222,17 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 </button>
               ))}
               
+              {activeSpeciesArray.map(specie => (
+                <button 
+                  key={`chip-species-${specie}`}
+                  onClick={() => onFilterChange('especie', toggleSpeciesFilter(activeFilters.speciesFilter, specie))}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-300 hover:text-red-500 text-xs font-fredoka font-medium transition-colors rounded-full group cursor-pointer shadow-sm"
+                >
+                  Mascota: {species?.find(s => speciesKey(s) === speciesKey(specie)) ?? specie}
+                  <span className="text-gray-400 group-hover:text-red-500">✕</span>
+                </button>
+              ))}
+
               {activeWeightsArray.map(weight => (
                 <button 
                   key={`chip-weight-${weight}`}
@@ -265,7 +291,34 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
       )}
 
-      {/* 2. SECCIÓN MARCAS */}
+      {/* 2. SECCIÓN MASCOTA (ESPECIE) */}
+      {species && species.length > 0 && (
+        <div>
+          <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Mascota</h3>
+          <div className="flex flex-col items-start gap-3">
+            {species.map((specie) => {
+              const isActive = activeSpeciesArray.some(s => speciesKey(s) === speciesKey(specie));
+              return (
+                <button
+                  key={specie}
+                  onClick={() => onFilterChange('especie', toggleSpeciesFilter(activeFilters.speciesFilter, specie))}
+                  className={`text-sm font-fredoka transition-colors cursor-pointer text-left flex items-center gap-2 group ${
+                    isActive ? 'text-brand-primary font-bold' : 'text-gray-600 font-medium hover:text-brand-primary'
+                  }`}
+                >
+                  {/* Checkbox visual redondeado */}
+                  <div className={`w-4 h-4 rounded-sm border-2 flex items-center justify-center transition-colors ${isActive ? 'bg-brand-primary border-brand-primary' : 'border-gray-300 group-hover:border-brand-primary'}`}>
+                      {isActive && <i className="fa-solid fa-check text-[10px] text-white"></i>}
+                  </div>
+                  {specie}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 3. SECCIÓN MARCAS */}
       {brands && brands.length > 0 && (
         <div>
           <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Marcas</h3>
@@ -292,7 +345,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
       )}
 
-      {/* 3. SECCIÓN PESO */}
+      {/* 4. SECCIÓN PESO */}
       {weights && weights.length > 0 && (
           <div>
             <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Peso</h3>
@@ -313,7 +366,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
       )}
 
-      {/* 4. SECCIÓN EDAD/TAMAÑO */}
+      {/* 5. SECCIÓN EDAD/TAMAÑO */}
       {ageSizes && ageSizes.length > 0 && (
           <div>
             <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Edad y Tamaño</h3>
@@ -339,7 +392,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </div>
       )}
 
-      {/* 5. SECCIÓN PRECIO (ÚLTIMA) */}
+      {/* 6. SECCIÓN PRECIO (ÚLTIMA) */}
       <div>
         <h3 className="text-sm font-fredoka font-bold uppercase tracking-wider mb-4 text-gray-500 border-t border-gray-100 pt-6">Precio</h3>
         <div className="flex items-center gap-3 mb-4">

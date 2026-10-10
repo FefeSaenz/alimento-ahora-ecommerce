@@ -31,7 +31,7 @@ export interface Product {
   images: string[];
   category: string;
   subcategory?: string;
-  species?: string;
+  species?: string; // Ej: "Perro", "Gato". Ausente si el backend no la informa
   base_sku?: string;
   brand?: string;
   material?: string;

@@ -63,6 +63,12 @@ export const normalizeContentWeight = (raw: unknown): string => {
  */
 export const weightKey = (value: unknown): string => toSafeString(value).replace(/\s+/g, '').toLowerCase();
 
+/**
+ * Clave de comparación de especies: sin tildes ni mayúsculas ("Perro" === "perro" === " PERRO ").
+ */
+export const speciesKey = (value: unknown): string =>
+  toSafeString(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 /** Peso numérico de un contenido ya normalizado ("1.5 kg"); sin número ("Unidad") va al final. */
 const contentWeightValue = (content: string): number => {
   const match = content.match(WEIGHT_NUMBER_REGEX);
@@ -157,7 +163,7 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
     base_sku: fallbackSku,
     brand: apiProduct.brand_name || undefined,
     material: apiProduct.product_composition || undefined, 
-    species: apiProduct.product_species || undefined,
+    species: toSafeString(apiProduct.product_species) || undefined,
     active: true,
     tags: apiProduct.product_highlight === 1 ? 'Destacado' : undefined, 
     variants: Object.values(groupedVariants),
