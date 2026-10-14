@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CartItem, Product, ProductVariant } from '@/src/types/product.types';
 import Modal from './Modal';
 import Price from './Price';
+import { isOutOfStock, OUT_OF_STOCK_LABEL } from '@/src/utils/stock';
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -119,6 +120,10 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
                   <span className="text-sm lg:text-base 2xl:text-lg font-fredoka text-gray-400 line-through">${product.original_price.toLocaleString('es-AR')}</span>
                 )}
               </div>
+              <p className="text-sm text-gray-500 italic -mt-1">Precios de referencia sujetos a confirmación de stock</p>
+              {isOutOfStock(selectedOption) && (
+                <p className="text-sm text-gray-500 italic">{OUT_OF_STOCK_LABEL}</p>
+              )}
               
               {/* Selección de Variedad / Presentación */}
               {currentVariant.presentation.name !== 'ÚNICO' && (
@@ -157,18 +162,17 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
                 <div className="flex flex-wrap gap-2 2xl:gap-3">
                   {currentVariant.options.map((optObj) => {
                     const contentStr = optObj.content.toString();
-                    const isAvailable = optObj.available && optObj.stock > 0;
+                    const isAvailable = !isOutOfStock(optObj);
                     
                     return (
                       <button
                         key={contentStr}
-                        onClick={() => isAvailable && setSelectedContent(contentStr)}
-                        disabled={!isAvailable}
+                        onClick={() => setSelectedContent(contentStr)}
                         className={`px-4 py-2 min-w-12 lg:min-w-14 h-10 lg:h-11 2xl:h-12 border rounded-xl flex items-center justify-center text-xs lg:text-sm font-fredoka font-bold transition-all ${
-                          !isAvailable 
-                            ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through' 
-                            : selectedContent === contentStr 
-                              ? 'bg-black text-white border-black shadow-md' 
+                          selectedContent === contentStr 
+                            ? 'bg-black text-white border-black shadow-md' 
+                            : !isAvailable
+                              ? 'bg-gray-50 text-gray-400 border-gray-200 line-through hover:border-black cursor-pointer'
                               : 'bg-white border-gray-200 hover:border-black text-gray-800 cursor-pointer'
                         }`}
                       >
@@ -200,7 +204,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
             <div className="pt-6 2xl:pt-8 mt-auto">
               <button
                 onClick={() => {
-                  if (selectedOption?.available) {
+                  if (selectedOption) {
                     const newItem: CartItem = {
                       ...product,
                       price: selectedOption.price, // Precio de la variante elegida, no el "desde" del producto
@@ -208,18 +212,19 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
                       selectedContent: selectedContent,
                       selectedPresentation: currentVariant.presentation.name,
                       selectedImage: mainImageSrc,
-                      variant_id: selectedOption.variant_id
+                      variant_id: selectedOption.variant_id,
+                      outOfStock: isOutOfStock(selectedOption)
                     };
                     onAddToCart(newItem);
                   }
                 }}
-                disabled={!selectedOption?.available}
+                disabled={!selectedOption}
                 className={`w-full py-4 lg:py-5 text-sm lg:text-base font-fredoka font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center space-x-3 cursor-pointer shadow-md ${
-                  selectedOption?.available ? 'bg-brand-primary text-white hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
+                  selectedOption ? 'bg-brand-primary text-white hover:bg-orange-600 hover:shadow-lg hover:-translate-y-0.5' : 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none'
                 }`}
               >
                 <i className="fa-solid fa-cart-shopping"></i>
-                <span>{selectedOption?.available ? 'Agregar a consulta' : selectedOption ? 'No disponible' : 'Seleccioná una opción'}</span>
+                <span>{selectedOption ? 'Agregar a consulta' : 'Seleccioná una opción'}</span>
               </button>
             </div>
             

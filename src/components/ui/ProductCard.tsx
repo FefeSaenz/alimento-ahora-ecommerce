@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Product, ProductContentOption, CartItem } from '@/src/types/product.types';
 import Price from './Price';
+import { isOutOfStock } from '@/src/utils/stock';
 
 interface ProductCardProps {
   product: Product;
@@ -29,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
     e.preventDefault(); 
     e.stopPropagation();
     
-    if (!selectedOption || !selectedOption.available || selectedOption.stock <= 0) return;
+    if (!selectedOption) return;
 
     const cartItem: CartItem = {
       ...product,
@@ -39,7 +40,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
       // Presentación a la que pertenece la opción elegida (no siempre es la primera)
       selectedPresentation: product.variants.find(v => v.options.includes(selectedOption))?.presentation.name || defaultPresentation,
       selectedImage: product.images[0],
-      variant_id: selectedOption.variant_id
+      variant_id: selectedOption.variant_id,
+      outOfStock: isOutOfStock(selectedOption)
     };
 
     onAdd(cartItem); // Pasa la pelota hacia arriba (ProductGrid -> Home -> CartContext)
@@ -88,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
           <div className="flex flex-wrap gap-1 mb-3">
             {allAvailableOptions.map((opt, idx) => {
               const isSelected = selectedOption?.content === opt.content;
-              const isAvailable = opt.available && opt.stock > 0;
+              const isAvailable = !isOutOfStock(opt);
 
               return (
                 <button
@@ -96,15 +98,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (isAvailable) setSelectedOption(opt);
+                    setSelectedOption(opt);
                   }}
-                  disabled={!isAvailable}
                   // Pastillas más chiquitas
                   className={`px-1.5 py-0.5 text-[10px] font-sans font-bold border rounded transition-colors ${
-                    !isAvailable 
-                      ? 'bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed line-through'
-                      : isSelected 
-                        ? 'bg-brand-primary border-brand-primary text-white' 
+                    isSelected 
+                      ? 'bg-brand-primary border-brand-primary text-white' 
+                      : !isAvailable
+                        ? 'bg-gray-50 text-gray-400 border-gray-200 line-through hover:border-brand-primary cursor-pointer'
                         : 'bg-white border-gray-300 text-gray-700 hover:border-brand-primary hover:text-brand-primary cursor-pointer'
                   }`}
                 >
@@ -117,10 +118,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
 
         <div className="flex flex-col items-center mt-auto w-full pt-2 border-t border-gray-100">
           <Price amount={currentPrice} emptyLabel="Consultar precio" className="text-base lg:text-lg font-fredoka font-black text-brand-primary mb-2 text-center block" />
+          {isOutOfStock(selectedOption) && (
+            <p className="text-[10px] font-fredoka text-gray-500 italic mb-2 text-center">Sin stock actual - Consultar ingreso</p>
+          )}
           
           <button 
             onClick={handleAddToCart}
-            disabled={!selectedOption || !selectedOption.available || selectedOption.stock <= 0}
+            disabled={!selectedOption}
             // Botón más comprimido
             className="w-full bg-brand-primary text-white py-2 rounded-full text-[11px] lg:text-xs font-fredoka font-bold uppercase tracking-wider shadow-md hover:bg-orange-600 transition-colors cursor-pointer active:scale-[0.98] disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none"
           >

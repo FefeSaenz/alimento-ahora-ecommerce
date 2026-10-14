@@ -110,8 +110,9 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
     if (group.options.some((o) => o.content.toLowerCase() === content.toLowerCase())) return;
 
     // 2. CONTENIDO, PRECIO Y STOCK: Ej -> "3 kg", $47.047
-    // Es consultable si está activa (condición 1) y no declara stock agotado. Un precio 0 no la bloquea:
-    // se lista como "Consultar precio" y se puede agregar al carrito para consultarla por WhatsApp
+    // `available` es solo informativo (activa y con stock): NO bloquea nada. Toda variante se puede agregar al
+    // carrito para consultarla por WhatsApp; las sin stock/deshabilitadas se avisan como "Sin stock actual".
+    // Un precio 0 tampoco la bloquea: se lista como "Consultar precio"
     const price = toSafePrice(v.variant_price);
     const hasStock = typeof v.variant_stock !== 'number' || v.variant_stock > 0;
     group.options.push({

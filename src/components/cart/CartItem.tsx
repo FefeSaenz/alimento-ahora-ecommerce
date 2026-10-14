@@ -1,6 +1,7 @@
 import React from 'react';
 import { CartItem as CartItemType } from '@/src/types/product.types';
 import Price from '@/src/components/ui/Price';
+import { OUT_OF_STOCK_LABEL } from '@/src/utils/stock';
 
 interface CartItemProps {
   item: CartItemType;
@@ -25,6 +26,9 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemove })
               {/* MOSTRAMOS LA VARIEDAD ACÁ */}
               Variedad: <span className="text-black font-semibold">{item.selectedPresentation}</span>
             </p>
+            {item.outOfStock && (
+              <p className="text-[11px] font-fredoka text-gray-500 italic mt-1">({OUT_OF_STOCK_LABEL})</p>
+            )}
           </div>
           <Price amount={item.price} emptyLabel="Consultar precio" className="text-sm font-fredoka font-black text-brand-primary" />
         </div>

@@ -1,5 +1,6 @@
 import { CartItem } from '@/src/types/product.types';
 import { calcSubtotal, countUnpriced, formatPrice } from '@/src/utils/pricing';
+import { OUT_OF_STOCK_LABEL } from '@/src/utils/stock';
 
 // Si el mensaje codificado supera este largo se usa el formato compacto (los links muy largos pueden fallar)
 const MAX_ENCODED_LENGTH = 3000;
@@ -25,11 +26,12 @@ const detailedLine = (item: CartItem, index: number): string =>
     `${index + 1}. *${itemName(item)}*`,
     describeOptions(item) && `   ${describeOptions(item)}`,
     `   Cantidad: ${item.quantity}`,
+    item.outOfStock && `   (${OUT_OF_STOCK_LABEL})`,
     `   Precio de referencia: ${item.price > 0 ? `${money(item.price)} c/u` : 'a consultar'}`,
   ].filter(Boolean).join('\n');
 
 const compactLine = (item: CartItem): string =>
-  `• ${item.quantity} x ${itemName(item)}${describeOptions(item) ? ` - ${describeOptions(item)}` : ''}`;
+  `• ${item.quantity} x ${itemName(item)}${describeOptions(item) ? ` - ${describeOptions(item)}` : ''}${item.outOfStock ? ` (${OUT_OF_STOCK_LABEL})` : ''}`;
 
 const buildMessage = (items: CartItem[], compact: boolean): string => {
   const subtotal = calcSubtotal(items);

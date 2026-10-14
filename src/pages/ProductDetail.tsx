@@ -10,6 +10,7 @@ import { Product, CartItem } from "@/src/types/product.types"; // Añadimos Cart
 
 // UI Components
 import Price from "@/src/components/ui/Price";
+import { isOutOfStock, OUT_OF_STOCK_LABEL } from "@/src/utils/stock";
 import ProductCarousel from "@/src/components/ui/ProductCarousel";
 import Breadcrumbs from "@/src/components/ui/Breadcrumbs";
 import Modal from "@/src/components/ui/Modal";
@@ -124,8 +125,8 @@ const ProductDetail: React.FC = () => {
         (o) => o.content.toString() === selectedContent,
       );
 
-      if (!chosenOptionObj || !chosenOptionObj.available) {
-        setError("Esta presentación no está disponible por el momento.");
+      if (!chosenOptionObj) {
+        setError("Seleccioná una opción para continuar.");
         return;
       }
 
@@ -141,6 +142,7 @@ const ProductDetail: React.FC = () => {
         selectedImage:
           mainImage || (product.images.length > 0 ? product.images[0] : ""),
         variant_id: variantIdentifier,
+        outOfStock: isOutOfStock(chosenOptionObj),
       };
 
       addToCart(cartItem);
@@ -411,6 +413,10 @@ const ProductDetail: React.FC = () => {
                 </span>
               )}
             </div>
+            <p className="text-sm text-gray-500 italic -mt-6 mb-8">
+              Precios de referencia sujetos a confirmación de stock
+              {isOutOfStock(selectedOption) && <span className="block">{OUT_OF_STOCK_LABEL}</span>}
+            </p>
 
             {/* Selector de Opción Principal (Ej: Edad, Tamaño de Mordida) */}
             {availablePresentations.length > 0 &&
@@ -458,16 +464,15 @@ const ProductDetail: React.FC = () => {
                   {availableContents.map((optionObj) => (
                     <button
                       key={optionObj.content}
-                      disabled={!optionObj.available}
                       onClick={() => {
                         setSelectedContent(optionObj.content.toString());
                         setError("");
                       }}
                       className={`px-4 min-w-14 h-12 border rounded-xl flex items-center justify-center text-sm font-fredoka font-bold transition-all shadow-sm ${
-                        !optionObj.available
-                          ? "bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed opacity-60 line-through shadow-none"
-                          : selectedContent === optionObj.content.toString()
-                            ? "bg-black text-white border-black shadow-md"
+                        selectedContent === optionObj.content.toString()
+                          ? "bg-black text-white border-black shadow-md"
+                          : !optionObj.available
+                            ? "bg-gray-50 text-gray-400 border-gray-200 line-through hover:border-brand-primary cursor-pointer"
                             : "bg-white border-gray-200 hover:border-brand-primary hover:text-brand-primary text-gray-700 cursor-pointer"
                       }`}
                     >

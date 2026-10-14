@@ -53,6 +53,7 @@ export interface CartItem extends Omit<Product, 'variants'> {
   selectedPresentation: string; // Ej: "Mini Adulto"
   selectedImage: string;
   variant_id?: number;
+  outOfStock?: boolean; // Sin stock/deshabilitada al agregarla: igual se consulta, y se avisa en el carrito y en WhatsApp
   // `price` (heredado de Product) es el precio unitario de la variante elegida, no el precio "desde" del producto
 }
 

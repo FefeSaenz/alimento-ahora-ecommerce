@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { toast } from 'sonner';
 import { CartItem, Order, Product, ProductContentOption } from '@/src/types/product.types';
 import { normalizeContentWeight, weightKey } from '@/src/utils/mappers';
+import { isOutOfStock } from '@/src/utils/stock';
 import { useApp } from '@/src/context/AppContext';
 
 // Estado de negocio: cambia cuando se modifica el carrito o las órdenes
@@ -96,8 +97,8 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   // REPRICING: el carrito persiste en localStorage y puede traer precios viejos o inexistentes.
   // Una vez cargado el catálogo, cada ítem se alinea con el precio vigente de su variante, y se quitan
-  // los que ya no están disponibles (variante discontinuada o deshabilitada). Un precio 0 NO los quita: se
-  // conservan y se listan como "Consultar precio".
+  // los que ya no existen en el catálogo (variante discontinuada). Ni un precio 0 ni la falta de stock los quitan:
+  // se conservan ("Consultar precio" / "Sin stock actual") porque igual se pueden consultar por WhatsApp.
   useEffect(() => {
     if (catalogLoading || allProducts.length === 0) return;
 
@@ -106,14 +107,15 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
     const next = cart.flatMap((item) => {
       const option = findCartItemOption(allProducts, item);
       if (option === undefined) return [item]; // El catálogo no conoce el producto: no se puede juzgar
-      if (option === null || !option.available) {
+      if (option === null) {
         removedNames.push(item.name);
         changed = true;
         return [];
       }
-      if (option.price !== item.price) {
+      const outOfStock = isOutOfStock(option);
+      if (option.price !== item.price || outOfStock !== !!item.outOfStock) {
         changed = true;
-        return [{ ...item, price: option.price }];
+        return [{ ...item, price: option.price, outOfStock }];
       }
       return [item];
     });
