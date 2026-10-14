@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import { useApp } from '@/src/context/AppContext';
+import { ENABLE_AUTH } from '@/src/constants/features';
 import NavLink from '@/src/components/ui/NavLink';
 import logoAlimentoAhora from '@/src/assets/logoNegro-alimentoAhora.png';
 
@@ -76,13 +77,16 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenProfile 
 
         {/* FOOTER DRAWER */}
         <div className="border-t border-gray-100 py-8 shrink-0 flex flex-col space-y-6">
-          <button 
-            onClick={() => { onOpenProfile(); onClose(); }} 
-            className="flex items-center space-x-3 text-left w-fit cursor-pointer bg-orange-50 px-4 py-2 rounded-full hover:bg-orange-100 transition-colors"
-          >
-            <i className="fa-regular fa-user text-lg text-brand-primary"></i>
-            <span className="text-sm font-fredoka font-semibold text-brand-primary">Mi Cuenta</span>
-          </button>
+          {/* Acceso a la cuenta (oculto mientras ENABLE_AUTH = false) */}
+          {ENABLE_AUTH && (
+            <button 
+              onClick={() => { onOpenProfile(); onClose(); }} 
+              className="flex items-center space-x-3 text-left w-fit cursor-pointer bg-orange-50 px-4 py-2 rounded-full hover:bg-orange-100 transition-colors"
+            >
+              <i className="fa-regular fa-user text-lg text-brand-primary"></i>
+              <span className="text-sm font-fredoka font-semibold text-brand-primary">Mi Cuenta</span>
+            </button>
+          )}
           
           <div className="flex items-center space-x-6 px-2">
             <a href="https://www.instagram.com/alimentoahora/" target="_blank" rel="noopener noreferrer" className="text-sm font-fredoka text-gray-500 hover:text-brand-primary transition-colors flex items-center gap-2">

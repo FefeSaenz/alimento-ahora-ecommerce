@@ -4,6 +4,7 @@ import { Toaster } from 'sonner';
 
 // Contexts
 import { useApp } from '@/src/context/AppContext';
+import { ENABLE_AUTH } from '@/src/constants/features';
 import { useCartState, useCartUI, useCartActions } from '@/src/context/CartContext';
 
 // Components
@@ -109,11 +110,14 @@ const Layout: React.FC = () => {
                 onComplete={handleCheckoutComplete}
             />
 
-            <UserProfile 
-                isOpen={isProfileOpen}
-                onClose={() => setIsProfileOpen(false)}
-                orders={orders}
-            />
+            {/* Perfil de usuario (no se monta mientras ENABLE_AUTH = false) */}
+            {ENABLE_AUTH && (
+                <UserProfile 
+                    isOpen={isProfileOpen}
+                    onClose={() => setIsProfileOpen(false)}
+                    orders={orders}
+                />
+            )}
 
             {/* MODAL DE TÉRMINOS */}
             <TermsModal 

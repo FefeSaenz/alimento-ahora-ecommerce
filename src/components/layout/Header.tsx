@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import NavLink from '@/src/components/ui/NavLink';
 import { useApp } from '@/src/context/AppContext';
+import { ENABLE_AUTH } from '@/src/constants/features';
 import logoAlimentoAhora from '@/src/assets/logoNegro-alimentoAhora.png';
 import MobileMenu from './MobileMenu';
 
@@ -116,14 +117,16 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
             <i className="fa-solid fa-magnifying-glass text-xl"></i>
           </button>
 
-          {/* Desktop: Perfil */}
-          <button 
-            onClick={onOpenProfile} 
-            className="hidden lg:block text-gray-800 hover:text-brand-primary transition-transform active:scale-95 cursor-pointer"
-            aria-label="Perfil de usuario"
-          >
-            <i className="fa-solid fa-user text-xl"></i>
-          </button>
+          {/* Desktop: Perfil (oculto mientras ENABLE_AUTH = false) */}
+          {ENABLE_AUTH && (
+            <button 
+              onClick={onOpenProfile} 
+              className="hidden lg:block text-gray-800 hover:text-brand-primary transition-transform active:scale-95 cursor-pointer"
+              aria-label="Perfil de usuario"
+            >
+              <i className="fa-solid fa-user text-xl"></i>
+            </button>
+          )}
 
           {/* Mobile, Tablet & Desktop: Carrito */}
           <button 

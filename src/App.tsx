@@ -8,6 +8,7 @@ import { CartProvider } from '@/src/context/CartContext';
 
 // API
 import { SESSION_EXPIRED_EVENT } from '@/src/api/axios';
+import { ENABLE_AUTH } from '@/src/constants/features';
 
 // Layout Principal
 import Layout from '@/src/components/layout/Layout';
@@ -27,7 +28,9 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     const handleSessionExpired = () => {
       logout();
-      navigate('/', { replace: true });
+      // Sin accesos de cuenta visibles (ENABLE_AUTH = false) no hay pantalla de la que "salir": un token viejo
+      // en localStorage no debe sacar al invitado de la página que está navegando.
+      if (ENABLE_AUTH) navigate('/', { replace: true });
     };
     window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
