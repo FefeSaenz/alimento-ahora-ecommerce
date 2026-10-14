@@ -496,7 +496,7 @@ const ProductDetail: React.FC = () => {
               onClick={handleAddToCart}
               className="w-full bg-brand-primary text-white py-4 md:py-5 rounded-full text-sm md:text-base font-fredoka font-bold uppercase tracking-wider hover:bg-orange-600 hover:shadow-lg transition-all active:scale-[0.98] mb-8 cursor-pointer shadow-md flex items-center justify-center gap-3"
             >
-              <i className="fa-solid fa-cart-plus"></i> Agregar al Carrito
+              <i className="fa-solid fa-cart-plus"></i> Agregar a consulta
             </button>
 
             {/* Detalles Tipo Acordeón Fijo */}

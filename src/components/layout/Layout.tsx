@@ -87,7 +87,6 @@ const Layout: React.FC = () => {
             <CartDrawer 
                 isOpen={isCartOpen} 
                 onClose={() => setIsCartOpen(false)} 
-                onOpenCheckout={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
                 cart={cart}
                 onUpdateQuantity={updateQuantity}
                 onRemove={removeFromCart}
@@ -103,6 +102,7 @@ const Layout: React.FC = () => {
                 }}
             />
 
+            {/* Checkout huérfano: el carrito ya no lo abre (ahora consulta stock por WhatsApp). Se conserva para poder reactivarlo */}
             <CheckoutModal 
                 isOpen={isCheckoutOpen}
                 onClose={() => setIsCheckoutOpen(false)}

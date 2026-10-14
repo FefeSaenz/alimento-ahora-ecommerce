@@ -7,7 +7,7 @@ export interface ProductContentOption {
   content: string;
   sku: string;
   variant_id?: number;
-  price: number; // Precio de esta variante (> 0). Si es 0 la opción no es vendible (sin precio cargado)
+  price: number; // Precio de esta variante. 0 = sin precio cargado: se muestra como "Consultar precio"
   stock: number;
   available: boolean;
 }
@@ -25,7 +25,7 @@ export interface Product {
   slug: string;
   name: string;
   description: string;
-  price: number; // Precio "desde": el menor entre las variantes vendibles
+  price: number; // Precio "desde": el menor entre las variantes con precio (0 si ninguna lo tiene)
   original_price: number | null;
   discount_percentage: number | null;
   images: string[];

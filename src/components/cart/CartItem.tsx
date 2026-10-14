@@ -26,7 +26,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRemove })
               Variedad: <span className="text-black font-semibold">{item.selectedPresentation}</span>
             </p>
           </div>
-          <Price amount={item.price} className="text-sm font-fredoka font-black text-brand-primary" />
+          <Price amount={item.price} emptyLabel="Consultar precio" className="text-sm font-fredoka font-black text-brand-primary" />
         </div>
         <div className="mt-4 flex items-center justify-between">
           {/* Controles de cantidad en formato pastilla */}

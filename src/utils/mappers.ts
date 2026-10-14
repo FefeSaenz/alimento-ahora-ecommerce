@@ -110,7 +110,8 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
     if (group.options.some((o) => o.content.toLowerCase() === content.toLowerCase())) return;
 
     // 2. CONTENIDO, PRECIO Y STOCK: Ej -> "3 kg", $47.047
-    // Solo es vendible si está activa (condición 1), tiene precio > 0 y no declara stock agotado
+    // Es consultable si está activa (condición 1) y no declara stock agotado. Un precio 0 no la bloquea:
+    // se lista como "Consultar precio" y se puede agregar al carrito para consultarla por WhatsApp
     const price = toSafePrice(v.variant_price);
     const hasStock = typeof v.variant_stock !== 'number' || v.variant_stock > 0;
     group.options.push({
@@ -119,7 +120,7 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
       variant_id: v.variant_id,
       price,
       stock: typeof v.variant_stock === 'number' ? v.variant_stock : 99,
-      available: condition === 1 && price > 0 && hasStock,
+      available: condition === 1 && hasStock,
     });
   });
 
@@ -131,13 +132,13 @@ export const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
   if (Object.keys(groupedVariants).length === 0) {
     groupedVariants[DEFAULT_PRESENTATION] = {
       presentation: { name: DEFAULT_PRESENTATION, hex: DEFAULT_HEX },
-      options: [{ content: 'U', sku: fallbackSku, price: fallbackPrice, stock: 10, available: fallbackPrice > 0 }]
+      options: [{ content: 'U', sku: fallbackSku, price: fallbackPrice, stock: 10, available: true }]
     };
   }
 
-  // Precio "desde" del producto: el menor entre las opciones vendibles (si no hay, entre las que tienen precio)
+  // Precio "desde" del producto: el menor entre las opciones disponibles con precio (si no hay, entre las que tienen precio)
   const allOptions = Object.values(groupedVariants).flatMap((g) => g.options);
-  const sellablePrices = allOptions.filter((o) => o.available).map((o) => o.price);
+  const sellablePrices = allOptions.filter((o) => o.available && o.price > 0).map((o) => o.price);
   const pricedPrices = allOptions.filter((o) => o.price > 0).map((o) => o.price);
   const startingPrice = sellablePrices.length > 0
     ? Math.min(...sellablePrices)

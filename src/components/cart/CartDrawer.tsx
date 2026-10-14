@@ -10,7 +10,6 @@ import { CartItem as CartItemType, Product } from '@/src/types/product.types';
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenCheckout: () => void;
   cart: CartItemType[];
   onUpdateQuantity: (id: string, content: string, presentation: string, delta: number) => void;
   onRemove: (id: string, content: string, presentation: string) => void;
@@ -18,7 +17,7 @@ interface CartDrawerProps {
 }
 
 const CartDrawer: React.FC<CartDrawerProps> = (props) => {
-  const { isOpen, onClose, onOpenCheckout, cart, onUpdateQuantity, onRemove, onAddFromRec } = props;
+  const { isOpen, onClose, cart, onUpdateQuantity, onRemove, onAddFromRec } = props;
   const subtotal = calcSubtotal(cart);
 
   return (
@@ -64,7 +63,7 @@ const CartDrawer: React.FC<CartDrawerProps> = (props) => {
             </div>
           </div>
 
-          <CartSummary subtotal={subtotal} onCheckout={onOpenCheckout} disabled={cart.length === 0} />
+          <CartSummary cart={cart} subtotal={subtotal} />
         </div>
       </div>
     </>

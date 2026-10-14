@@ -219,7 +219,7 @@ const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose, onAdd
                 }`}
               >
                 <i className="fa-solid fa-cart-shopping"></i>
-                <span>{selectedOption?.available ? 'Añadir al carrito' : selectedOption ? 'No disponible' : 'Seleccioná una opción'}</span>
+                <span>{selectedOption?.available ? 'Agregar a consulta' : selectedOption ? 'No disponible' : 'Seleccioná una opción'}</span>
               </button>
             </div>
             

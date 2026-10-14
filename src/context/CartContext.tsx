@@ -96,7 +96,8 @@ export const CartProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
   // REPRICING: el carrito persiste en localStorage y puede traer precios viejos o inexistentes.
   // Una vez cargado el catálogo, cada ítem se alinea con el precio vigente de su variante, y se quitan
-  // los que ya no son vendibles (variante discontinuada o sin precio) para no cobrarlos a un precio erróneo.
+  // los que ya no están disponibles (variante discontinuada o deshabilitada). Un precio 0 NO los quita: se
+  // conservan y se listan como "Consultar precio".
   useEffect(() => {
     if (catalogLoading || allProducts.length === 0) return;
 

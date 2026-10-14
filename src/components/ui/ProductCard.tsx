@@ -124,7 +124,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
             // Botón más comprimido
             className="w-full bg-brand-primary text-white py-2 rounded-full text-[11px] lg:text-xs font-fredoka font-bold uppercase tracking-wider shadow-md hover:bg-orange-600 transition-colors cursor-pointer active:scale-[0.98] disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none"
           >
-            Comprar Ahora
+            Agregar a consulta
           </button>
         </div>
       </div>
