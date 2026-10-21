@@ -11,6 +11,8 @@ import HeroBanner from "@/src/components/ui/HeroBanner";
 import HeroBannerSkeleton from "@/src/components/ui/HeroBannerSkeleton";
 import ProductGrid from "@/src/components/layout/ProductGrid";
 import ProductCarousel from "@/src/components/ui/ProductCarousel";
+import TrustBadges from "@/src/components/ui/TrustBadges";
+import QuickCategories from "@/src/components/ui/QuickCategories";
 
 //Assets
 import banner1 from "@/src/assets/AAbanner1.png";
@@ -124,6 +126,10 @@ const Home: React.FC = () => {
       ) : (
         <HeroBanner banners={visualBanners} onCtaClick={handleBannerClick} />
       )}
+
+      <TrustBadges />
+
+      <QuickCategories />
 
       <ProductGrid
         title="Destacados"
