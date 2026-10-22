@@ -31,7 +31,7 @@ const SectionTitle: React.FC<SectionTitleProps> = ({
         {viewAllLink && viewAllText && (
           <Link
             to={viewAllLink}
-            className="text-xs pb-1 font-fredoka font-semibold uppercase tracking-wider text-gray-400 hover:text-brand-primary transition-colors hidden md:block cursor-pointer"
+            className="text-xs pb-1 font-fredoka font-semibold uppercase tracking-wider text-gray-500 hover:text-brand-primary transition-colors hidden md:block cursor-pointer"
           >
             {viewAllText}
           </Link>

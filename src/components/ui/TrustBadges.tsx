@@ -19,7 +19,7 @@ const TrustBadges: React.FC = () => {
             </span>
             <div className="min-w-0">
               <p className="font-fredoka font-bold text-gray-800 leading-tight">{title}</p>
-              <p className="font-fredoka text-sm text-gray-400 leading-snug">{subtitle}</p>
+              <p className="font-fredoka text-sm text-gray-500 leading-snug">{subtitle}</p>
             </div>
           </li>
         ))}
