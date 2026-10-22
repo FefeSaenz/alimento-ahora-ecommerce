@@ -570,7 +570,7 @@ const ProductDetail: React.FC = () => {
       </div>
 
       {/* Carrusel de Productos Relacionados */}
-      <div className="mt-8 border-t border-gray-100 pt-8">
+      <div>
         <ProductCarousel
           title="Te puede interesar"
           variant="slim"
