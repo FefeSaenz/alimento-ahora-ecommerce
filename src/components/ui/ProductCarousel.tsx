@@ -73,14 +73,14 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
         <button 
           onClick={() => scroll('left')}
           // Hover Naranja de Alimento Ahora
-          className="hidden md:flex absolute -left-4 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
+          className="hidden md:flex absolute left-2 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
         >
           <i className="fa-solid fa-chevron-left text-sm"></i>
         </button>
         <button 
           onClick={() => scroll('right')}
           // Hover Naranja de Alimento Ahora
-          className="hidden md:flex absolute -right-4 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
+          className="hidden md:flex absolute right-2 top-1/2 mt-4 -translate-y-1/2 z-30 w-12 h-12 items-center justify-center border border-gray-200 bg-white rounded-full text-black hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all opacity-0 group-hover/carousel:opacity-100 shadow-sm cursor-pointer"
         >
           <i className="fa-solid fa-chevron-right text-sm"></i>
         </button>
