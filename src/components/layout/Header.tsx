@@ -81,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenCart, onOpenProfile, onOpenSearch
                 key={item.id}
                 item={item}
                 onClick={handleNavClick}
-                className="h-full text-[14px] font-sans font-medium tracking-wide text-gray-800 hover:text-brand-primary transition-colors"
+                className="h-full text-[15px] font-fredoka font-bold tracking-wide text-gray-800 hover:text-brand-primary transition-colors"
               />
             ))}
           </nav>
