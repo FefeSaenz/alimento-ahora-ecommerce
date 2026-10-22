@@ -14,6 +14,7 @@ import { isOutOfStock, OUT_OF_STOCK_LABEL } from "@/src/utils/stock";
 import ProductCarousel from "@/src/components/ui/ProductCarousel";
 import Breadcrumbs from "@/src/components/ui/Breadcrumbs";
 import Modal from "@/src/components/ui/Modal";
+import { getRelatedProducts } from "@/src/utils/related";
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -28,6 +29,12 @@ const ProductDetail: React.FC = () => {
     // Buscamos el producto directamente en la lista limpia y unificada
     return allProducts.find((p) => p.slug === slug || p.id === slug);
   }, [allProducts, slug]);
+
+  // Relacionados: misma marca, luego misma especie y, si faltan, el resto del catálogo
+  const relatedProducts = useMemo(
+    () => (product ? getRelatedProducts(product, allProducts) : []),
+    [product, allProducts],
+  );
 
   // 2. ESTADOS LOCALES
   const [selectedPresentation, setSelectedPresentation] = useState<
@@ -574,7 +581,7 @@ const ProductDetail: React.FC = () => {
         <ProductCarousel
           title="Te puede interesar"
           variant="slim"
-          products={allProducts.filter((p) => p.id !== product.id).slice(0, 8)}
+          products={relatedProducts}
           onAdd={addToCart} // Inyectamos la función directamente
         />
       </div>
