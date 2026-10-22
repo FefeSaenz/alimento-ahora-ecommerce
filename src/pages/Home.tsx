@@ -10,6 +10,7 @@ import { useUnifiedProducts } from "@/src/hooks/useUnifiedProducts";
 import HeroBanner from "@/src/components/ui/HeroBanner";
 import HeroBannerSkeleton from "@/src/components/ui/HeroBannerSkeleton";
 import ProductGrid from "@/src/components/layout/ProductGrid";
+import { isOnOffer } from "@/src/utils/offers";
 import ProductCarousel from "@/src/components/ui/ProductCarousel";
 import TrustBadges from "@/src/components/ui/TrustBadges";
 import QuickCategories from "@/src/components/ui/QuickCategories";
@@ -45,7 +46,7 @@ const Home: React.FC = () => {
   // LÓGICA DE OFERTAS PARA EL CARRUSEL ---
   const offersMapped = useMemo(() => {
     return allProducts
-      .filter((p) => p.discount_percentage && p.discount_percentage > 0)
+      .filter(isOnOffer)
       .slice(0, 10); // Máximo 10 ofertas en el carrusel
   }, [allProducts]);
 

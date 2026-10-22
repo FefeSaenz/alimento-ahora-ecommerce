@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { getFrontData } from '@/src/api/axios';
 import { Product } from '@/src/types/product.types';
 import { mapApiProductToProduct, extractUniqueCategories } from '@/src/utils/mappers';
+import { isOnOffer } from '@/src/utils/offers';
 import { MenuItem, ApiResponse } from '@/src/types/api';
 
 interface AppContextType {
@@ -16,8 +17,8 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const buildSmartMenu = (brands: string[]): MenuItem[] => {
-  return [
+const buildSmartMenu = (brands: string[], hasOffers: boolean): MenuItem[] => {
+  const items: MenuItem[] = [
     { id: 1, label: 'PERROS', url: '/productos?especie=Perro', active: false, icon: null },
     { id: 2, label: 'GATOS', url: '/productos?especie=Gato', active: false, icon: null },
     {
@@ -30,16 +31,20 @@ const buildSmartMenu = (brands: string[]): MenuItem[] => {
         label: brand.toUpperCase(),
         url: `/productos?marca=${encodeURIComponent(brand)}`
       }))
-    },
-    { id: 4, label: 'OFERTAS', url: '/offers', active: false, icon: 'fire' }
+    }
   ];
+  // OFERTAS solo aparece si hay al menos un producto en oferta (Header, Footer y MobileMenu comparten este menú)
+  if (hasOffers) {
+    items.push({ id: 4, label: 'OFERTAS', url: '/offers', active: false, icon: 'fire' });
+  }
+  return items;
 };
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   // El menú base (sin marcas) se renderiza de inmediato; se enriquece cuando la API responde
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(() => buildSmartMenu([]));
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(() => buildSmartMenu([], false));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [frontConfig, setFrontConfig] = useState<ApiResponse['data'] | null>(null);
@@ -75,7 +80,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           const uniqueBrands = Array.from(new Set(mappedProducts.map(p => p.brand).filter(Boolean))) as string[];
 
           // 3. Armamos el menú pasándole las marcas
-          setMenuItems(buildSmartMenu(uniqueBrands));
+          setMenuItems(buildSmartMenu(uniqueBrands, mappedProducts.some(isOnOffer)));
           
           setError(false);
         }
@@ -108,4 +113,4 @@ export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) throw new Error("useApp debe usarse dentro de AppProvider");
   return context;
-};
+};

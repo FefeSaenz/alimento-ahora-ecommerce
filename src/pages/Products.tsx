@@ -4,8 +4,10 @@ import {
   useParams,
   useNavigate,
   useLocation,
+  Link,
 } from "react-router-dom"; // Eliminamos useOutletContext
 import { Helmet } from "react-helmet-async";
+import { Tags } from "lucide-react";
 
 // Context & Hooks
 import { useApp } from "@/src/context/AppContext";
@@ -19,6 +21,7 @@ import ProductGrid from "@/src/components/layout/ProductGrid";
 import FilterSidebar from "@/src/components/layout/FilterSidebar";
 import FilterBar from "@/src/components/ui/FilterBar";
 import Breadcrumbs from "@/src/components/ui/Breadcrumbs";
+import { isOnOffer } from "@/src/utils/offers";
 
 const Products: React.FC = () => {
   const { loading } = useApp();
@@ -40,9 +43,7 @@ const Products: React.FC = () => {
   // 1. COMBINACIÓN Y NORMALIZACIÓN DE DATA
   const combinedProducts = useMemo(() => {
     if (isOffersRoute) {
-      return unifiedProducts.filter(
-        (p) => p.discount_percentage && p.discount_percentage > 0,
-      );
+      return unifiedProducts.filter(isOnOffer);
     }
     return unifiedProducts;
   }, [unifiedProducts, isOffersRoute]);
@@ -179,6 +180,39 @@ const Products: React.FC = () => {
       { label: activeCategory },
     ];
   }, [isOffersRoute, activeCategory, searchTerm]);
+
+  // ESTADO VACÍO DE OFERTAS: sin promociones activas se explica en vez de mostrar una grilla vacía
+  if (isOffersRoute && !loading && combinedProducts.length === 0) {
+    return (
+      <div className="flex flex-col animate-in fade-in duration-500 pb-16">
+        <Helmet>
+          <title>{`ALIMENTO AHORA | ${metaTitle}`}</title>
+        </Helmet>
+
+        <div className="max-w-360 mx-auto px-4 md:px-6 w-full pt-6 pb-4">
+          <Breadcrumbs items={breadcrumbItems} />
+        </div>
+
+        <section className="max-w-360 mx-auto px-6 w-full min-h-[50vh] flex flex-col items-center justify-center text-center gap-5">
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
+            <Tags className="h-10 w-10" strokeWidth={1.75} aria-hidden="true" />
+          </span>
+          <h2 className="font-lilita text-4xl md:text-5xl tracking-wide text-gray-800">
+            ¡Las ofertas volaron!
+          </h2>
+          <p className="font-fredoka text-base md:text-lg text-gray-500 max-w-md leading-relaxed">
+            En este momento no tenemos promociones activas, pero podés encontrar los mejores precios en nuestro catálogo.
+          </p>
+          <Link
+            to="/productos"
+            className="mt-2 rounded-full bg-brand-primary px-8 py-4 text-sm font-fredoka font-bold uppercase tracking-wider text-white shadow-md transition-all hover:shadow-lg active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary"
+          >
+            Ir al catálogo
+          </Link>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col animate-in fade-in duration-500 pb-16">
