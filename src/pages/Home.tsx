@@ -16,9 +16,9 @@ import TrustBadges from "@/src/components/ui/TrustBadges";
 import QuickCategories from "@/src/components/ui/QuickCategories";
 
 //Assets
-import banner1 from "@/src/assets/AAbanner1.png";
-import banner2 from "@/src/assets/AAbanner2.png";
-import banner3 from "@/src/assets/AAbanner3.png";
+import banner1 from "@/src/assets/AAbanner1.webp";
+import banner2 from "@/src/assets/AAbanner2.webp";
+import banner3 from "@/src/assets/AAbanner3.webp";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
